@@ -2,7 +2,10 @@
 #define WPO_KERNEL_HPP 1
 
 #include "expression.hpp"
+#include <set>
 
-vector<pair<monomial, polynomial>> find_kernels(const vector<polynomial>& P);
+using std::set;
+
+void find_kernels(const vector<polynomial>& P, set<monomial>& sco_kernels, set<polynomial>& skernels);
 
 #endif

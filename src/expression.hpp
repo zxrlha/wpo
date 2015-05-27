@@ -9,6 +9,10 @@ using std::vector;
 class monomial
 {
 public:
+	monomial()
+	{
+		_posi = true;
+	};
 	bool is_positive() const
 	{
 		return _posi;
@@ -33,11 +37,15 @@ public:
 		_vpow.resize(newsize);
 	}
 
-	int operator[](size_t i) const
+	int operator[](int i) const
 	{
 		return _vpow[i];
 	}
 
+	int& operator[](int i)
+	{
+		return _vpow[i];
+	}
 	monomial& operator*=(const monomial& m2);
 protected:
 	vector<int> _vpow;
@@ -54,7 +62,7 @@ public:
 	explicit polynomial(const monomial& A)
 		: _vmon{A}
 	{
-		_mono_size = A.size();
+		_size = A.size();
 	};
 	int size() const
 	{
@@ -68,11 +76,14 @@ public:
 	polynomial& operator+=(const monomial& A);
 	polynomial& operator-=(const monomial& A);
 
-	const monomial& operator[](size_t i) const
+	const monomial& operator[](int i) const
 	{
 		return _vmon[i];
 	}
+
+	monomial gcd() const;
 protected:
+	void sort();
 	vector<monomial> _vmon;
 	int _size;
 };
@@ -80,5 +91,44 @@ protected:
 polynomial operator+(const monomial& A, const monomial& B);
 polynomial operator-(const monomial& A, const monomial& B);
 monomial operator*(const monomial& A, const monomial& B);
+polynomial operator/(const polynomial& P, const monomial& A);
+
+bool operator<(const monomial& A, const monomial& B);
+inline bool operator>(const monomial& A, const monomial& B)
+{
+	return B < A;
+}
+inline bool operator<=(const monomial& A, const monomial& B)
+{
+	return !(A > B);
+}
+inline bool operator>=(const monomial& A, const monomial& B)
+{
+	return !(A < B);
+}
+bool operator==(const monomial& A, const monomial& B);
+inline bool operator!=(const monomial& A, const monomial& B)
+{
+	return !(A == B);
+}
+
+bool operator<(const polynomial& A, const polynomial& B);
+inline bool operator>(const polynomial& A, const polynomial& B)
+{
+	return B < A;
+}
+inline bool operator<=(const polynomial& A, const polynomial& B)
+{
+	return !(A > B);
+}
+inline bool operator>=(const polynomial& A, const polynomial& B)
+{
+	return !(A < B);
+}
+bool operator==(const polynomial& A, const polynomial& B);
+inline bool operator!=(const polynomial& A, const polynomial& B)
+{
+	return !(A == B);
+}
 
 #endif
