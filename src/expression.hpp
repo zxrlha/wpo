@@ -3,8 +3,10 @@
 
 #include <vector>
 #include <cassert>
+#include <string>
 
 using std::vector;
+using std::string;
 
 class monomial
 {
@@ -47,6 +49,8 @@ public:
 		return _vpow[i];
 	}
 	monomial& operator*=(const monomial& m2);
+
+	int multiplication_number() const;
 protected:
 	vector<int> _vpow;
 	bool _posi;
@@ -82,16 +86,21 @@ public:
 	}
 
 	monomial gcd() const;
+	bool contain(const monomial& m) const;
+	string& name() { return _name; };
 protected:
 	void sort();
 	vector<monomial> _vmon;
 	int _size;
+	string _name;
 };
 
 polynomial operator+(const monomial& A, const monomial& B);
 polynomial operator-(const monomial& A, const monomial& B);
 monomial operator*(const monomial& A, const monomial& B);
 polynomial operator/(const polynomial& P, const monomial& A);
+
+polynomial mod(const polynomial& P, const monomial& A);
 
 bool operator<(const monomial& A, const monomial& B);
 inline bool operator>(const monomial& A, const monomial& B)

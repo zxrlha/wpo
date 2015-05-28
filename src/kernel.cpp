@@ -44,7 +44,10 @@ void find_kernels(const vector<polynomial>& vP, set<monomial>& sco_kernels, set<
 	for (auto P: vP)
 	{
 		kernels(0, P, monomial(), sco_kernels, skernels);
-		sco_kernels.insert(monomial());
-		skernels.insert(P);
+		if (P.gcd() == monomial())
+		{
+			sco_kernels.insert(monomial());
+			skernels.insert(P);
+		}
 	}
 }

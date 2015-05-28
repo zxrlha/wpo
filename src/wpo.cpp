@@ -1,5 +1,8 @@
 #include "kernel.hpp"
 #include <iostream>
+#include "extraction.hpp"
+#include "kcm.hpp"
+#include "literal.hpp"
 
 int main()
 {
@@ -25,6 +28,12 @@ int main()
 	p -= m4;
 	set<monomial> scok;
 	set<polynomial> sk;
-	find_kernels(vector<polynomial>{p}, scok, sk);
+	vector<polynomial> vP{p};
+	literal_append("x");
+	literal_append("s3");
+	literal_append("s5");
+	literal_append("s7");
+	find_kernel_intersections(vP);
+	std::cout<<1<<std::endl;
 	return 0;
 }

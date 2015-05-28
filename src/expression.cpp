@@ -22,7 +22,7 @@ monomial& monomial::operator*=(const monomial& m2)
 void polynomial::resize(int ns)
 {
 	assert(ns >= _size);
-	for (auto m : _vmon)
+	for (auto& m : _vmon)
 	{
 		m.resize(ns);
 	}
@@ -138,6 +138,29 @@ polynomial operator/(const polynomial& P, const monomial& A)
 	return res;
 }
 
+polynomial mod(const polynomial& P, const monomial& A)
+{
+	assert(P.size() >= A.size());
+	polynomial res;
+	for (int i = 0; i < P.number(); ++i)
+	{
+		bool flag = true;
+		for (int j = 0; j < A.size(); ++j)
+		{
+			if (P[i][j] < A[j])
+			{
+				flag = false;
+				break;
+			}
+		}
+		if (!flag)
+		{
+			res += P[i];
+		}
+	}
+	return res;
+}
+
 bool operator<(const monomial& A, const monomial& B)
 {
 	for (int i = 0; i < min(A.size(), B.size()); ++i)
@@ -219,3 +242,17 @@ bool operator==(const polynomial& A, const polynomial& B)
 	return true;
 }
 
+bool polynomial::contain(const monomial& m) const
+{
+	return std::binary_search(_vmon.begin(), _vmon.end(), m);
+}
+
+int monomial::multiplication_number() const
+{
+	int res = 0;
+	for (int i = 0; i < _vpow.size(); ++i)
+	{
+		res += _vpow[i];
+	}
+	return res;
+}
