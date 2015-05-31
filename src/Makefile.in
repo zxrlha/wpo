@@ -92,7 +92,8 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_wpo_OBJECTS = expression.$(OBJEXT) kernel.$(OBJEXT) kcm.$(OBJEXT) \
-	extraction.$(OBJEXT) literal.$(OBJEXT) wpo.$(OBJEXT)
+	cim.$(OBJEXT) extraction.$(OBJEXT) literal.$(OBJEXT) \
+	wpo.$(OBJEXT)
 wpo_OBJECTS = $(am_wpo_OBJECTS)
 wpo_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
@@ -259,6 +260,7 @@ top_srcdir = @top_srcdir@
 wpo_SOURCES = expression.hpp expression.cpp \
 			  kernel.hpp kernel.cpp \
 			  kcm.hpp kcm.cpp \
+			  cim.hpp cim.cpp \
 			  extraction.hpp extraction.cpp \
 			  literal.hpp literal.cpp \
 			  wpo.cpp
@@ -350,6 +352,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cim.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/expression.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/extraction.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kcm.Po@am__quote@

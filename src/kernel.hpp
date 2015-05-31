@@ -2,10 +2,10 @@
 #define WPO_KERNEL_HPP 1
 
 #include "expression.hpp"
-#include <set>
+#include <map>
 
-using std::set;
+using std::map;
 
-void find_kernels(const vector<polynomial>& P, set<monomial>& sco_kernels, set<polynomial>& skernels);
+void find_kernels(const polynomial& P, map<monomial, polynomial>& kernelmap);
 
 #endif

@@ -1,6 +1,7 @@
 #include "expression.hpp"
 #include <functional>
 #include <algorithm>
+#include "literal.hpp"
 
 using std::min;
 using std::max;
@@ -85,6 +86,22 @@ polynomial operator-(const monomial& A, const monomial& B)
 	polynomial P(A);
 	P -= B;
 	return P;
+}
+
+polynomial& polynomial::operator*=(const monomial& A)
+{
+	for (auto& m : _vmon)
+	{
+		m *= A;
+	}
+	return *this;
+}
+
+polynomial operator*(const polynomial& P, const monomial& A)
+{
+	polynomial res(P);
+	res *= A;
+	return res;
 }
 
 monomial operator*(const monomial& A, const monomial& B)
@@ -255,4 +272,42 @@ int monomial::multiplication_number() const
 		res += _vpow[i];
 	}
 	return res;
+}
+
+ostream& operator<<(ostream& os, const monomial& m)
+{
+	if (m.is_negative()) os << "-";
+	int status = 0;
+	for (int i = 0; i < m.size(); ++i)
+	{
+		if (m[i] != 0)
+		{
+			for (int j = 0; j < m[i]; ++j)
+			{
+				if (status != 0) os << "*";
+				os << literal_name(i);
+				status = 1;
+			}
+		}
+	}
+	if (status == 0) os << "1";
+	return os;
+}
+
+ostream& operator<<(ostream& os, const polynomial& p)
+{
+	os << p.name() << "=";
+	for (int i = 0; i < p.number(); ++i)
+	{
+		if (i != 0 && p[i].is_positive()) os << "+";
+		os << p[i];
+	}
+	return os;
+}
+
+void polynomial::remove(const monomial& m)
+{
+	auto it = std::lower_bound(_vmon.begin(), _vmon.end(), m);
+	assert(*it == m);
+	_vmon.erase(it);
 }

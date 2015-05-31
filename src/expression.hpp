@@ -4,9 +4,11 @@
 #include <vector>
 #include <cassert>
 #include <string>
+#include <iostream>
 
 using std::vector;
 using std::string;
+using std::ostream;
 
 class monomial
 {
@@ -79,6 +81,7 @@ public:
 	}
 	polynomial& operator+=(const monomial& A);
 	polynomial& operator-=(const monomial& A);
+	polynomial& operator*=(const monomial& A);
 
 	const monomial& operator[](int i) const
 	{
@@ -87,7 +90,17 @@ public:
 
 	monomial gcd() const;
 	bool contain(const monomial& m) const;
-	string& name() { return _name; };
+	string& name()
+	{
+		return _name;
+	};
+	const string& name() const
+	{
+		return _name;
+	};
+
+	void remove(const monomial& m);
+
 protected:
 	void sort();
 	vector<monomial> _vmon;
@@ -98,9 +111,16 @@ protected:
 polynomial operator+(const monomial& A, const monomial& B);
 polynomial operator-(const monomial& A, const monomial& B);
 monomial operator*(const monomial& A, const monomial& B);
-polynomial operator/(const polynomial& P, const monomial& A);
 
+polynomial operator/(const polynomial& P, const monomial& A);
 polynomial mod(const polynomial& P, const monomial& A);
+
+polynomial operator*(const polynomial& P, const monomial& A);
+inline polynomial operator*(const monomial& A, const polynomial& P)
+{
+	return P * A;
+}
+
 
 bool operator<(const monomial& A, const monomial& B);
 inline bool operator>(const monomial& A, const monomial& B)
@@ -140,4 +160,7 @@ inline bool operator!=(const polynomial& A, const polynomial& B)
 	return !(A == B);
 }
 
+
+ostream& operator<<(ostream& os, const monomial& m);
+ostream& operator<<(ostream& os, const polynomial& m);
 #endif
