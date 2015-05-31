@@ -32,3 +32,25 @@ int literal_size()
 {
 	return vlit.size();
 }
+
+bool literal_check(const string& name)
+{
+	for (auto t : vlit)
+	{
+		if (t == name)
+			return true;
+	}
+	return false;
+}
+
+int literal_add(const string& name)
+{
+	for (int i = 0; i < vlit.size(); ++i)
+	{
+		if (vlit[i] == name)
+		{
+			return i;
+		}
+	}
+	return literal_append(name);
+}

@@ -104,11 +104,45 @@ polynomial operator*(const polynomial& P, const monomial& A)
 	return res;
 }
 
+polynomial operator+(const polynomial& P, const monomial& A)
+{
+	polynomial res(P);
+	res += A;
+	return res;
+}
+
+polynomial operator-(const polynomial& P, const monomial& A)
+{
+	polynomial res(P);
+	res -= A;
+	return res;
+}
+
 monomial operator*(const monomial& A, const monomial& B)
 {
 	monomial C(A);
 	C *= B;
 	return C;
+}
+
+polynomial operator+(const polynomial& P1, const polynomial& P2)
+{
+	polynomial res(P1);
+	for (int i = 0; i < P2.number(); ++i)
+	{
+		res += P2[i];
+	}
+	return res;
+}
+
+polynomial operator-(const polynomial& P1, const polynomial& P2)
+{
+	polynomial res(P1);
+	for (int i = 0; i < P2.number(); ++i)
+	{
+		res -= P2[i];
+	}
+	return res;
 }
 
 monomial polynomial::gcd() const

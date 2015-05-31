@@ -1,0 +1,38 @@
+%{
+#include <boost/lexical_cast.hpp>
+#include "literal.hpp"
+#include "yyglobal.hpp"
+	int yylex(void);
+	inline void yyerror(char const *) {}
+
+	%}
+
+	%token NUMBER IDENTIFY
+	%left '-' '+'
+	%left '*'
+	%right '^'
+
+	%%
+
+	file:
+{} /*empty*/
+| file poly_def {}
+
+poly_def:
+IDENTIFY '=' exp { auto& P = get<polynomial>($3); P.name() = get<string>($1); vP.push_back(P); }
+
+monowithsign:
+mono { $$ = $1; std::cout<<1<<std::endl;}
+| '-' mono { auto& t = get<monomial>($2); t.reverse_sign(); $$ = t;}
+
+mono:
+IDENTIFY { int i = literal_add(get<string>($1)); monomial m; m.resize(i+1); m[i] = 1; $$ = m; }
+| IDENTIFY '^' NUMBER { int li = literal_add(get<string>($1)); int ti = get<int>($3); monomial m; m.resize(li+1); m[li] = ti; $$ = m; }
+| mono '*' mono { $$ = get<monomial>($1) * get<monomial>($3); }
+| NUMBER '*' mono { int i = literal_add(boost::lexical_cast<string>(get<int>($1))); monomial m; m.resize(i+1); m[i] = 1; $$ = m * get<monomial>($3); }
+| mono '*' NUMBER { int i = literal_add(boost::lexical_cast<string>(get<int>($3))); monomial m; m.resize(i+1); m[i] = 1; $$ = m * get<monomial>($1); }
+
+exp:
+monowithsign { polynomial P; P += get<monomial>($1); $$ = P; }
+| exp '+' mono { $$ = get<polynomial>($1) + get<monomial>($3); }
+| exp '-' mono { $$ = get<polynomial>($1) - get<monomial>($3); }

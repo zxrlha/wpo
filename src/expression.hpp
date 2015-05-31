@@ -13,10 +13,13 @@ using std::ostream;
 class monomial
 {
 public:
+	//constructor
 	monomial()
 	{
 		_posi = true;
 	};
+	
+	//sign information
 	bool is_positive() const
 	{
 		return _posi;
@@ -26,11 +29,13 @@ public:
 		return !_posi;
 	}
 
+	//sign operation
 	void reverse_sign()
 	{
 		_posi = !_posi;
 	}
 
+	//size information and operation
 	int size() const
 	{
 		return _vpow.size();
@@ -41,17 +46,20 @@ public:
 		_vpow.resize(newsize);
 	}
 
+	//term access
 	int operator[](int i) const
 	{
 		return _vpow[i];
 	}
-
 	int& operator[](int i)
 	{
 		return _vpow[i];
 	}
+
+	//ring operation
 	monomial& operator*=(const monomial& m2);
 
+	//information for kcm
 	int multiplication_number() const;
 protected:
 	vector<int> _vpow;
@@ -61,6 +69,7 @@ protected:
 class polynomial
 {
 public:
+	//constructor
 	polynomial()
 	{
 		_size = 0;
@@ -70,6 +79,8 @@ public:
 	{
 		_size = A.size();
 	};
+
+	//size information and operation
 	int size() const
 	{
 		return _size;
@@ -79,17 +90,24 @@ public:
 	{
 		return _vmon.size();
 	}
+
+	//ring operation
 	polynomial& operator+=(const monomial& A);
 	polynomial& operator-=(const monomial& A);
 	polynomial& operator*=(const monomial& A);
 
+	//term access
 	const monomial& operator[](int i) const
 	{
 		return _vmon[i];
 	}
 
+	//information and operation for kcm
 	monomial gcd() const;
 	bool contain(const monomial& m) const;
+	void remove(const monomial& m);
+
+	//name information operation for output
 	string& name()
 	{
 		return _name;
@@ -99,8 +117,6 @@ public:
 		return _name;
 	};
 
-	void remove(const monomial& m);
-
 protected:
 	void sort();
 	vector<monomial> _vmon;
@@ -108,20 +124,33 @@ protected:
 	string _name;
 };
 
+//ring operation
 polynomial operator+(const monomial& A, const monomial& B);
 polynomial operator-(const monomial& A, const monomial& B);
 monomial operator*(const monomial& A, const monomial& B);
 
+//operation for kcm
 polynomial operator/(const polynomial& P, const monomial& A);
 polynomial mod(const polynomial& P, const monomial& A);
 
+//ring operator
+polynomial operator+(const polynomial& P1, const polynomial& P2);
+polynomial operator-(const polynomial& P1, const polynomial& P2);
+
+polynomial operator+(const polynomial& P, const monomial& A);
+polynomial operator-(const polynomial& P, const monomial& A);
 polynomial operator*(const polynomial& P, const monomial& A);
+
+inline polynomial operator+(const monomial& A, const polynomial& P)
+{
+	return P + A;
+}
 inline polynomial operator*(const monomial& A, const polynomial& P)
 {
 	return P * A;
 }
 
-
+//compare operator for sort and associated container
 bool operator<(const monomial& A, const monomial& B);
 inline bool operator>(const monomial& A, const monomial& B)
 {
@@ -160,7 +189,7 @@ inline bool operator!=(const polynomial& A, const polynomial& B)
 	return !(A == B);
 }
 
-
+//output operator for view and debug
 ostream& operator<<(ostream& os, const monomial& m);
 ostream& operator<<(ostream& os, const polynomial& m);
 #endif
