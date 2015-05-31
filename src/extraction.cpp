@@ -10,6 +10,9 @@ using std::map;
 
 void find_kernel_intersections(vector<polynomial>& vP)
 {
+	//first, resize
+	for (auto& P: vP) P.resize(literal_size());
+
 	while (true)
 	{
 		map<monomial, polynomial> vmp;

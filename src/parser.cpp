@@ -1391,7 +1391,7 @@ yyreduce:
   case 9:
 /* Line 1792 of yacc.c  */
 #line 33 "parser.ypp"
-    { (yyval) = (yyvsp[(1) - (1)]); std::cout<<1<<std::endl;}
+    { (yyval) = (yyvsp[(1) - (1)]); }
     break;
 
   case 10:

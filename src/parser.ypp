@@ -30,7 +30,7 @@ poly_def:
 IDENTIFY '=' exp { auto& P = get<polynomial>($3); P.name() = get<string>($1); vP.push_back(P); }
 
 monowithsign:
-mono { $$ = $1; std::cout<<1<<std::endl;}
+mono { $$ = $1; }
 | '-' mono { auto& t = get<monomial>($2); t.reverse_sign(); $$ = t;}
 
 mono:
