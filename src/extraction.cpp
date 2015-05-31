@@ -109,6 +109,7 @@ void find_cube_intersections(vector<polynomial>& vP)
 		}
 		//add this into vP
 		polynomial nl;
+		nl.resize(li+1);
 		nl += m;
 		nl.name() = literal_name(li);
 		vP.push_back(nl);

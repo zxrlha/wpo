@@ -2,10 +2,12 @@
 #define WPO_EXPRESSION_HPP 1
 
 #include <vector>
+#include <set>
 #include <cassert>
 #include <string>
 #include <iostream>
 
+using std::set;
 using std::vector;
 using std::string;
 using std::ostream;
@@ -18,7 +20,7 @@ public:
 	{
 		_posi = true;
 	};
-	
+
 	//sign information
 	bool is_positive() const
 	{
@@ -117,6 +119,11 @@ public:
 		return _name;
 	};
 
+	//literal information for output
+	bool contain_literals(const set<int>& ls);
+
+	set<int> literals() const;
+	set<int> tmp_literals() const;
 protected:
 	void sort();
 	vector<monomial> _vmon;

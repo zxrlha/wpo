@@ -1,13 +1,15 @@
 %{
 #include <boost/lexical_cast.hpp>
+#include <cstdlib>
 #include "literal.hpp"
 #include "yyglobal.hpp"
 	int yylex(void);
-	inline void yyerror(char const *) {}
+	inline void yyerror(char const *) { std::cerr<<"YYERROR:"<<std::endl; exit(1);}
 
 	%}
 
-	%token NUMBER IDENTIFY
+	%token NUMBER IDENTIFY STRING
+	%token OPTION
 	%left '-' '+'
 	%left '*'
 	%right '^'
@@ -17,6 +19,12 @@
 	file:
 {} /*empty*/
 | file poly_def {}
+| file optionline {}
+
+optionline:
+OPTION IDENTIFY { if (get<string>($1)=="prefix") tmp_prefix= get<string>($2); else if (get<string>($1)=="suffix") tmp_suffix=get<string>($2); else std::cerr<<"ERROR:Unknown option:"<<$1<<std::endl; exit(1);}
+|OPTION STRING { if (get<string>($1)=="prefix") tmp_prefix= get<string>($2); else if (get<string>($1)=="suffix") tmp_suffix=get<string>($2); else std::cerr<<"ERROR:Unknown option:"<<$1<<std::endl; exit(1);}
+|OPTION NUMBER { if (get<string>($1)=="start") tmp_start = get<int>($2); else std::cerr<<"ERROR:Unknown option:"<<$1<<std::endl; exit(1); }
 
 poly_def:
 IDENTIFY '=' exp { auto& P = get<polynomial>($3); P.name() = get<string>($1); vP.push_back(P); }

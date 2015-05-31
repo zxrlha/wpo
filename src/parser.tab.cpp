@@ -74,7 +74,7 @@
 
 	
 /* Line 371 of yacc.c  */
-#line 78 "parser.cpp"
+#line 78 "parser.tab.cpp"
 
 # ifndef YY_NULL
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -92,10 +92,7 @@
 # define YYERROR_VERBOSE 0
 #endif
 
-/* In a future release of Bison, this section will be replaced
-   by #include "y.tab.h".  */
-#ifndef YY_YY_PARSER_HPP_INCLUDED
-# define YY_YY_PARSER_HPP_INCLUDED
+
 /* Enabling traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -116,12 +113,6 @@ extern int yydebug;
      OPTION = 261
    };
 #endif
-/* Tokens.  */
-#define NUMBER 258
-#define IDENTIFY 259
-#define STRING 260
-#define OPTION 261
-
 
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -147,12 +138,12 @@ int yyparse ();
 #endif
 #endif /* ! YYPARSE_PARAM */
 
-#endif /* !YY_YY_PARSER_HPP_INCLUDED  */
+
 
 /* Copy the second part of user declarations.  */
 
 /* Line 390 of yacc.c  */
-#line 156 "parser.cpp"
+#line 147 "parser.tab.cpp"
 
 #ifdef short
 # undef short
@@ -1451,7 +1442,7 @@ yyreduce:
 
 
 /* Line 1792 of yacc.c  */
-#line 1455 "parser.cpp"
+#line 1446 "parser.tab.cpp"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires

@@ -15,6 +15,10 @@ ID [a-zA-Z][a-zA-Z0-9]*
 
 {ID} { yylval = string(yytext); /*std::cout<<get<string>(yylval)<<std::endl;*/return IDENTIFY; }
 
+[%#$]{ID} { yylval = string(yytext+1); return OPTION; }
+
+[a-zA-Z]*[a-zA-Z0-9]*[\(\)\[\]\{\}\<\>]+[a-zA-Z0-9\(\)\[\]\{\}\<\>]* { yylval = string(yytext+1); return STRING; }
+
 "*" { return '*'; }
 "+" { return '+'; }
 "-" { return '-'; }
