@@ -12,4 +12,9 @@ using boost::get;
 
 extern vector<polynomial> vP;
 
+extern string tmp_prefix;
+extern string tmp_suffix;
+extern int tmp_start;
+extern string line_suffix;
+
 #endif

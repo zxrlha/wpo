@@ -7,13 +7,17 @@
 %}
 
 DIGIT [0-9]
-ID [a-zA-Z][a-zA-Z0-9]*
+ID [a-zA-Z_][a-zA-Z_0-9]*
 
 %%
 
 {DIGIT}+ { yylval = boost::lexical_cast<int>(yytext); return NUMBER; }
 
-{ID} { yylval = string(yytext); /*std::cout<<get<string>(yylval)<<std::endl;*/return IDENTIFY; }
+{ID} { yylval = string(yytext); /*std::cout<<get<string>(yylval)<<std::endl*/;return IDENTIFY; }
+
+[%#$]{ID} { /*std::cout<<yytext<<std::endl*/; yylval = string(yytext+1); return OPTION; }
+
+"\"".*"\"" { string str(yytext+1); str.resize(str.size()-1); yylval = str; return STRING; }
 
 "*" { return '*'; }
 "+" { return '+'; }

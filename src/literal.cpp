@@ -19,7 +19,19 @@ int literal_append(const string& name)
 int literal_append_tmp()
 {
 	++tmpi;
-	return literal_append("tmp"+boost::lexical_cast<string>(tmpi));
+	return literal_append("#tmp"+boost::lexical_cast<string>(tmpi));
+}
+
+bool literal_is_tmp(const string& name)
+{
+	if (name[0] == '#')
+		return true;
+	else return false;
+}
+
+bool literal_is_tmp(int i)
+{
+	return literal_is_tmp(vlit[i]);
 }
 
 
@@ -43,6 +55,17 @@ bool literal_check(const string& name)
 	return false;
 }
 
+int literal_get(const string& name)
+{
+	for (int i = 0; i < vlit.size(); ++i)
+	{
+		if (vlit[i] == name)
+			return i;
+	}
+	return -1;
+}
+
+
 int literal_add(const string& name)
 {
 	for (int i = 0; i < vlit.size(); ++i)
@@ -53,4 +76,9 @@ int literal_add(const string& name)
 		}
 	}
 	return literal_append(name);
+}
+
+void literal_set_name(int i, const string& name)
+{
+	vlit[i] = name;
 }

@@ -95,7 +95,7 @@ PROGRAMS = $(bin_PROGRAMS)
 am_wpo_OBJECTS = expression.$(OBJEXT) kernel.$(OBJEXT) kcm.$(OBJEXT) \
 	cim.$(OBJEXT) extraction.$(OBJEXT) literal.$(OBJEXT) \
 	wpo.$(OBJEXT) parser.$(OBJEXT) lexer.$(OBJEXT) \
-	yyglobal.$(OBJEXT)
+	yyglobal.$(OBJEXT) output.$(OBJEXT)
 wpo_OBJECTS = $(am_wpo_OBJECTS)
 wpo_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
@@ -288,7 +288,8 @@ wpo_SOURCES = expression.hpp expression.cpp \
 			  wpo.cpp \
 			  parser.ypp \
 			  lexer.lpp \
-			  yyglobal.hpp yyglobal.cpp
+			  yyglobal.hpp yyglobal.cpp \
+			  output.hpp output.cpp
 
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-am
@@ -388,6 +389,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kernel.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lexer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/literal.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/output.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/parser.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wpo.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/yyglobal.Po@am__quote@

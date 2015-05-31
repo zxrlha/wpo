@@ -1,6 +1,6 @@
-#include "expression.hpp"
 #include <functional>
 #include <algorithm>
+#include "expression.hpp"
 #include "literal.hpp"
 
 using std::min;
@@ -344,4 +344,42 @@ void polynomial::remove(const monomial& m)
 	auto it = std::lower_bound(_vmon.begin(), _vmon.end(), m);
 	assert(*it == m);
 	_vmon.erase(it);
+}
+
+bool polynomial::contain_literals(const set<int>& ls)
+{
+	for (int i = 0; i < _vmon.size(); ++i)
+	{
+		for (auto it : ls)
+		{
+			if (_vmon[i][it] != 0) return true;
+		}
+	}
+	return false;
+}
+
+set<int> polynomial::literals() const
+{
+	set<int> res;
+	for (int i = 0; i < _vmon.size(); ++i)
+	{
+		for (int j = 0; j < _vmon[i].size(); ++j)
+		{
+			if (_vmon[i][j] != 0) res.insert(j);
+		}
+	}
+	return res;
+}
+
+set<int> polynomial::tmp_literals() const
+{
+	set<int> res;
+	for (int i = 0; i < _vmon.size(); ++i)
+	{
+		for (int j = 0; j < _vmon[i].size(); ++j)
+		{
+			if (_vmon[i][j] != 0 && literal_is_tmp(j)) res.insert(j);
+		}
+	}
+	return res;
 }

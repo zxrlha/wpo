@@ -10,5 +10,6 @@ wpo_SOURCES = expression.hpp expression.cpp \
 			  wpo.cpp \
 			  parser.ypp \
 			  lexer.lpp \
-			  yyglobal.hpp yyglobal.cpp
+			  yyglobal.hpp yyglobal.cpp \
+			  output.hpp output.cpp
 

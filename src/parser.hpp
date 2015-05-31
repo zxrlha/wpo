@@ -47,12 +47,16 @@ extern int yydebug;
       know about them.  */
    enum yytokentype {
      NUMBER = 258,
-     IDENTIFY = 259
+     IDENTIFY = 259,
+     STRING = 260,
+     OPTION = 261
    };
 #endif
 /* Tokens.  */
 #define NUMBER 258
 #define IDENTIFY 259
+#define STRING 260
+#define OPTION 261
 
 
 
