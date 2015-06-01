@@ -20,6 +20,12 @@ public:
 	{
 		_posi = true;
 	};
+	monomial(const monomial&) = default;
+	monomial(monomial&&) = default;
+
+	//assignment
+	monomial& operator=(const monomial&) = default;
+	monomial& operator=(monomial&&) = default;
 
 	//sign information
 	bool is_positive() const
@@ -81,6 +87,12 @@ public:
 	{
 		_size = A.size();
 	};
+	polynomial(const polynomial&) = default;
+	polynomial(polynomial&&) = default;
+
+	//assignment
+	polynomial& operator=(const polynomial&) = default;
+	polynomial& operator=(polynomial&&) = default;
 
 	//size information and operation
 	int size() const

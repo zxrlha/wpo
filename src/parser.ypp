@@ -40,6 +40,6 @@ IDENTIFY { int i = literal_add(get<string>($1)); monomial m; m.resize(i+1); m[i]
 | mono '*' mono { $$ = get<monomial>($1) * get<monomial>($3); }
 
 exp:
-monowithsign { polynomial P; P += get<monomial>($1); $$ = P; }
-| exp '+' mono { $$ = get<polynomial>($1) + get<monomial>($3); }
-| exp '-' mono { $$ = get<polynomial>($1) - get<monomial>($3); }
+monowithsign { $$ = polynomial(get<monomial>($1)); }
+| exp '+' mono { $$ = std::move(get<polynomial>($1)); get<polynomial>($$) += get<monomial>($3); }
+| exp '-' mono { $$ = std::move(get<polynomial>($1)); get<polynomial>($$) -= get<monomial>($3); }

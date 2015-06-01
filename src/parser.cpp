@@ -1427,19 +1427,19 @@ yyreduce:
   case 15:
 /* Line 1792 of yacc.c  */
 #line 43 "parser.ypp"
-    { polynomial P; P += get<monomial>((yyvsp[(1) - (1)])); (yyval) = P; }
+    { (yyval) = polynomial(get<monomial>((yyvsp[(1) - (1)]))); }
     break;
 
   case 16:
 /* Line 1792 of yacc.c  */
 #line 44 "parser.ypp"
-    { (yyval) = get<polynomial>((yyvsp[(1) - (3)])) + get<monomial>((yyvsp[(3) - (3)])); }
+    { (yyval) = std::move(get<polynomial>((yyvsp[(1) - (3)]))); get<polynomial>((yyval)) += get<monomial>((yyvsp[(3) - (3)])); }
     break;
 
   case 17:
 /* Line 1792 of yacc.c  */
 #line 45 "parser.ypp"
-    { (yyval) = get<polynomial>((yyvsp[(1) - (3)])) - get<monomial>((yyvsp[(3) - (3)])); }
+    { (yyval) = std::move(get<polynomial>((yyvsp[(1) - (3)]))); get<polynomial>((yyval)) -= get<monomial>((yyvsp[(3) - (3)])); }
     break;
 
 
