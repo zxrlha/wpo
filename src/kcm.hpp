@@ -18,8 +18,8 @@ public:
 	const monomial& column(int i) const { return _vk[i]; };
 	int index(int i) const { return _icok[i]; };
 protected:
-	int value_of_best_rectangle(int ri, int ci, vector<int>& row, vector<int>& column);
-	int value_of_best_rectangle(vector<int>& row, vector<int>& column, set<int>& posi_rows, set<int>& posi_columns);
+	void generate_best_rectangle(int ri, int ci, vector<int>& row, vector<int>& column);
+	void generate_best_rectangle(vector<int>& row, vector<int>& column, set<int>& posi_rows, set<int>& posi_columns);
 	int value_of_prime_rectangle(vector<int>& row, vector<int>& column);
 
 	vector<monomial> _vcok;
@@ -28,6 +28,10 @@ protected:
 	vector<monomial> _vk;
 	vector<int> _vMC;//M(C_i)
 	vector<vector<int> > _mat;
+
+	vector<int> _br;
+	vector<int> _bc;
+	int _bv;
 };
 
 #endif

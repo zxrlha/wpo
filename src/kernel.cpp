@@ -7,7 +7,7 @@ using std::make_pair;
 
 void kernels(int i, const polynomial& P, const monomial& d, vector<pair<monomial, polynomial>>& kernelmap)
 {
-	std::cout<<"kmap size="<<kernelmap.size()<<" "<<P.number()<<" "<<literal_size()<<std::endl;
+	//std::cout<<"kmap size="<<kernelmap.size()<<" "<<P.number()<<" "<<literal_size()<<" "<<i<<std::endl;
 	for (int j = i; j < P.size(); ++j)
 	{
 		//std::cout<<"kernels:"<<j<<std::endl;

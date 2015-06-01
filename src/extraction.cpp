@@ -18,17 +18,15 @@ void find_kernel_intersections(vector<polynomial>& vP)
 	while (true)
 	{
 		++i;
-		std::cout << i << std::endl;
 		vector<pair<monomial, polynomial>> vmp;
 		vector<vector<pair<monomial, polynomial>>> vkmap;
 		for (auto P : vP)
 		{
 			find_kernels(P, vmp);
-		std::cout << 2*i << std::endl;
-			vkmap.push_back(vmp);
+			vkmap.push_back(std::move(vmp));
 		}
-		std::cout << 3*i << std::endl;
 		kcm tm(vkmap, vP);
+		vkmap.clear();
 		vector<int> vr;
 		vector<int> vc;
 		if (!tm.generate_best_rectangle(vr, vc)) return;

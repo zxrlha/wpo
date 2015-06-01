@@ -58,12 +58,20 @@ kcm::kcm(const vector<vector<pair<monomial, polynomial>>>& vkmap, const vector<p
 	}
 }
 
+int i = 0;
 bool kcm::generate_best_rectangle(vector<int>& row, vector<int>& column)
 {
-	int max = 0;
+	_bv = 0;
+	_br.clear();
+	_bc.clear();
+
+	vector<int> tr;
+	vector<int> tc;
+
 	int start = 0;
+
 	if (_vcok.size() == 0) return false;
-	if (_vcok[0] == monomial()) start = 1;
+	//if (_vcok[0] == monomial()) start = 1;
 	if (_vcok.size() <= start) return false;
 	for (int i = start; i < _vcok.size(); ++i)
 	{
@@ -73,23 +81,20 @@ bool kcm::generate_best_rectangle(vector<int>& row, vector<int>& column)
 			{
 				vector<int> vr;
 				vector<int> vc;
-				int v = value_of_best_rectangle(i, j, vr, vc);
-				if (v > max)
-				{
-					max = v;
-					row = vr;
-					column = vc;
-				}
+				generate_best_rectangle(i, j, tr, tc);
 			}
 		}
 	}
+	i=0;
 	//std::cout<<max<<std::endl;
-	if (max == 0) return false;
-	if (row.size() == 1 && column.size() == 1) return false;
+	if (_bv == 0) return false;
+	if (_br.size() == 1 && _bc.size() == 1) return false;
+	row = _br;
+	column = _bc;
 	return true;
 }
 
-int kcm::value_of_best_rectangle(int ri, int ci, vector<int>& row, vector<int>& column)
+void kcm::generate_best_rectangle(int ri, int ci, vector<int>& row, vector<int>& column)
 {
 	set<int> posi_rows;
 	set<int> posi_columns;
@@ -109,18 +114,27 @@ int kcm::value_of_best_rectangle(int ri, int ci, vector<int>& row, vector<int>& 
 	}
 	row.push_back(ri);
 	column.push_back(ci);
-	return value_of_best_rectangle(row, column, posi_rows, posi_columns);
+	generate_best_rectangle(row, column, posi_rows, posi_columns);
+	row.erase(row.end()-1);
+	column.erase(column.end()-1);
 }
 
 //row contain rows included in rectangle
 //column contain columns included in rectangle
 //posi_rows and posi_columns are allowed to included row/column
-int kcm::value_of_best_rectangle(vector<int>& row, vector<int>& column, set<int>& posi_rows, set<int>& posi_columns)
+void kcm::generate_best_rectangle(vector<int>& row, vector<int>& column, set<int>& posi_rows, set<int>& posi_columns)
 {
 	if (posi_rows.size() == 0 && posi_columns.size() == 0)//it is prime rectangle know
 	{
-		return value_of_prime_rectangle(row, column);
+		int v = value_of_prime_rectangle(row, column);
+		if (v > _bv)
+		{
+			_br = row;
+			_bc = column;
+			_bv = v;
+		}
 	}
+	if (::i>100000) return;
 	int max = 0;
 	vector<int> bestvr;
 	vector<int> bestvc;
@@ -128,9 +142,7 @@ int kcm::value_of_best_rectangle(vector<int>& row, vector<int>& column, set<int>
 	{
 		for (auto i : posi_rows)
 		{
-			vector<int> tr(row);
-			vector<int> tc(column);
-			tr.push_back(i);//include this row
+			row.push_back(i);
 			//build new posi_rows and posi_columns
 			set<int> tpr(posi_rows);
 			set<int> tpc(posi_columns);
@@ -149,22 +161,15 @@ int kcm::value_of_best_rectangle(vector<int>& row, vector<int>& column, set<int>
 				}
 				else ++it;
 			}
-			int value = value_of_best_rectangle(tr, tc, tpr, tpc);
-			if (value > max)
-			{
-				max = value;
-				bestvr = tr;
-				bestvc = tc;
-			}
+			generate_best_rectangle(row, column, tpr, tpc);
+			row.erase(row.end()-1);
 		}
 	}
 	//now no more rows
 	set<int> nrow;
 	for (auto i : posi_columns)
 	{
-		vector<int> tr(row);
-		vector<int> tc(column);
-		tc.push_back(i);//include this column
+		column.push_back(i);
 		//build new posi_columns
 		set<int> tpc(posi_columns);
 		//remove columns bigger than i
@@ -173,21 +178,14 @@ int kcm::value_of_best_rectangle(vector<int>& row, vector<int>& column, set<int>
 			if (*it >= i) it = tpc.erase(it);
 			else ++it;
 		}
-		int value = value_of_best_rectangle(tr, tc, nrow, tpc);
-		if (value > max)
-		{
-			max = value;
-			bestvr = tr;
-			bestvc = tc;
-		}
+		generate_best_rectangle(row, column, nrow, tpc);
+		column.erase(column.end()-1);
 	}
-	row = bestvr;
-	column = bestvc;
-	return max;
 }
 
 int kcm::value_of_prime_rectangle(vector<int>& row, vector<int>& column)
 {
+	++::i;
 	int C = column.size();
 	int R = row.size();
 	int nsumMR = 0;
