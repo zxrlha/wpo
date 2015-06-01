@@ -19,7 +19,7 @@ public:
 	int index(int i) const { return _icok[i]; };
 protected:
 	void generate_best_rectangle(int ri, int ci, vector<int>& row, vector<int>& column);
-	void generate_best_rectangle(vector<int>& row, vector<int>& column, set<int>& posi_rows, set<int>& posi_columns);
+	void generate_best_rectangle(vector<int>& row, vector<int>& column, vector<int>& posi_rows, vector<int>& posi_columns);
 	int value_of_prime_rectangle(vector<int>& row, vector<int>& column);
 
 	vector<monomial> _vcok;

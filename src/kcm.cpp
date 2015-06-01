@@ -95,20 +95,20 @@ bool kcm::generate_best_rectangle(vector<int>& row, vector<int>& column)
 
 void kcm::generate_best_rectangle(int ri, int ci, vector<int>& row, vector<int>& column)
 {
-	set<int> posi_rows;
-	set<int> posi_columns;
+	vector<int> posi_rows(_vcok.size());
+	vector<int> posi_columns(_vk.size());
 	for (int i = 0; i < ri; ++i)
 	{
 		if (_mat[i][ci] != 0)//possible rows
 		{
-			posi_rows.insert(i);
+			posi_rows[i] = 1;
 		}
 	}
 	for (int i = 0; i < ci; ++i)
 	{
 		if (_mat[ri][i] != 0)//possible columns
 		{
-			posi_columns.insert(i);
+			posi_columns[i] = 1;
 		}
 	}
 	row.push_back(ri);
@@ -121,9 +121,23 @@ void kcm::generate_best_rectangle(int ri, int ci, vector<int>& row, vector<int>&
 //row contain rows included in rectangle
 //column contain columns included in rectangle
 //posi_rows and posi_columns are allowed to included row/column
-void kcm::generate_best_rectangle(vector<int>& row, vector<int>& column, set<int>& posi_rows, set<int>& posi_columns)
+void kcm::generate_best_rectangle(vector<int>& row, vector<int>& column, vector<int>& posi_rows, vector<int>& posi_columns)
 {
-	if (posi_rows.size() == 0 && posi_columns.size() == 0)//it is prime rectangle know
+	bool is_prime = true;
+	for (int i = 0; i < row.back(); ++i)
+		if (posi_rows[i] != 0)
+		{
+			is_prime = false;
+			break;
+		}
+	if (is_prime)
+		for (int i = 0; i < column.back(); ++i)
+			if (posi_columns[i] != 0)
+			{
+				is_prime = false;
+				break;
+			}
+	if (is_prime)//it is prime rectangle now
 	{
 		int v = value_of_prime_rectangle(row, column);
 		if (v > _bv)
@@ -132,51 +146,39 @@ void kcm::generate_best_rectangle(vector<int>& row, vector<int>& column, set<int
 			_bc = column;
 			_bv = v;
 		}
+		return;
 	}
-	int max = 0;
-	vector<int> bestvr;
-	vector<int> bestvc;
-	if (posi_rows.size() != 0)//now we can added one row
+	//add possible row
+	for (int i = 0; i < row.back(); ++i)
 	{
-		for (auto i : posi_rows)
+		if (posi_rows[i] == 0) continue;
+		row.push_back(i);
+		//build new posi_rows and posi_columns
+		set<int> trpc;
+		//remove columns which is not possible since i is included
+		for (int j = 0; j < column.back(); ++j)
 		{
-			row.push_back(i);
-			//build new posi_rows and posi_columns
-			set<int> tpr(posi_rows);
-			set<int> tpc(posi_columns);
-			//remove rows bigger than i
-			for (auto it = tpr.begin(); it != tpr.end();)
+			if (posi_columns[j] == 1 && _mat[i][j] != 1)
 			{
-				if (*it >= i) it = tpr.erase(it);
-				else ++it;
+				posi_columns[j] = 0;
+				trpc.insert(j);
 			}
-			//remove columns which is not possible since i is included
-			for (auto it = tpc.begin(); it != tpc.end();)
-			{
-				if (_mat[i][*it] != 1)
-				{
-					it = tpc.erase(it);
-				}
-				else ++it;
-			}
-			generate_best_rectangle(row, column, tpr, tpc);
-			row.erase(row.end() - 1);
 		}
+		generate_best_rectangle(row, column, posi_rows, posi_columns);
+		//add back
+		for (auto ci : trpc)
+		{
+			posi_columns[ci] = 1;
+		}
+		row.erase(row.end() - 1);
 	}
 	//now no more rows
-	set<int> nrow;
-	for (auto i : posi_columns)
+	vector<int> nrow(posi_rows.size(), 0);
+	for (int i = 0; i < column.back(); ++i)
 	{
+		if (posi_columns[i] == 0) continue;
 		column.push_back(i);
-		//build new posi_columns
-		set<int> tpc(posi_columns);
-		//remove columns bigger than i
-		for (auto it = tpc.begin(); it != tpc.end();)
-		{
-			if (*it >= i) it = tpc.erase(it);
-			else ++it;
-		}
-		generate_best_rectangle(row, column, nrow, tpc);
+		generate_best_rectangle(row, column, nrow, posi_columns);
 		column.erase(column.end() - 1);
 	}
 }
@@ -195,5 +197,6 @@ int kcm::value_of_prime_rectangle(vector<int>& row, vector<int>& column)
 	{
 		sumMC += _vMC[column[i]];
 	}
+	//std::cout<<3<<C<<" "<<R<<" "<<sumMR<<" "<<sumMC<<std::endl;
 	return (C - 1) * (sumMR + R) + (R - 1) * (sumMC);
 }
