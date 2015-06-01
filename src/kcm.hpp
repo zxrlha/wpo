@@ -18,7 +18,7 @@ public:
 	const monomial& column(int i) const { return _vk[i]; };
 	int index(int i) const { return _icok[i]; };
 protected:
-	void generate_best_rectangle(int ri, int ci1, vector<int>& row, vector<int>& column);
+	void generate_best_rectangle(int ri, int ci1, int ci2, vector<int>& row, vector<int>& column);
 	void generate_best_rectangle(vector<int>& row, vector<int>& column, vector<int>& posi_rows, vector<int>& posi_columns);
 	void generate_best_rectangle(vector<int>& row, vector<int>& column, vector<int>& posi_rows);
 	bool is_prime(int ri, int ci, const vector<int>& posi_rows, const vector<int>& posi_columns);

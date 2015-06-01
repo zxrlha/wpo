@@ -22,9 +22,9 @@ int main()
 	cerr<<"//cube intersection finished"<<endl;
 
 	//reorder(vP);
-	cerr<<"//reorder intersection finished"<<endl;
+	cerr<<"//reorder finished"<<endl;
 	//rename(vP);
-	cerr<<"//rename intersection finished"<<endl;
+	cerr<<"//rename finished"<<endl;
 	for (int i = 0; i < vP.size(); ++i)
 	{
 		std::cout<<vP[i]<<line_suffix<<std::endl;
