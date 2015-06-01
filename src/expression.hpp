@@ -125,7 +125,6 @@ public:
 	set<int> literals() const;
 	set<int> tmp_literals() const;
 protected:
-	void sort();
 	vector<monomial> _vmon;
 	int _size;
 	string _name;
@@ -177,6 +176,7 @@ inline bool operator!=(const monomial& A, const monomial& B)
 	return !(A == B);
 }
 
+/*
 bool operator<(const polynomial& A, const polynomial& B);
 inline bool operator>(const polynomial& A, const polynomial& B)
 {
@@ -195,6 +195,7 @@ inline bool operator!=(const polynomial& A, const polynomial& B)
 {
 	return !(A == B);
 }
+*/
 
 //output operator for view and debug
 ostream& operator<<(ostream& os, const monomial& m);

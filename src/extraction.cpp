@@ -1,5 +1,6 @@
 #include <map>
 #include <boost/lexical_cast.hpp>
+#include <iostream>
 #include "kcm.hpp"
 #include "cim.hpp"
 #include "extraction.hpp"
@@ -11,13 +12,16 @@ using std::map;
 void find_kernel_intersections(vector<polynomial>& vP)
 {
 	//first, resize
-	for (auto& P: vP) P.resize(literal_size());
+	for (auto& P : vP) P.resize(literal_size());
 
+	int i  = 0;
 	while (true)
 	{
+		++i;
+		std::cout << i << std::endl;
 		map<monomial, polynomial> vmp;
 		vector<map<monomial, polynomial>> vkmap;
-		for (auto P: vP)
+		for (auto P : vP)
 		{
 			find_kernels(P, vmp);
 			vkmap.push_back(vmp);
@@ -25,12 +29,13 @@ void find_kernel_intersections(vector<polynomial>& vP)
 		kcm tm(vkmap, vP);
 		vector<int> vr;
 		vector<int> vc;
-		map<polynomial, int> mR;
 		if (!tm.generate_best_rectangle(vr, vc)) return;
 		else
 		{
 			//build new literal polynomial
 			polynomial nlp;
+			int li;
+			li = literal_append_tmp();
 			for (auto vci : vc)
 			{
 				nlp += tm.column(vci);
@@ -50,18 +55,6 @@ void find_kernel_intersections(vector<polynomial>& vP)
 					}
 				}
 				if (!flag) continue;
-				//append
-				auto it = mR.find(nlp);
-				int li;
-				if (it != mR.end())
-				{
-					li = it->second;
-				}
-				else
-				{
-					li = literal_append_tmp();
-					mR.insert(std::make_pair(nlp, li));
-				}
 				//rewrote P
 				polynomial nP;
 				for (auto vci : vc)
@@ -73,11 +66,8 @@ void find_kernel_intersections(vector<polynomial>& vP)
 				nm[li] = 1;
 				P += nm * tm.row(vri);
 			}
-		}
-		for (auto p : mR)
-		{
-			vP.push_back(p.first);
-			vP.back().name() = literal_name(p.second);
+			vP.push_back(nlp);
+			vP.back().name() = literal_name(li);
 		}
 		for (auto& p : vP)
 		{
@@ -112,7 +102,7 @@ void find_cube_intersections(vector<polynomial>& vP)
 		}
 		//add this into vP
 		polynomial nl;
-		nl.resize(li+1);
+		nl.resize(li + 1);
 		nl += m;
 		nl.name() = literal_name(li);
 		vP.push_back(nl);

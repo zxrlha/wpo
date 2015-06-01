@@ -30,11 +30,6 @@ void polynomial::resize(int ns)
 	_size = ns;
 }
 
-void polynomial::sort()
-{
-	std::sort(_vmon.begin(), _vmon.end());
-}
-
 polynomial& polynomial::operator+=(const monomial& A)
 {
 	if (A.size() < _size)
@@ -51,7 +46,6 @@ polynomial& polynomial::operator+=(const monomial& A)
 		}
 		_vmon.push_back(A);
 	}
-	this->sort();
 }
 
 polynomial& polynomial::operator-=(const monomial& A)
@@ -71,7 +65,6 @@ polynomial& polynomial::operator-=(const monomial& A)
 		_vmon.push_back(A);
 	}
 	_vmon.back().reverse_sign();
-	this->sort();
 }
 
 polynomial operator+(const monomial& A, const monomial& B)
@@ -271,6 +264,7 @@ bool operator==(const monomial& A, const monomial& B)
 	return true;
 }
 
+/*
 bool operator<(const polynomial& A, const polynomial& B)
 {
 	if (A.number() > B.number()) return false;
@@ -292,10 +286,11 @@ bool operator==(const polynomial& A, const polynomial& B)
 	}
 	return true;
 }
+*/
 
 bool polynomial::contain(const monomial& m) const
 {
-	return std::binary_search(_vmon.begin(), _vmon.end(), m);
+	return std::find(_vmon.begin(), _vmon.end(), m) != _vmon.end();
 }
 
 int monomial::multiplication_number() const
@@ -341,7 +336,7 @@ ostream& operator<<(ostream& os, const polynomial& p)
 
 void polynomial::remove(const monomial& m)
 {
-	auto it = std::lower_bound(_vmon.begin(), _vmon.end(), m);
+	auto it = std::find(_vmon.begin(), _vmon.end(), m);
 	assert(*it == m);
 	_vmon.erase(it);
 }
