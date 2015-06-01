@@ -15,7 +15,7 @@ int main()
 {
 	yyparse();
 	cerr<<"//Parse finished"<<endl;
-	return 0;
+	//return 0;
 	find_kernel_intersections(vP);
 	cerr<<"//kernel intersection finished"<<endl;
 	find_cube_intersections(vP);

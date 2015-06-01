@@ -107,7 +107,9 @@ public:
 
 	//ring operation
 	polynomial& operator+=(const monomial& A);
+	polynomial& operator+=(monomial&& A);
 	polynomial& operator-=(const monomial& A);
+	polynomial& operator-=(monomial&& A);
 	polynomial& operator*=(const monomial& A);
 
 	//term access

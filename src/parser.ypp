@@ -41,5 +41,5 @@ IDENTIFY { int i = literal_add(get<string>($1)); monomial m; m.resize(i+1); m[i]
 
 exp:
 monowithsign { $$ = polynomial(get<monomial>($1)); }
-| exp '+' mono { $$ = std::move(get<polynomial>($1)); get<polynomial>($$) += get<monomial>($3); }
-| exp '-' mono { $$ = std::move(get<polynomial>($1)); get<polynomial>($$) -= get<monomial>($3); }
+| exp '+' mono { $$ = std::move(get<polynomial>($1)); get<polynomial>($$) += std::move(get<monomial>($3)); }
+| exp '-' mono { $$ = std::move(get<polynomial>($1)); get<polynomial>($$) -= std::move(get<monomial>($3)); }

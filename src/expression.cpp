@@ -48,6 +48,19 @@ polynomial& polynomial::operator+=(const monomial& A)
 	}
 }
 
+polynomial& polynomial::operator+=(monomial&& A)
+{
+	if (A.size() < _size)
+	{
+		A.resize(_size);
+	}
+	else if (A.size() > _size)
+	{
+		resize(A.size());
+	}
+	_vmon.push_back(std::move(A));
+}
+
 polynomial& polynomial::operator-=(const monomial& A)
 {
 	if (A.size() < _size)
@@ -67,6 +80,19 @@ polynomial& polynomial::operator-=(const monomial& A)
 	_vmon.back().reverse_sign();
 }
 
+polynomial& polynomial::operator-=(monomial&& A)
+{
+	A.reverse_sign();
+	if (A.size() < _size)
+	{
+		A.resize(_size);
+	}
+	else if (A.size() > _size)
+	{
+		resize(A.size());
+	}
+	_vmon.push_back(std::move(A));
+}
 polynomial operator+(const monomial& A, const monomial& B)
 {
 	polynomial P(A);
@@ -267,24 +293,24 @@ bool operator==(const monomial& A, const monomial& B)
 /*
 bool operator<(const polynomial& A, const polynomial& B)
 {
-	if (A.number() > B.number()) return false;
-	if (A.number() < B.number()) return true;
-	for (int i = 0; i < A.number(); ++i)
-	{
-		if (A[i] > B[i]) return false;
-		if (A[i] < B[i]) return true;
-	}
-	return false;
+    if (A.number() > B.number()) return false;
+    if (A.number() < B.number()) return true;
+    for (int i = 0; i < A.number(); ++i)
+    {
+        if (A[i] > B[i]) return false;
+        if (A[i] < B[i]) return true;
+    }
+    return false;
 }
 
 bool operator==(const polynomial& A, const polynomial& B)
 {
-	if (A.number() != B.number()) return false;
-	for (int i = 0; i < A.number(); ++i)
-	{
-		if (A[i] != B[i]) return false;
-	}
-	return true;
+    if (A.number() != B.number()) return false;
+    for (int i = 0; i < A.number(); ++i)
+    {
+        if (A[i] != B[i]) return false;
+    }
+    return true;
 }
 */
 
