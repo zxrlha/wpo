@@ -1,12 +1,16 @@
 #include <algorithm>
+#include <iostream>
 #include "kernel.hpp"
+#include "literal.hpp"
 
 using std::make_pair;
 
-void kernels(int i, const polynomial& P, const monomial& d, map<monomial, polynomial>& kernelmap)
+void kernels(int i, const polynomial& P, const monomial& d, vector<pair<monomial, polynomial>>& kernelmap)
 {
+	std::cout<<"kmap size="<<kernelmap.size()<<" "<<P.number()<<" "<<literal_size()<<std::endl;
 	for (int j = i; j < P.size(); ++j)
 	{
+		//std::cout<<"kernels:"<<j<<std::endl;
 		int times = 0;
 		for (int k = 0; k < P.number(); ++k)
 		{
@@ -32,19 +36,19 @@ void kernels(int i, const polynomial& P, const monomial& d, map<monomial, polyno
 			{
 				polynomial FI = Ft / C;//kernel
 				monomial DI = d * C * Lj;//co-kernel
-				kernelmap.insert(make_pair(DI, FI));
+				kernelmap.push_back(make_pair(DI, FI));
 				kernels(j, FI, DI, kernelmap);
 			}
 		}
 	}
 }
 
-void find_kernels(const polynomial& P, map<monomial, polynomial>& kernelmap)
+void find_kernels(const polynomial& P, vector<pair<monomial, polynomial>>& kernelmap)
 {
 	kernelmap.clear();
 	kernels(0, P, monomial(), kernelmap);
 	if (P.gcd() == monomial())
 	{
-		kernelmap.insert(make_pair(monomial(), P));
+		kernelmap.push_back(make_pair(monomial(), P));
 	}
 }

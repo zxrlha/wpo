@@ -19,13 +19,15 @@ void find_kernel_intersections(vector<polynomial>& vP)
 	{
 		++i;
 		std::cout << i << std::endl;
-		map<monomial, polynomial> vmp;
-		vector<map<monomial, polynomial>> vkmap;
+		vector<pair<monomial, polynomial>> vmp;
+		vector<vector<pair<monomial, polynomial>>> vkmap;
 		for (auto P : vP)
 		{
 			find_kernels(P, vmp);
+		std::cout << 2*i << std::endl;
 			vkmap.push_back(vmp);
 		}
+		std::cout << 3*i << std::endl;
 		kcm tm(vkmap, vP);
 		vector<int> vr;
 		vector<int> vc;

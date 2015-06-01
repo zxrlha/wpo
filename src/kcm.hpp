@@ -7,11 +7,12 @@
 
 using std::set;
 using std::map;
+using std::pair;
 
 class kcm
 {
 public:
-	kcm(const vector<map<monomial, polynomial>>& vkmap, const vector<polynomial>& vP);
+	kcm(const vector<vector<pair<monomial, polynomial>>>& vkmap, const vector<polynomial>& vP);
 	bool generate_best_rectangle(vector<int>& row, vector<int>& column);
 	const monomial& row(int i) const { return _vcok[i]; };
 	const monomial& column(int i) const { return _vk[i]; };

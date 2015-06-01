@@ -2,7 +2,7 @@
 #include "kcm.hpp"
 #include <iostream>
 
-kcm::kcm(const vector<map<monomial, polynomial>>& vkmap, const vector<polynomial>& vP)
+kcm::kcm(const vector<vector<pair<monomial, polynomial>>>& vkmap, const vector<polynomial>& vP)
 {
 	vector<polynomial> tvk;
 	//co-kernels

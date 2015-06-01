@@ -5,7 +5,8 @@
 #include <map>
 
 using std::map;
+using std::pair;
 
-void find_kernels(const polynomial& P, map<monomial, polynomial>& kernelmap);
+void find_kernels(const polynomial& P, vector<pair<monomial, polynomial>>& kernelmap);
 
 #endif
