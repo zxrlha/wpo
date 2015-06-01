@@ -16,14 +16,14 @@ int main()
 	yyparse();
 	cerr<<"//Parse finished"<<endl;
 	//return 0;
-	find_kernel_intersections(vP);
+	//find_kernel_intersections(vP);
 	cerr<<"//kernel intersection finished"<<endl;
 	find_cube_intersections(vP);
 	cerr<<"//cube intersection finished"<<endl;
 
-	reorder(vP);
+	//reorder(vP);
 	cerr<<"//reorder intersection finished"<<endl;
-	rename(vP);
+	//rename(vP);
 	cerr<<"//rename intersection finished"<<endl;
 	for (int i = 0; i < vP.size(); ++i)
 	{

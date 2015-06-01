@@ -3,16 +3,13 @@
 
 cim::cim(const vector<polynomial>& vP)
 {
-	set<monomial> tsk;
 	for (auto P : vP)
 	{
 		for (int i = 0; i < P.number(); ++i)
 		{
-			tsk.insert(P[i]);
+			_mat.push_back(P[i]);
 		}
 	}
-	_mat.resize(tsk.size());
-	std::copy(tsk.begin(), tsk.end(), _mat.begin());
 }
 
 bool cim::generate_best_rectangle(vector<int>& row, monomial& m)

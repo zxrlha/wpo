@@ -8,7 +8,7 @@ kcm::kcm(const vector<vector<pair<monomial, polynomial>>>& vkmap, const vector<p
 	//co-kernels
 	for (int i = 0; i < vkmap.size(); ++i)
 	{
-		for (auto pr: vkmap[i])
+		for (auto pr : vkmap[i])
 		{
 			_vcok.push_back(pr.first);
 			_icok.push_back(i);
@@ -19,7 +19,7 @@ kcm::kcm(const vector<vector<pair<monomial, polynomial>>>& vkmap, const vector<p
 	std::set<monomial> skm;
 	for (int i = 0; i < vkmap.size(); ++i)
 	{
-		for (auto pr:  vkmap[i])
+		for (auto pr : vkmap[i])
 		{
 			for (int j = 0; j < pr.second.number(); ++j)
 			{
@@ -58,7 +58,6 @@ kcm::kcm(const vector<vector<pair<monomial, polynomial>>>& vkmap, const vector<p
 	}
 }
 
-int i = 0;
 bool kcm::generate_best_rectangle(vector<int>& row, vector<int>& column)
 {
 	_bv = 0;
@@ -85,7 +84,7 @@ bool kcm::generate_best_rectangle(vector<int>& row, vector<int>& column)
 			}
 		}
 	}
-	i=0;
+
 	//std::cout<<max<<std::endl;
 	if (_bv == 0) return false;
 	if (_br.size() == 1 && _bc.size() == 1) return false;
@@ -115,8 +114,8 @@ void kcm::generate_best_rectangle(int ri, int ci, vector<int>& row, vector<int>&
 	row.push_back(ri);
 	column.push_back(ci);
 	generate_best_rectangle(row, column, posi_rows, posi_columns);
-	row.erase(row.end()-1);
-	column.erase(column.end()-1);
+	row.erase(row.end() - 1);
+	column.erase(column.end() - 1);
 }
 
 //row contain rows included in rectangle
@@ -134,7 +133,6 @@ void kcm::generate_best_rectangle(vector<int>& row, vector<int>& column, set<int
 			_bv = v;
 		}
 	}
-	if (::i>100000) return;
 	int max = 0;
 	vector<int> bestvr;
 	vector<int> bestvc;
@@ -162,7 +160,7 @@ void kcm::generate_best_rectangle(vector<int>& row, vector<int>& column, set<int
 				else ++it;
 			}
 			generate_best_rectangle(row, column, tpr, tpc);
-			row.erase(row.end()-1);
+			row.erase(row.end() - 1);
 		}
 	}
 	//now no more rows
@@ -179,24 +177,23 @@ void kcm::generate_best_rectangle(vector<int>& row, vector<int>& column, set<int
 			else ++it;
 		}
 		generate_best_rectangle(row, column, nrow, tpc);
-		column.erase(column.end()-1);
+		column.erase(column.end() - 1);
 	}
 }
 
 int kcm::value_of_prime_rectangle(vector<int>& row, vector<int>& column)
 {
-	++::i;
 	int C = column.size();
 	int R = row.size();
-	int nsumMR = 0;
+	int sumMR = 0;
 	int sumMC = 0;
 	for (int i = 0; i < row.size(); ++i)
 	{
-		nsumMR += (_vMR[row[i]] + 1) * (C - 1);
+		sumMR += _vMR[row[i]];
 	}
 	for (int i = 0; i < column.size(); ++i)
 	{
 		sumMC += _vMC[column[i]];
 	}
-	return nsumMR + (R - 1) * (sumMC);
+	return (C - 1) * (sumMR + R) + (R - 1) * (sumMC);
 }
