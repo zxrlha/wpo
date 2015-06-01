@@ -12,9 +12,13 @@ public:
 	explicit cim(const vector<polynomial>& vP);
 	bool generate_best_rectangle(vector<int>& row, monomial& m);
 protected:
-	int value_of_best_rectangle(int ri, vector<int>& row, monomial& m);
-	int value_of_prime_rectangle(vector<int>& row, monomial& m);
+	void generate_best_rectangle(int ri, vector<int>& row, const monomial& m);
+	int value_of_prime_rectangle(vector<int>& row, const monomial& m);
 	vector<monomial> _mat;
+
+	vector<int> _br;
+	monomial _bm;
+	int _bv;
 };
 
 #endif
