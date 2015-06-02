@@ -99,17 +99,17 @@ void output_prime_func()
 int main()
 {
 	yyparse();
-	debug_out();
-	cerr << "//Parse finished" << endl;
+	//debug_out();
+	//cerr << "//Parse finished" << endl;
 	find_kernel_intersections(vP);
-	cerr << "//kernel intersection finished" << endl;
+	//cerr << "//kernel intersection finished" << endl;
 	find_cube_intersections(vP);
-	cerr << "//cube intersection finished" << endl;
+	//cerr << "//cube intersection finished" << endl;
 
 	reorder(vP);
-	cerr << "//reorder finished" << endl;
+	//cerr << "//reorder finished" << endl;
 	int max = rename(vP);
-	cerr << "//rename finished" << endl;
+	//cerr << "//rename finished" << endl;
 
 	if (tmp_style == "array0")
 	{
