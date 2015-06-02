@@ -13,6 +13,7 @@
 	%left '-' '+'
 	%left '*'
 	%right '^'
+	%token '(' ')'
 
 	%%
 
@@ -35,9 +36,10 @@ mono { $$ = $1; }
 
 mono:
 IDENTIFY { int i = literal_add(get<string>($1)); monomial m; m.resize(i+1); m[i] = 1; $$ = m; }
-| IDENTIFY '^' NUMBER { int li = literal_add(get<string>($1)); int ti = get<int>($3); monomial m; m.resize(li+1); m[li] = ti; $$ = m; }
+| mono '^' NUMBER { $$ = $1; int n = get<int>($3); for (int i = 0; i < get<monomial>($$).size(); ++i) get<monomial>($$)[i] *= n; }
 | NUMBER { int i = literal_add(boost::lexical_cast<string>(get<int>($1))); monomial m; m.resize(i+1); m[i] = 1; $$ = m; }
 | mono '*' mono { $$ = get<monomial>($1) * get<monomial>($3); }
+| '(' exp ')' { int nli = vP_get(get<polynomial>($2)); if (nli == -1) {nli = literal_append_tmp(); get<polynomial>($2).name() = literal_name(nli); vP.push_back(get<polynomial>($2)); } else { nli = literal_get(vP[nli].name()); } monomial m; m.resize(nli+1); m[nli] = 1; $$ = m; }
 
 exp:
 monowithsign { $$ = polynomial(get<monomial>($1)); }

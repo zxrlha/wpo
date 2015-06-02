@@ -329,6 +329,16 @@ int monomial::multiplication_number() const
 	return res;
 }
 
+bool nosort_equal(const polynomial& A, const polynomial& B)
+{
+	if (A.number() != B.number()) return false;
+	for (int i = 0; i < A.number(); ++i)
+	{
+		if (A[i] != B[i]) return false;
+	}
+	return true;
+}
+
 ostream& operator<<(ostream& os, const monomial& m)
 {
 	if (m.is_negative()) os << "-";

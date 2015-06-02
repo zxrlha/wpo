@@ -204,12 +204,8 @@ inline bool operator>=(const polynomial& A, const polynomial& B)
 {
 	return !(A < B);
 }
-bool operator==(const polynomial& A, const polynomial& B);
-inline bool operator!=(const polynomial& A, const polynomial& B)
-{
-	return !(A == B);
-}
 */
+bool nosort_equal(const polynomial& A, const polynomial& B);
 
 //output operator for view and debug
 ostream& operator<<(ostream& os, const monomial& m);

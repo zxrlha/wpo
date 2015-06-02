@@ -17,4 +17,6 @@ extern string tmp_suffix;
 extern int tmp_start;
 extern string line_suffix;
 
+int vP_get(const polynomial& P);
+
 #endif
