@@ -1,0 +1,39 @@
+%tmp_style null
+$var_style pre
+#type Complex
+y11 = i*l1*x1*((2*Ratio4-Ratio1)*x4*x6+(2*Ratio4-Ratio1)*x2*x3*x6+(2*Ratio4-Ratio1)*x2*x6+(2*Ratio4-Ratio1)*x6-(Ratio3-2*Ratio4)*x4*x5-(Ratio3-2*Ratio4)*x2*x3*x5-(Ratio3-2*Ratio4)*x2*x5-(Ratio3-2*Ratio4)*x5+2*Ratio4*x1*x4+2*Ratio4*x4+2*Ratio4*x1*x2*x3+2*Ratio4*x2*x3-Ratio3*x3+2*Ratio4*x1*x2+Ratio4*x2+2*Ratio4*x1+2*Ratio4-Ratio3)-i*l1*(1-x1)*((2*Ratio4-Ratio1)*x4*x6+(2*Ratio4-Ratio1)*x2*x3*x6+(2*Ratio4-Ratio1)*x2*x6+(2*Ratio4-Ratio1)*x6-(Ratio3-2*Ratio4)*x4*x5-(Ratio3-2*Ratio4)*x2*x3*x5-(Ratio3-2*Ratio4)*x2*x5-(Ratio3-2*Ratio4)*x5+2*Ratio4*x1*x4+2*Ratio4*x4+2*Ratio4*x1*x2*x3+2*Ratio4*x2*x3-Ratio3*x3+2*Ratio4*x1*x2+Ratio4*x2+2*Ratio4*x1+2*Ratio4-Ratio3)-i*l1*(1-x1)*x1*(2*Ratio4*x4+2*Ratio4*x2*x3+2*Ratio4*x2+2*Ratio4)+1;
+y12 = -i*l1*(1-x1)*x1*((2*Ratio4-Ratio1)*x3*x6+(2*Ratio4-Ratio1)*x6-(Ratio3-2*Ratio4)*x3*x5-(Ratio3-2*Ratio4)*x5+2*Ratio4*x1*x3+2*Ratio4*x3+2*Ratio4*x1+Ratio4);
+y13 = -i*l1*(1-x1)*x1*((2*Ratio4-Ratio1)*x2*x6-(Ratio3-2*Ratio4)*x2*x5+2*Ratio4*x1*x2+2*Ratio4*x2-Ratio3);
+y14 = -i*l1*(1-x1)*x1*((2*Ratio4-Ratio1)*x6-(Ratio3-2*Ratio4)*x5+2*Ratio4*x1+2*Ratio4);
+y15 = -i*l1*(1-x1)*x1*(-(Ratio3-2*Ratio4)*x4-(Ratio3-2*Ratio4)*x2*x3-(Ratio3-2*Ratio4)*x2+2*Ratio4-Ratio3);
+y16 = -i*l1*(1-x1)*x1*((2*Ratio4-Ratio1)*x4+(2*Ratio4-Ratio1)*x2*x3+(2*Ratio4-Ratio1)*x2+2*Ratio4-Ratio1);
+y21 = -i*l2*(1-x2)*x2*((2*Ratio4-Ratio1)*x3*x6+(2*Ratio4-Ratio1)*x6-(Ratio3-2*Ratio4)*x3*x5-(Ratio3-2*Ratio4)*x5+2*Ratio4*x1*x3+2*Ratio4*x3+2*Ratio4*x1+Ratio4);
+y22 = i*l2*x2*(Ratio4*x3*x6^2+Ratio4*x6^2+(2*Ratio4-Ratio1)*x3*x5*x6+(2*Ratio4-Ratio1)*x5*x6+(2*Ratio4-Ratio1)*x1*x3*x6+(2*Ratio4-Ratio1)*x3*x6+(2*Ratio4-Ratio1)*x1*x6+Ratio4*x6+Ratio4*x3*x5^2+Ratio4*x5^2-(Ratio3-2*Ratio4)*x1*x3*x5-(Ratio3-2*Ratio4)*x3*x5-(Ratio3-2*Ratio4)*x1*x5+Ratio4*x5+Ratio4*x1^2*x3+2*Ratio4*x1*x3+Ratio4*x3+Ratio4*x1^2+Ratio4*x1)-i*l2*(1-x2)*(Ratio4*x3*x6^2+Ratio4*x6^2+(2*Ratio4-Ratio1)*x3*x5*x6+(2*Ratio4-Ratio1)*x5*x6+(2*Ratio4-Ratio1)*x1*x3*x6+(2*Ratio4-Ratio1)*x3*x6+(2*Ratio4-Ratio1)*x1*x6+Ratio4*x6+Ratio4*x3*x5^2+Ratio4*x5^2-(Ratio3-2*Ratio4)*x1*x3*x5-(Ratio3-2*Ratio4)*x3*x5-(Ratio3-2*Ratio4)*x1*x5+Ratio4*x5+Ratio4*x1^2*x3+2*Ratio4*x1*x3+Ratio4*x3+Ratio4*x1^2+Ratio4*x1)+1;
+y23 = -i*l2*(1-x2)*x2*(Ratio4*x6^2+(2*Ratio4-Ratio1)*x5*x6+(2*Ratio4-Ratio1)*x1*x6+(2*Ratio4-Ratio1)*x6+Ratio4*x5^2-(Ratio3-2*Ratio4)*x1*x5-(Ratio3-2*Ratio4)*x5+Ratio4*x1^2+2*Ratio4*x1+Ratio4);
+y24 = 0;
+y25 = -i*l2*(1-x2)*x2*((2*Ratio4-Ratio1)*x3*x6+(2*Ratio4-Ratio1)*x6+2*Ratio4*x3*x5+2*Ratio4*x5-(Ratio3-2*Ratio4)*x1*x3-(Ratio3-2*Ratio4)*x3-(Ratio3-2*Ratio4)*x1+Ratio4);
+y26 = -i*l2*(1-x2)*x2*(2*Ratio4*x3*x6+2*Ratio4*x6+(2*Ratio4-Ratio1)*x3*x5+(2*Ratio4-Ratio1)*x5+(2*Ratio4-Ratio1)*x1*x3+(2*Ratio4-Ratio1)*x3+(2*Ratio4-Ratio1)*x1+Ratio4);
+y31 = -i*l3*(1-x3)*x3*((2*Ratio4-Ratio1)*x2*x6-(Ratio3-2*Ratio4)*x2*x5+2*Ratio4*x1*x2+2*Ratio4*x2-Ratio3);
+y32 = -i*l3*(1-x3)*x3*(Ratio4*x6^2+(2*Ratio4-Ratio1)*x5*x6+(2*Ratio4-Ratio1)*x1*x6+(2*Ratio4-Ratio1)*x6+Ratio4*x5^2-(Ratio3-2*Ratio4)*x1*x5-(Ratio3-2*Ratio4)*x5+Ratio4*x1^2+2*Ratio4*x1+Ratio4);
+y33 = i*l3*x3*(Ratio4*x2*x6^2+(2*Ratio4-Ratio1)*x2*x5*x6+(2*Ratio4-Ratio1)*x1*x2*x6+(2*Ratio4-Ratio1)*x2*x6-Ratio3*x6+Ratio4*x2*x5^2-(Ratio3-2*Ratio4)*x1*x2*x5-(Ratio3-2*Ratio4)*x2*x5-Ratio3*x5+Ratio4*x1^2*x2+2*Ratio4*x1*x2+Ratio4*x2-Ratio3*x1-Ratio3)-i*l3*(1-x3)*(Ratio4*x2*x6^2+(2*Ratio4-Ratio1)*x2*x5*x6+(2*Ratio4-Ratio1)*x1*x2*x6+(2*Ratio4-Ratio1)*x2*x6-Ratio3*x6+Ratio4*x2*x5^2-(Ratio3-2*Ratio4)*x1*x2*x5-(Ratio3-2*Ratio4)*x2*x5-Ratio3*x5+Ratio4*x1^2*x2+2*Ratio4*x1*x2+Ratio4*x2-Ratio3*x1-Ratio3)+1;
+y34 = 0;
+y35 = -i*l3*(1-x3)*x3*((2*Ratio4-Ratio1)*x2*x6+2*Ratio4*x2*x5-(Ratio3-2*Ratio4)*x1*x2-(Ratio3-2*Ratio4)*x2-Ratio3);
+y36 = -i*l3*(1-x3)*x3*(2*Ratio4*x2*x6+(2*Ratio4-Ratio1)*x2*x5+(2*Ratio4-Ratio1)*x1*x2+(2*Ratio4-Ratio1)*x2-Ratio3);
+y41 = -i*l4*(1-x4)*x4*((2*Ratio4-Ratio1)*x6-(Ratio3-2*Ratio4)*x5+2*Ratio4*x1+2*Ratio4);
+y42 = 0;
+y43 = 0;
+y44 = i*l4*x4*(Ratio4*x6^2+(2*Ratio4-Ratio1)*x5*x6+(2*Ratio4-Ratio1)*x1*x6+(2*Ratio4+Ratio3-Ratio2-2*Ratio1)*x6+Ratio4*x5^2-(Ratio3-2*Ratio4)*x1*x5+2*Ratio4*x5+Ratio4*x1^2+2*Ratio4*x1+Ratio4)-i*l4*(1-x4)*(Ratio4*x6^2+(2*Ratio4-Ratio1)*x5*x6+(2*Ratio4-Ratio1)*x1*x6+(2*Ratio4+Ratio3-Ratio2-2*Ratio1)*x6+Ratio4*x5^2-(Ratio3-2*Ratio4)*x1*x5+2*Ratio4*x5+Ratio4*x1^2+2*Ratio4*x1+Ratio4)+1;
+y45 = -i*l4*(1-x4)*x4*((2*Ratio4-Ratio1)*x6+2*Ratio4*x5-(Ratio3-2*Ratio4)*x1+2*Ratio4);
+y46 = -i*l4*(1-x4)*x4*(2*Ratio4*x6+(2*Ratio4-Ratio1)*x5+(2*Ratio4-Ratio1)*x1+2*Ratio4+Ratio3-Ratio2-2*Ratio1);
+y51 = -i*l5*(-(Ratio3-2*Ratio4)*x4-(Ratio3-2*Ratio4)*x2*x3-(Ratio3-2*Ratio4)*x2+2*Ratio4-Ratio3)*(1-x5)*x5;
+y52 = -i*l5*(1-x5)*x5*((2*Ratio4-Ratio1)*x3*x6+(2*Ratio4-Ratio1)*x6+2*Ratio4*x3*x5+2*Ratio4*x5-(Ratio3-2*Ratio4)*x1*x3-(Ratio3-2*Ratio4)*x3-(Ratio3-2*Ratio4)*x1+Ratio4);
+y53 = -i*l5*(1-x5)*x5*((2*Ratio4-Ratio1)*x2*x6+2*Ratio4*x2*x5-(Ratio3-2*Ratio4)*x1*x2-(Ratio3-2*Ratio4)*x2-Ratio3);
+y54 = -i*l5*(1-x5)*x5*((2*Ratio4-Ratio1)*x6+2*Ratio4*x5-(Ratio3-2*Ratio4)*x1+2*Ratio4);
+y55 = i*l5*x5*((2*Ratio4-Ratio1)*x4*x6+(2*Ratio4-Ratio1)*x2*x3*x6+(2*Ratio4-Ratio1)*x2*x6+(2*Ratio4-Ratio1)*x6+2*Ratio4*x4*x5+2*Ratio4*x2*x3*x5+2*Ratio4*x2*x5+2*Ratio4*x5-(Ratio3-2*Ratio4)*x1*x4+2*Ratio4*x4-(Ratio3-2*Ratio4)*x1*x2*x3-(Ratio3-2*Ratio4)*x2*x3-Ratio3*x3-(Ratio3-2*Ratio4)*x1*x2+Ratio4*x2-(Ratio3-2*Ratio4)*x1+2*Ratio4)-i*l5*(1-x5)*((2*Ratio4-Ratio1)*x4*x6+(2*Ratio4-Ratio1)*x2*x3*x6+(2*Ratio4-Ratio1)*x2*x6+(2*Ratio4-Ratio1)*x6+2*Ratio4*x4*x5+2*Ratio4*x2*x3*x5+2*Ratio4*x2*x5+2*Ratio4*x5-(Ratio3-2*Ratio4)*x1*x4+2*Ratio4*x4-(Ratio3-2*Ratio4)*x1*x2*x3-(Ratio3-2*Ratio4)*x2*x3-Ratio3*x3-(Ratio3-2*Ratio4)*x1*x2+Ratio4*x2-(Ratio3-2*Ratio4)*x1+2*Ratio4)-i*l5*(2*Ratio4*x4+2*Ratio4*x2*x3+2*Ratio4*x2+2*Ratio4)*(1-x5)*x5+1;
+y56 = -i*l5*((2*Ratio4-Ratio1)*x4+(2*Ratio4-Ratio1)*x2*x3+(2*Ratio4-Ratio1)*x2+2*Ratio4-Ratio1)*(1-x5)*x5;
+y61 = -i*l6*((2*Ratio4-Ratio1)*x4+(2*Ratio4-Ratio1)*x2*x3+(2*Ratio4-Ratio1)*x2+2*Ratio4-Ratio1)*(1-x6)*x6;
+y62 = -i*l6*(1-x6)*x6*(2*Ratio4*x3*x6+2*Ratio4*x6+(2*Ratio4-Ratio1)*x3*x5+(2*Ratio4-Ratio1)*x5+(2*Ratio4-Ratio1)*x1*x3+(2*Ratio4-Ratio1)*x3+(2*Ratio4-Ratio1)*x1+Ratio4);
+y63 = -i*l6*(1-x6)*x6*(2*Ratio4*x2*x6+(2*Ratio4-Ratio1)*x2*x5+(2*Ratio4-Ratio1)*x1*x2+(2*Ratio4-Ratio1)*x2-Ratio3);
+y64 = -i*l6*(1-x6)*x6*(2*Ratio4*x6+(2*Ratio4-Ratio1)*x5+(2*Ratio4-Ratio1)*x1+2*Ratio4+Ratio3-Ratio2-2*Ratio1);
+y65 = -i*l6*((2*Ratio4-Ratio1)*x4+(2*Ratio4-Ratio1)*x2*x3+(2*Ratio4-Ratio1)*x2+2*Ratio4-Ratio1)*(1-x6)*x6;
+y66 = i*l6*x6*(2*Ratio4*x4*x6+2*Ratio4*x2*x3*x6+2*Ratio4*x2*x6+2*Ratio4*x6+(2*Ratio4-Ratio1)*x4*x5+(2*Ratio4-Ratio1)*x2*x3*x5+(2*Ratio4-Ratio1)*x2*x5+(2*Ratio4-Ratio1)*x5+(2*Ratio4-Ratio1)*x1*x4+(2*Ratio4+Ratio3-Ratio2-2*Ratio1)*x4+(2*Ratio4-Ratio1)*x1*x2*x3+(2*Ratio4-Ratio1)*x2*x3-Ratio3*x3+(2*Ratio4-Ratio1)*x1*x2+Ratio4*x2+(2*Ratio4-Ratio1)*x1+2*Ratio4-Ratio1)-i*l6*(1-x6)*(2*Ratio4*x4*x6+2*Ratio4*x2*x3*x6+2*Ratio4*x2*x6+2*Ratio4*x6+(2*Ratio4-Ratio1)*x4*x5+(2*Ratio4-Ratio1)*x2*x3*x5+(2*Ratio4-Ratio1)*x2*x5+(2*Ratio4-Ratio1)*x5+(2*Ratio4-Ratio1)*x1*x4+(2*Ratio4+Ratio3-Ratio2-2*Ratio1)*x4+(2*Ratio4-Ratio1)*x1*x2*x3+(2*Ratio4-Ratio1)*x2*x3-Ratio3*x3+(2*Ratio4-Ratio1)*x1*x2+Ratio4*x2+(2*Ratio4-Ratio1)*x1+2*Ratio4-Ratio1)-i*l6*(2*Ratio4*x4+2*Ratio4*x2*x3+2*Ratio4*x2+2*Ratio4)*(1-x6)*x6+1;
