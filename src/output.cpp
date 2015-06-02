@@ -53,8 +53,9 @@ void reorder(vector<polynomial>& vP)
 }
 
 
-void rename(vector<polynomial>& rvP)
+int rename(vector<polynomial>& rvP)
 {
+	int max = -1;
 	//now rename to optimization space usage
 	vector<polynomial> ornv(rvP.rbegin(), rvP.rend());
 	map<int, int> trans_rule;
@@ -66,7 +67,7 @@ void rename(vector<polynomial>& rvP)
 		{
 			int pi = trans_rule[literal_get(P.name())];
 			inuse.erase(pi);
-			P.name() = output_tmp_name(pi);
+			P.name() = "#" + output_tmp_name(pi);//mark as tmp variable
 		}
 		set<int> tsi = P.tmp_literals();
 		for (auto i: tsi)
@@ -78,6 +79,7 @@ void rename(vector<polynomial>& rvP)
 				while (inuse.count(ni) != 0) ++ni;
 				trans_rule.insert(make_pair(i, ni));
 				inuse.insert(ni);
+				if (ni > max) max = ni;
 			}
 		}
 	}
@@ -87,4 +89,5 @@ void rename(vector<polynomial>& rvP)
 	}
 
 	std::copy(ornv.rbegin(), ornv.rend(), rvP.begin());
+	return max;
 }

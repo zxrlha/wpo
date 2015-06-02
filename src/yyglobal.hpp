@@ -15,8 +15,13 @@ extern vector<polynomial> vP;
 extern string tmp_prefix;
 extern string tmp_suffix;
 extern int tmp_start;
+extern string line_prefix;
 extern string line_suffix;
+extern string type_str;
+extern string tmp_style;
+extern string var_style;
 
 int vP_get(const polynomial& P);
 
+void parse_options(const string& name, const string& value);
 #endif

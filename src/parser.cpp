@@ -1368,13 +1368,13 @@ yyreduce:
   case 5:
 /* Line 1792 of yacc.c  */
 #line 26 "parser.ypp"
-    { if (get<string>((yyvsp[(1) - (2)]))=="tmp_prefix") tmp_prefix= get<string>((yyvsp[(2) - (2)])); else if (get<string>((yyvsp[(1) - (2)]))=="tmp_suffix") tmp_suffix=get<string>((yyvsp[(2) - (2)])); else { std::cerr<<"ERROR:Unknown option:"<<(yyvsp[(1) - (2)])<<std::endl; exit(1);}}
+    { parse_options(get<string>((yyvsp[(1) - (2)])), get<string>((yyvsp[(2) - (2)]))); }
     break;
 
   case 6:
 /* Line 1792 of yacc.c  */
 #line 27 "parser.ypp"
-    { if (get<string>((yyvsp[(1) - (2)]))=="tmp_prefix") tmp_prefix= get<string>((yyvsp[(2) - (2)])); else if (get<string>((yyvsp[(1) - (2)]))=="tmp_suffix") tmp_suffix=get<string>((yyvsp[(2) - (2)])); else if (get<string>((yyvsp[(1) - (2)]))=="line_suffix") line_suffix=get<string>((yyvsp[(2) - (2)])); else {std::cerr<<"ERROR:Unknown option:"<<(yyvsp[(1) - (2)])<<std::endl; exit(1);}}
+    { parse_options(get<string>((yyvsp[(1) - (2)])), get<string>((yyvsp[(2) - (2)]))); }
     break;
 
   case 7:
