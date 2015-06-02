@@ -1,6 +1,7 @@
 #include <vector>
 #include <boost/lexical_cast.hpp>
 #include "literal.hpp"
+#include "yyglobal.hpp"
 
 using std::vector;
 
@@ -8,6 +9,7 @@ namespace
 {
 	vector<string> vlit;
 	int tmpi=0;
+	int funci= 0;
 }
 
 int literal_append(const string& name)
@@ -20,6 +22,12 @@ int literal_append_tmp()
 {
 	++tmpi;
 	return literal_append("#tmp"+boost::lexical_cast<string>(tmpi));
+}
+
+int literal_append_func()
+{
+	++funci;
+	return literal_append(func_prefix+boost::lexical_cast<string>(funci));
 }
 
 bool literal_is_tmp(const string& name)

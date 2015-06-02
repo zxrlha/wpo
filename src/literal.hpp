@@ -7,6 +7,7 @@ using std::string;
 
 int literal_append(const string& name);
 int literal_append_tmp();
+int literal_append_func();
 string literal_name(int i);
 int literal_size();
 

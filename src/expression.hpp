@@ -12,6 +12,14 @@ using std::vector;
 using std::string;
 using std::ostream;
 
+class funcexpr
+{
+	public:
+		string _funcname;
+		int _paraid;
+		string _resname;
+};
+
 class monomial
 {
 public:
@@ -135,9 +143,11 @@ public:
 
 	//literal information for output
 	bool contain_literals(const set<int>& ls);
-
 	set<int> literals() const;
 	set<int> tmp_literals() const;
+
+	//variable reduction
+	int single_id() const;
 protected:
 	vector<monomial> _vmon;
 	int _size;

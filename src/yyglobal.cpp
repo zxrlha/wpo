@@ -1,6 +1,7 @@
 #include "yyglobal.hpp"
 
 vector<polynomial> vP;
+vector<funcexpr> vfunc;
 
 string tmp_prefix = "tmp[";
 string tmp_suffix = "]";
@@ -10,6 +11,7 @@ string line_prefix = "    ";
 string type_str = "double";
 string tmp_style = "array0";//array0 array1 pre in null
 string var_style = "in"; //pre in null
+string func_prefix = "func";
 
 int vP_get(const polynomial& P)
 {
@@ -20,6 +22,16 @@ int vP_get(const polynomial& P)
 	return -1;
 }
 
+int vfunc_get(const funcexpr& fe)
+{
+	for (int i = 0; i < vfunc.size(); ++i)
+	{
+		if (fe._funcname == vfunc[i]._funcname
+		        && fe._paraid == vfunc[i]._paraid)
+			return i;
+	}
+	return -1;
+}
 void parse_options(const string& name, const string& value)
 {
 	if (name == "tmp_prefix") tmp_prefix = value;
@@ -29,9 +41,10 @@ void parse_options(const string& name, const string& value)
 	else if (name == "type") type_str = value;
 	else if (name == "tmp_style") tmp_style = value;
 	else if (name == "var_style") var_style = value;
+	else if (name == "func_prefix") func_prefix = value;
 	else
 	{
-		std::cerr<<"ERROR:Unknown option:"<<name<<std::endl;
+		std::cerr << "ERROR:Unknown option:" << name << std::endl;
 		exit(1);
 	}
 }

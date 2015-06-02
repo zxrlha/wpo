@@ -11,6 +11,7 @@ using boost::get;
 #define YYSTYPE yystype
 
 extern vector<polynomial> vP;
+extern vector<funcexpr> vfunc;
 
 extern string tmp_prefix;
 extern string tmp_suffix;
@@ -20,8 +21,10 @@ extern string line_suffix;
 extern string type_str;
 extern string tmp_style;
 extern string var_style;
+extern string func_prefix;
 
 int vP_get(const polynomial& P);
+int vfunc_get(const funcexpr& fe);
 
 void parse_options(const string& name, const string& value);
 #endif

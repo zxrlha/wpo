@@ -414,3 +414,20 @@ set<int> polynomial::tmp_literals() const
 	}
 	return res;
 }
+
+int polynomial::single_id() const
+{
+	if (number() != 1) return -1;
+	if (_vmon[0].is_negative()) return -1;
+	int si = -1;
+	for (int i = 0; i < _vmon[0].size(); ++i)
+	{
+		if (_vmon[0][i] != 0)
+		{
+			if (si != -1) return -1;
+			if (_vmon[0][i] != 1) return -1;
+			si = i;
+		}
+	}
+	return si;
+}

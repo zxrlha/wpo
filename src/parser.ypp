@@ -39,7 +39,62 @@ IDENTIFY { int i = literal_add(get<string>($1)); monomial m; m.resize(i+1); m[i]
 | mono '^' NUMBER { $$ = $1; int n = get<int>($3); for (int i = 0; i < get<monomial>($$).size(); ++i) get<monomial>($$)[i] *= n; }
 | NUMBER { int i = literal_add(boost::lexical_cast<string>(get<int>($1))); monomial m; m.resize(i+1); m[i] = 1; $$ = m; }
 | mono '*' mono { $$ = get<monomial>($1) * get<monomial>($3); }
-| '(' exp ')' { int nli = vP_get(get<polynomial>($2)); if (nli == -1) {nli = literal_append_tmp(); get<polynomial>($2).name() = literal_name(nli); vP.push_back(get<polynomial>($2)); } else { nli = literal_get(vP[nli].name()); } monomial m; m.resize(nli+1); m[nli] = 1; $$ = m; }
+| varstr { int i = get<int>($1); monomial m; m.resize(i+1); m[i] = 1; $$ = m;}
+
+varstr:
+'(' exp ')'
+{
+	int nli = vP_get(get<polynomial>($2));
+	if (nli == -1)
+	{
+		nli = get<polynomial>($2).single_id();
+		if (nli == -1)//new polynomial
+		{
+			nli = literal_append_tmp();
+			get<polynomial>($2).name() = literal_name(nli);
+			vP.push_back(get<polynomial>($2));
+		}
+	}
+	else 
+	{
+		nli = literal_get(vP[nli].name());
+	}
+	$$ = nli;
+}
+| IDENTIFY '(' exp ')'
+{
+	/*a function call*/
+	int nli = vP_get(get<polynomial>($3));
+	if (nli == -1)
+	{
+		nli = get<polynomial>($3).single_id();
+		if (nli == -1)//new polynomial
+		{
+			nli = literal_append_tmp();
+			get<polynomial>($3).name() = literal_name(nli);
+			vP.push_back(get<polynomial>($3));
+		}
+	}
+	else
+	{
+		nli = literal_get(vP[nli].name());
+	};
+	funcexpr nf;
+	nf._funcname=get<string>($1);
+	nf._paraid=nli;
+	int nfi = vfunc_get(nf); 
+	if (nfi == -1)
+	{
+		nfi = literal_append_func(); 
+		nf._resname = literal_name(nfi); 
+		vfunc.push_back(nf);
+	}
+	else
+	{
+		nfi = literal_get(vfunc[nfi]._resname);
+	};
+	$$ = nfi;
+}
 
 exp:
 monowithsign { $$ = polynomial(get<monomial>($1)); }
