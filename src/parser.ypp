@@ -25,21 +25,67 @@
 optionline:
 OPTION IDENTIFY { parse_options(get<string>($1), get<string>($2)); }
 |OPTION STRING { parse_options(get<string>($1), get<string>($2)); }
-|OPTION NUMBER { if (get<string>($1)=="tmp_start") tmp_start = get<int>($2); else {std::cerr<<"ERROR:Unknown option:"<<$1<<std::endl; exit(1); }}
+|OPTION NUMBER
+{
+	if (get<string>($1)=="tmp_start")
+		tmp_start = get<int>($2);
+	else
+	{
+		std::cerr<<"ERROR:Unknown option:"<<$1<<std::endl;
+		exit(1);
+	}
+}
 
 poly_def:
-IDENTIFY '=' exp { auto& P = get<polynomial>($3); P.name() = get<string>($1); vP.push_back(P); }
+IDENTIFY '=' exp
+{
+	auto& P = get<polynomial>($3);
+	P.name() = get<string>($1);
+	vP.push_back(P);
+}
 
 monowithsign:
 mono { $$ = $1; }
-| '-' mono { auto& t = get<monomial>($2); t.reverse_sign(); $$ = t;}
+| '-' mono
+{
+	auto& t = get<monomial>($2);
+	t.reverse_sign();
+	$$ = t;
+}
 
 mono:
-IDENTIFY { int i = literal_add(get<string>($1)); monomial m; m.resize(i+1); m[i] = 1; $$ = m; }
-| mono '^' NUMBER { $$ = $1; int n = get<int>($3); for (int i = 0; i < get<monomial>($$).size(); ++i) get<monomial>($$)[i] *= n; }
-| NUMBER { int i = literal_add(boost::lexical_cast<string>(get<int>($1))); monomial m; m.resize(i+1); m[i] = 1; $$ = m; }
+IDENTIFY
+{
+	int i = literal_add(get<string>($1));
+	monomial m;
+	m.resize(i+1);
+	m[i] = 1;
+	$$ = m;
+}
+| mono '^' NUMBER
+{
+	$$ = $1;
+	int n = get<int>($3);
+	for (int i = 0; i < get<monomial>($$).size(); ++i)
+		get<monomial>($$)[i] *= n;
+}
+| NUMBER
+{
+	int i = literal_add(boost::lexical_cast<string>(get<int>($1)));
+	monomial m;
+	m.resize(i+1);
+	m[i] = 1;
+	$$ = m;
+}
 | mono '*' mono { $$ = get<monomial>($1) * get<monomial>($3); }
-| varstr { int i = get<int>($1); monomial m; m.resize(i+1); m[i] = 1; $$ = m;}
+| varstr
+{
+	int i = get<int>($1);
+	monomial m;
+	m.resize(i+1);
+	m[i] = 1;
+	$$ = m;
+}
 
 varstr:
 '(' exp ')'
@@ -70,7 +116,7 @@ varstr:
 		nli = get<polynomial>($3).single_id();
 		if (nli == -1)//new polynomial
 		{
-			nli = literal_append_tmp();
+			nli = literal_append_func();
 			get<polynomial>($3).name() = literal_name(nli);
 			vP.push_back(get<polynomial>($3));
 		}
@@ -98,5 +144,13 @@ varstr:
 
 exp:
 monowithsign { $$ = polynomial(get<monomial>($1)); }
-| exp '+' mono { $$ = std::move(get<polynomial>($1)); get<polynomial>($$) += std::move(get<monomial>($3)); }
-| exp '-' mono { $$ = std::move(get<polynomial>($1)); get<polynomial>($$) -= std::move(get<monomial>($3)); }
+| exp '+' mono
+{
+	$$ = std::move(get<polynomial>($1));
+	get<polynomial>($$) += std::move(get<monomial>($3));
+}
+| exp '-' mono
+{
+	$$ = std::move(get<polynomial>($1));
+	get<polynomial>($$) -= std::move(get<monomial>($3));
+}
