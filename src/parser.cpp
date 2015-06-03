@@ -448,8 +448,8 @@ static const yytype_int8 yyrhs[] =
 static const yytype_uint8 yyrline[] =
 {
        0,    21,    21,    22,    23,    26,    27,    28,    40,    48,
-      49,    57,    65,    72,    80,    81,    91,   110,   147,   148,
-     153
+      49,    57,    65,    72,    80,    81,    91,   110,   146,   147,
+     152
 };
 #endif
 
@@ -1523,7 +1523,6 @@ yyreduce:
 	{
 		nli = literal_get(vP[nli].name());
 	};
-	std::cout<<nli<<std::endl;
 	funcexpr nf;
 	nf._funcname=get<string>((yyvsp[(1) - (4)]));
 	nf._paraid=nli;
@@ -1544,13 +1543,13 @@ yyreduce:
 
   case 18:
 /* Line 1792 of yacc.c  */
-#line 147 "parser.ypp"
+#line 146 "parser.ypp"
     { (yyval) = polynomial(get<monomial>((yyvsp[(1) - (1)]))); }
     break;
 
   case 19:
 /* Line 1792 of yacc.c  */
-#line 149 "parser.ypp"
+#line 148 "parser.ypp"
     {
 	(yyval) = std::move(get<polynomial>((yyvsp[(1) - (3)])));
 	get<polynomial>((yyval)) += std::move(get<monomial>((yyvsp[(3) - (3)])));
@@ -1559,7 +1558,7 @@ yyreduce:
 
   case 20:
 /* Line 1792 of yacc.c  */
-#line 154 "parser.ypp"
+#line 153 "parser.ypp"
     {
 	(yyval) = std::move(get<polynomial>((yyvsp[(1) - (3)])));
 	get<polynomial>((yyval)) -= std::move(get<monomial>((yyvsp[(3) - (3)])));
@@ -1568,7 +1567,7 @@ yyreduce:
 
 
 /* Line 1792 of yacc.c  */
-#line 1572 "parser.cpp"
+#line 1571 "parser.cpp"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires

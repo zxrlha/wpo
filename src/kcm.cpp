@@ -81,7 +81,7 @@ bool kcm::generate_best_rectangle(vector<int>& row, vector<int>& column)
 				for (int ci2 = 0; ci2 < j; ++ci2)
 				{
 					if (_mat[i][ci2] == 1)
-				generate_best_rectangle(i, j, ci2, tr, tc);
+						generate_best_rectangle(i, j, ci2, tr, tc);
 				}
 			}
 		}
@@ -153,60 +153,50 @@ void kcm::generate_best_rectangle(vector<int>& row, vector<int>& column, vector<
 		}
 		return;
 	}
-	//add possible column
-	for (int i = 0; i < column.back(); ++i)
-	{
-		if (posi_columns[i] == 0) continue;
-		column.push_back(i);
-		//build new posi_rows and posi_columns
-		set<int> trpr;
-		//remove rows which is not possible since i is included
-		for (int j = 0; j < row.back(); ++j)
-		{
-			if (posi_rows[j] == 1 && _mat[j][i] != 1)
-			{
-				posi_rows[j] = 0;
-				trpr.insert(j);
-			}
-		}
-		generate_best_rectangle(row, column, posi_rows, posi_columns);
-		//add back
-		for (auto ci : trpr)
-		{
-			posi_rows[ci] = 1;
-		}
-		column.erase(column.end() - 1);
-	}
-	generate_best_rectangle(row, column, posi_rows);
-}
-
-void kcm::generate_best_rectangle(vector<int>& row, vector<int>& column, vector<int>& posi_rows)
-{
-	bool is_prime = true;
-	for (int i = 0; i < row.back(); ++i)
-		if (posi_rows[i] != 0)
-		{
-			is_prime = false;
-			break;
-		}
-	if (is_prime)//it is prime rectangle now
-	{
-		int v = value_of_prime_rectangle(row, column);
-		if (v >= _bv)
-		{
-			_br = row;
-			_bc = column;
-			_bv = v;
-		}
-		return;
-	}
+	//add possible row
 	for (int i = 0; i < row.back(); ++i)
 	{
 		if (posi_rows[i] == 0) continue;
 		row.push_back(i);
-		generate_best_rectangle(row, column, posi_rows);
+		//build new posi_rows and posi_columns
+		set<int> trpc;
+		//remove columns which is not possible since i is included
+		for (int j = 0; j < column.back(); ++j)
+		{
+			if (posi_columns[j] == 1 && _mat[i][j] != 1)
+			{
+				posi_columns[j] = 0;
+				trpc.insert(j);
+			}
+		}
+		generate_best_rectangle(row, column, posi_rows, posi_columns);
+		//add back
+		for (auto ci : trpc)
+		{
+			posi_columns[ci] = 1;
+		}
 		row.erase(row.end() - 1);
 	}
+	generate_best_rectangle(row, column, posi_columns);
+}
+
+void kcm::generate_best_rectangle(vector<int>& row, vector<int>& column, vector<int>& posi_columns)
+{
+	int cs = column.size();
+	int tb = column.back();
+	for (int i = 0; i < tb; ++i)
+	{
+		if (posi_columns[i] == 0) continue;
+		column.push_back(i);
+	}
+	int v = value_of_prime_rectangle(row, column);
+	if (v >= _bv)
+	{
+		_br = row;
+		_bc = column;
+		_bv = v;
+	}
+	column.resize(cs);
 }
 int kcm::value_of_prime_rectangle(vector<int>& row, vector<int>& column)
 {
