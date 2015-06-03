@@ -46,6 +46,7 @@ polynomial& polynomial::operator+=(const monomial& A)
 		}
 		_vmon.push_back(A);
 	}
+	return *this;
 }
 
 polynomial& polynomial::operator+=(monomial&& A)
@@ -59,6 +60,7 @@ polynomial& polynomial::operator+=(monomial&& A)
 		resize(A.size());
 	}
 	_vmon.push_back(std::move(A));
+	return *this;
 }
 
 polynomial& polynomial::operator-=(const monomial& A)
@@ -78,6 +80,7 @@ polynomial& polynomial::operator-=(const monomial& A)
 		_vmon.push_back(A);
 	}
 	_vmon.back().reverse_sign();
+	return *this;
 }
 
 polynomial& polynomial::operator-=(monomial&& A)
@@ -92,6 +95,7 @@ polynomial& polynomial::operator-=(monomial&& A)
 		resize(A.size());
 	}
 	_vmon.push_back(std::move(A));
+	return *this;
 }
 polynomial operator+(const monomial& A, const monomial& B)
 {

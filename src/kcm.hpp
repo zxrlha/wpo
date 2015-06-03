@@ -19,8 +19,12 @@ public:
 	int index(int i) const { return _icok[i]; };
 protected:
 	void generate_best_rectangle(int ri, int ci1, int ci2);
-	void generate_best_rectangle(vector<int>& row, vector<int>& column, vector<int>& posi_rows, vector<int>& posi_columns);
-	void generate_best_rectangle(vector<int>& row, vector<int>& column, vector<int>& posi_rows);
+	void generate_best_rectangle_11(vector<int>& row, vector<int>& column, set<int>& posi_rows, set<int>& posi_columns);
+	void generate_best_rectangle_11_row(vector<int>& row, vector<int>& column, set<int>& posi_rows, set<int>& posi_columns);
+	void generate_best_rectangle_11_column(vector<int>& row, vector<int>& column, set<int>& posi_rows, set<int>& posi_columns);
+	void generate_best_rectangle_10(vector<int>& row, vector<int>& column, set<int>& posi_rows, set<int>& posi_columns);
+	void generate_best_rectangle_01(vector<int>& row, vector<int>& column, set<int>& posi_rows, set<int>& posi_columns);
+	void generate_best_rectangle_00(vector<int>& row, vector<int>& column, set<int>& posi_rows, set<int>& posi_columns);
 	bool is_prime(int ri, int ci, const vector<int>& posi_rows, const vector<int>& posi_columns);
 	int value_of_prime_rectangle(vector<int>& row, vector<int>& column);
 
@@ -34,6 +38,12 @@ protected:
 	vector<int> _br;
 	vector<int> _bc;
 	int _bv;
+
+	//tmp variable
+	int _sumMR;
+	int _sumMC;
+	int _prs;
+	int _pcs;
 };
 
 #endif
