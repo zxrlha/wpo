@@ -99,7 +99,7 @@ void output_prime_func()
 int main()
 {
 	yyparse();
-	debug_out();
+	//debug_out();
 	cerr << "//Parse finished" << endl;
 	find_kernel_intersections(vP);
 	cerr << "//kernel intersection finished" << endl;
