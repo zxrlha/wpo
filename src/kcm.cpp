@@ -64,13 +64,9 @@ bool kcm::generate_best_rectangle(vector<int>& row, vector<int>& column)
 	_br.clear();
 	_bc.clear();
 
-	vector<int> tr;
-	vector<int> tc;
-
 	int start = 0;
 
 	if (_vcok.size() == 0) return false;
-	//if (_vcok[0] == monomial()) start = 1;
 	if (_vcok.size() <= start) return false;
 	for (int i = start; i < _vcok.size(); ++i)
 	{
@@ -81,7 +77,8 @@ bool kcm::generate_best_rectangle(vector<int>& row, vector<int>& column)
 				for (int ci2 = 0; ci2 < j; ++ci2)
 				{
 					if (_mat[i][ci2] == 1)
-						generate_best_rectangle(i, j, ci2, tr, tc);
+						generate_best_rectangle(i, j, ci2);
+					if (i == 248) exit(0);
 				}
 			}
 		}
@@ -95,7 +92,7 @@ bool kcm::generate_best_rectangle(vector<int>& row, vector<int>& column)
 	return true;
 }
 
-void kcm::generate_best_rectangle(int ri, int ci1, int ci2, vector<int>& row, vector<int>& column)
+void kcm::generate_best_rectangle(int ri, int ci1, int ci2)
 {
 	vector<int> posi_rows(_vcok.size());
 	vector<int> posi_columns(_vk.size());
@@ -113,14 +110,9 @@ void kcm::generate_best_rectangle(int ri, int ci1, int ci2, vector<int>& row, ve
 			posi_columns[i] = 1;
 		}
 	}
-	row.resize(0);
-	column.resize(0);
-	row.push_back(ri);
-	column.push_back(ci1);
-	column.push_back(ci2);
+	vector<int> row{ri};
+	vector<int> column{ci1, ci2};
 	generate_best_rectangle(row, column, posi_rows, posi_columns);
-	row.resize(0);
-	column.resize(0);
 }
 
 //row contain rows included in rectangle
