@@ -180,6 +180,17 @@ monomial polynomial::gcd() const
 	return A;
 }
 
+monomial gcd(const monomial& A, const monomial& B)
+{
+	monomial R(A);
+	for (int i = 0; i < A.size(); ++i)
+	{
+		if (R[i] > B[i]) R[i] = B[i];
+	}
+	return R;
+}
+
+
 polynomial operator/(const polynomial& P, const monomial& A)
 {
 	assert(P.size() >= A.size());

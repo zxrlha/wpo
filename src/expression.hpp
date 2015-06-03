@@ -220,4 +220,6 @@ bool nosort_equal(const polynomial& A, const polynomial& B);
 //output operator for view and debug
 ostream& operator<<(ostream& os, const monomial& m);
 ostream& operator<<(ostream& os, const polynomial& m);
+
+monomial gcd(const monomial& A, const monomial& B);
 #endif
