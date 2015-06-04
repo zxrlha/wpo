@@ -27,6 +27,8 @@ protected:
 	void generate_best_rectangle_00(vector<int>& row, vector<int>& column, set<int>& posi_rows, set<int>& posi_columns);
 	bool is_prime(int ri, int ci, const vector<int>& posi_rows, const vector<int>& posi_columns);
 	int value_of_prime_rectangle(vector<int>& row, vector<int>& column);
+	int value_diff_nr(vector<int>& row, vector<int>& column, int nr);
+	int value_diff_nc(vector<int>& row, vector<int>& column, int nc);
 
 	vector<monomial> _vcok;
 	vector<int> _icok;

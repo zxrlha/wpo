@@ -84,7 +84,6 @@ bool kcm::generate_best_rectangle(vector<int>& row, vector<int>& column)
 		}
 	}
 
-	//std::cout<<max<<std::endl;
 	if (_bv == 0) return false;
 	if (_br.size() == 1 && _bc.size() == 1) return false;
 	row = _br;
@@ -141,8 +140,11 @@ void kcm::generate_best_rectangle_01(vector<int>& row, vector<int>& column, set<
 	for (auto it = posi_columns.begin(); it != posi_columns.end() && *it < cb; ++it)
 	{
 		int i = *it;
+		if (value_diff_nc(row, column, i) > 0)
+		{
 		column.push_back(i);
 		_sumMC += _vMC[i];
+		}
 	}
 	generate_best_rectangle_00(row, column, posi_rows, posi_columns);
 	column.resize(cs);
@@ -158,8 +160,11 @@ void kcm::generate_best_rectangle_10(vector<int>& row, vector<int>& column, set<
 	for (auto it = posi_rows.begin(); it != posi_rows.end() && *it < rb; ++it)
 	{
 		int i = *it;
+		if (value_diff_nr(row, column, i) > 0)
+		{
 		row.push_back(i);
 		_sumMR += _vMR[i];
+		}
 	}
 	generate_best_rectangle_00(row, column, posi_rows, posi_columns);
 	row.resize(rs);
@@ -280,4 +285,16 @@ int kcm::value_of_prime_rectangle(vector<int>& row, vector<int>& column)
 	*/
 	//std::cout<<3<<C<<" "<<R<<" "<<sumMR<<" "<<sumMC<<std::endl;
 	return (C - 1) * (_sumMR + R) + (R - 1) * (_sumMC);
+}
+
+int kcm::value_diff_nr(vector<int>& row, vector<int>& column, int nrow)
+{
+	int C = column.size();
+	return (C-1)*(1+_vMR[nrow])+_sumMC;
+}
+
+int kcm::value_diff_nc(vector<int>& row, vector<int>& column, int ncolumn)
+{
+	int R = row.size();
+	return (_sumMR+R)+(R-1)*_vMC[ncolumn];
 }
