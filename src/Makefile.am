@@ -1,6 +1,8 @@
 bin_PROGRAMS = wpo
 BUILT_SOURCES = parser.cpp parser.hpp lexer.cpp
 AM_YFLAGS=-d
+wpo_CPPFLAGS = $(BOOST_CPPFLAGS)
+wpo_LDFLAGS = $(BOOST_LDFLAGS)
 wpo_SOURCES = expression.hpp expression.cpp \
 			  kernel.hpp kernel.cpp \
 			  kcm.hpp kcm.cpp \
