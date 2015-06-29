@@ -41,7 +41,7 @@ kcm::kcm(const vector<vector<pair<monomial, polynomial>>>& vkmap, const vector<p
 	{
 		for (int j = 0; j < _vk.size(); ++j)
 		{
-			monomial m = _vk[j];
+			const monomial& m = _vk[j];
 			if (tvk[i].contain(m))
 				_mat[i][j] = 1;
 			else

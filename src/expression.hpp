@@ -149,6 +149,7 @@ public:
 	//variable reduction
 	int single_id() const;
 protected:
+	void sort();
 	vector<monomial> _vmon;
 	int _size;
 	string _name;
