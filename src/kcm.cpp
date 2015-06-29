@@ -68,17 +68,33 @@ bool kcm::generate_best_rectangle(vector<int>& row, vector<int>& column)
 
 	if (_vcok.size() == 0) return false;
 	if (_vcok.size() <= start) return false;
+
+	vector<set<int>> vposi_rows(_vk.size());
+	for (int j = 0; j < _vk.size(); ++j)
+	{
+		for (int i = 0; i < _vcok.size(); ++i)
+		{
+			if (_mat[i][j] == 1)
+			{
+				vposi_rows[j].insert(i);
+			}
+		}
+	}
+
 	for (int i = start; i < _vcok.size(); ++i)
 	{
 		for (int j = 0; j < _vk.size(); ++j)
 		{
 			if (_mat[i][j] == 1)
 			{
+				set<int> posi_columns;
 				for (int ci2 = 0; ci2 < j; ++ci2)
 				{
 					if (_mat[i][ci2] == 1)
-						generate_best_rectangle(i, j, ci2);
-					//if (i == 248) exit(0);
+					{
+						generate_best_rectangle(i, j, ci2, vposi_rows[ci2], posi_columns);
+						posi_columns.insert(ci2);
+					}
 				}
 			}
 		}
@@ -91,25 +107,18 @@ bool kcm::generate_best_rectangle(vector<int>& row, vector<int>& column)
 	return true;
 }
 
-void kcm::generate_best_rectangle(int ri, int ci1, int ci2)
+void kcm::generate_best_rectangle(int ri, int ci1, int ci2, const set<int>& aposi_rows, set<int> posi_columns)
 {
 	set<int> posi_rows;
-	set<int> posi_columns;
-	for (int i = 0; i < ri; ++i)
+	for (auto i:aposi_rows)
 	{
-		if (_mat[i][ci1] != 0 && _mat[i][ci2] != 0)//possible rows
+		if (i >= ri) break;
+		if (_mat[i][ci1] != 0)
 		{
 			posi_rows.insert(i);
 		}
 	}
 	_prs = posi_rows.size();
-	for (int i = 0; i < ci2; ++i)
-	{
-		if (_mat[ri][i] != 0)//possible columns
-		{
-			posi_columns.insert(i);
-		}
-	}
 	_pcs = posi_columns.size();
 	vector<int> row{ri};
 	vector<int> column{ci1, ci2};
