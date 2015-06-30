@@ -39,15 +39,14 @@ kcm::kcm(const vector<vector<pair<monomial, polynomial>>>& vkmap, const vector<p
 
 	for (int i = 0; i < _vcok.size(); ++i)
 	{
-		for (int j = 0; j < _vk.size(); ++j)
+		for (int j = 0; j < tvk[i].number(); ++j)
 		{
-			const monomial& m = _vk[j];
-			if (tvk[i].contain(m))
-				_mat[i][j] = 1;
-			else
-				_mat[i][j] = 0;
+			auto it = std::lower_bound(_vk.begin(), _vk.end(), tvk[i][j]);
+			int index = it - _vk.begin();
+			_mat[i][index] = 1;
 		}
 	}
+
 	for (int i = 0; i < _vcok.size(); ++i)
 	{
 		_vMR.push_back(_vcok[i].multiplication_number() - 1);
