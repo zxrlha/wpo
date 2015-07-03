@@ -46,7 +46,6 @@ kcm::kcm(const vector<vector<pair<monomial, polynomial>>>& vkmap, const vector<p
 			_mat[i][index] = 1;
 		}
 	}
-
 	for (int i = 0; i < _vcok.size(); ++i)
 	{
 		_vMR.push_back(_vcok[i].multiplication_number() - 1);
@@ -65,17 +64,14 @@ bool kcm::generate_best_rectangle(vector<int>& row, vector<int>& column)
 
 	int start = 0;
 
-	if (_vcok.size() == 0) return false;
-	if (_vcok.size() <= start) return false;
-
-	vector<set<int>> vposi_rows(_vk.size());
+	vector<vector<int>> vposi_rows(_vk.size());
 	for (int j = 0; j < _vk.size(); ++j)
 	{
 		for (int i = 0; i < _vcok.size(); ++i)
 		{
 			if (_mat[i][j] == 1)
 			{
-				vposi_rows[j].insert(i);
+				vposi_rows[j].push_back(i);
 			}
 		}
 	}
@@ -86,13 +82,13 @@ bool kcm::generate_best_rectangle(vector<int>& row, vector<int>& column)
 		{
 			if (_mat[i][j] == 1)
 			{
-				set<int> posi_columns;
+				vector<int> posi_columns;
 				for (int ci2 = 0; ci2 < j; ++ci2)
 				{
 					if (_mat[i][ci2] == 1)
 					{
 						generate_best_rectangle(i, j, ci2, vposi_rows[ci2], posi_columns);
-						posi_columns.insert(ci2);
+						posi_columns.push_back(ci2);
 					}
 				}
 			}
@@ -106,15 +102,15 @@ bool kcm::generate_best_rectangle(vector<int>& row, vector<int>& column)
 	return true;
 }
 
-void kcm::generate_best_rectangle(int ri, int ci1, int ci2, const set<int>& aposi_rows, set<int> posi_columns)
+void kcm::generate_best_rectangle(int ri, int ci1, int ci2, const vector<int>& aposi_rows, const vector<int>& posi_columns)
 {
-	set<int> posi_rows;
+	vector<int> posi_rows;
 	for (auto i:aposi_rows)
 	{
 		if (i >= ri) break;
 		if (_mat[i][ci1] != 0)
 		{
-			posi_rows.insert(i);
+			posi_rows.push_back(i);
 		}
 	}
 	_prs = posi_rows.size();
@@ -126,8 +122,8 @@ void kcm::generate_best_rectangle(int ri, int ci1, int ci2, const set<int>& apos
 	generate_best_rectangle_11(row, column, posi_rows, posi_columns);
 }
 
-//00: _prs == 0,_pcs == 0, prime rectangle
-void kcm::generate_best_rectangle_00(vector<int>& row, vector<int>& column, set<int>& posi_rows, set<int>& posi_columns)
+//00: _prs == 0, _pcs == 0, prime rectangle
+void kcm::generate_best_rectangle_00(vector<int>& row, vector<int>& column)
 {
 	int v = value_of_prime_rectangle(row, column);
 	if (v >= _bv)
@@ -140,7 +136,7 @@ void kcm::generate_best_rectangle_00(vector<int>& row, vector<int>& column, set<
 
 
 //01:no possible row, but possible columns, add them all
-void kcm::generate_best_rectangle_01(vector<int>& row, vector<int>& column, set<int>& posi_rows, set<int>& posi_columns)
+void kcm::generate_best_rectangle_01(vector<int>& row, vector<int>& column, const vector<int>& posi_columns)
 {
 	int cs = column.size();
 	int cb = column.back();
@@ -154,13 +150,13 @@ void kcm::generate_best_rectangle_01(vector<int>& row, vector<int>& column, set<
 		_sumMC += _vMC[i];
 		}
 	}
-	generate_best_rectangle_00(row, column, posi_rows, posi_columns);
+	generate_best_rectangle_00(row, column);
 	column.resize(cs);
 	_sumMC = osummc;
 }
 
 //10:no possible row, but possible columns, add them all
-void kcm::generate_best_rectangle_10(vector<int>& row, vector<int>& column, set<int>& posi_rows, set<int>& posi_columns)
+void kcm::generate_best_rectangle_10(vector<int>& row, vector<int>& column, const vector<int>& posi_rows)
 {
 	int rs = row.size();
 	int rb = row.back();
@@ -174,21 +170,21 @@ void kcm::generate_best_rectangle_10(vector<int>& row, vector<int>& column, set<
 		_sumMR += _vMR[i];
 		}
 	}
-	generate_best_rectangle_00(row, column, posi_rows, posi_columns);
+	generate_best_rectangle_00(row, column);
 	row.resize(rs);
 	_sumMR = osummr;
 }
 
 //11: possible row and possible column
-void kcm::generate_best_rectangle_11(vector<int>& row, vector<int>& column, set<int>& posi_rows, set<int>& posi_columns)
+void kcm::generate_best_rectangle_11(vector<int>& row, vector<int>& column, const vector<int>& posi_rows, const vector<int>& posi_columns)
 {
 	if (_prs == 0)
 	{
-		generate_best_rectangle_01(row, column, posi_rows, posi_columns);
+		generate_best_rectangle_01(row, column, posi_columns);
 	}
 	else if (_pcs == 0)
 	{
-		generate_best_rectangle_10(row, column, posi_rows, posi_columns);
+		generate_best_rectangle_10(row, column, posi_rows);
 	}
 	if (_prs < _pcs)
 	{
@@ -200,98 +196,70 @@ void kcm::generate_best_rectangle_11(vector<int>& row, vector<int>& column, set<
 	}
 }
 
-void kcm::generate_best_rectangle_11_row(vector<int>& row, vector<int>& column, set<int>& posi_rows, set<int>& posi_columns)
+void kcm::generate_best_rectangle_11_row(vector<int>& row, vector<int>& column, const vector<int>& posi_rows, const vector<int>& posi_columns)
 {
-	//std::cout << "ROW:" << _prs << " " << _pcs << std::endl;
 	int rb = row.back();
-	//add possible row
 	_prs = 0;
+	int opcs = _pcs;
+	//add possible row
 	for (auto it = posi_rows.begin(); it != posi_rows.end() && *it < rb; ++it, ++_prs)
 	{
 		int i = *it;
 		row.push_back(i);
 		_sumMR += _vMR[i];
 		//build new posi_columns
-		set<int> trpc;
-		//remove columns which is not possible since i is included
+		vector<int> new_posi_columns;
 		for (auto j : posi_columns)
 		{
-			if (_mat[i][j] != 1)
+			if (j > column.back()) break;
+			if (_mat[i][j] == 1)
 			{
-				trpc.insert(j);
+				new_posi_columns.push_back(j);
 			}
 		}
-		for (auto j : trpc)
-		{
-			posi_columns.erase(j);
-		}
-		_pcs -= trpc.size();
-		generate_best_rectangle_11(row, column, posi_rows, posi_columns);
-		//add back
-		for (auto j : trpc)
-		{
-			posi_columns.insert(j);
-		}
-		_pcs += trpc.size();
+		_pcs = new_posi_columns.size();
+		generate_best_rectangle_11(row, column, posi_rows, new_posi_columns);
+		//change row back
 		row.erase(row.end() - 1);
 		_sumMR -= _vMR[i];
 	}
+	//change _pcs back
+	_pcs = opcs;
 }
 
-void kcm::generate_best_rectangle_11_column(vector<int>& row, vector<int>& column, set<int>& posi_rows, set<int>& posi_columns)
+void kcm::generate_best_rectangle_11_column(vector<int>& row, vector<int>& column, const vector<int>& posi_rows, const vector<int>& posi_columns)
 {
-	//std::cout << "COLUMN" << _prs << " " << _pcs << std::endl;
 	int cb = column.back();
-	//add possible column
 	_pcs = 0;
+	int oprs = _prs;
+	//add possible column
 	for (auto it = posi_columns.begin(); it != posi_columns.end() && *it < cb; ++it, ++_pcs)
 	{
 		int i = *it;
 		column.push_back(i);
 		_sumMC += _vMC[i];
 		//build new posi_rows
-		set<int> trpr;
-		//remove rows which is not possible since i is included
+		vector<int> new_posi_rows;
 		for (auto j : posi_rows)
 		{
-			if (_mat[j][i] != 1)
+			if (j > row.back()) break;
+			if (_mat[j][i] == 1)
 			{
-				trpr.insert(j);
+				new_posi_rows.push_back(j);
 			}
 		}
-		for (auto j : trpr)
-		{
-			posi_rows.erase(j);
-		}
-		_prs -= trpr.size();
-		generate_best_rectangle_11(row, column, posi_rows, posi_columns);
-		//add back
-		for (auto j : trpr)
-		{
-			posi_rows.insert(j);
-		}
-		_prs += trpr.size();
+		_prs = new_posi_rows.size();
+		generate_best_rectangle_11(row, column, new_posi_rows, posi_columns);
+		//change column back
 		column.erase(column.end() - 1);
 		_sumMC -= _vMC[i];
 	}
+	_prs = oprs;
 }
 int kcm::value_of_prime_rectangle(vector<int>& row, vector<int>& column)
 {
 	int C = column.size();
 	int R = row.size();
-	/*
-	int sumMR = 0;
-	int sumMC = 0;
-	for (int i = 0; i < row.size(); ++i)
-	{
-	    sumMR += _vMR[row[i]];
-	}
-	for (int i = 0; i < column.size(); ++i)
-	{
-	    sumMC += _vMC[column[i]];
-	}
-	*/
-	//std::cout<<3<<C<<" "<<R<<" "<<sumMR<<" "<<sumMC<<std::endl;
 	return (C - 1) * (_sumMR + R) + (R - 1) * (_sumMC);
 }
 

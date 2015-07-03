@@ -3,11 +3,13 @@
 
 #include <set>
 #include <map>
+#include <vector>
 #include "expression.hpp"
 
 using std::set;
 using std::map;
 using std::pair;
+using std::vector;
 
 class kcm
 {
@@ -18,13 +20,13 @@ public:
 	const monomial& column(int i) const { return _vk[i]; };
 	int index(int i) const { return _icok[i]; };
 protected:
-	void generate_best_rectangle(int ri, int ci1, int ci2, const set<int>& aposi_rows, set<int> posi_columns);
-	void generate_best_rectangle_11(vector<int>& row, vector<int>& column, set<int>& posi_rows, set<int>& posi_columns);
-	void generate_best_rectangle_11_row(vector<int>& row, vector<int>& column, set<int>& posi_rows, set<int>& posi_columns);
-	void generate_best_rectangle_11_column(vector<int>& row, vector<int>& column, set<int>& posi_rows, set<int>& posi_columns);
-	void generate_best_rectangle_10(vector<int>& row, vector<int>& column, set<int>& posi_rows, set<int>& posi_columns);
-	void generate_best_rectangle_01(vector<int>& row, vector<int>& column, set<int>& posi_rows, set<int>& posi_columns);
-	void generate_best_rectangle_00(vector<int>& row, vector<int>& column, set<int>& posi_rows, set<int>& posi_columns);
+	void generate_best_rectangle(int ri, int ci1, int ci2, const vector<int>& aposi_rows, const vector<int>& posi_columns);
+	void generate_best_rectangle_11(vector<int>& row, vector<int>& column, const vector<int>& posi_rows, const vector<int>& posi_columns);
+	void generate_best_rectangle_11_row(vector<int>& row, vector<int>& column, const vector<int>& posi_rows, const vector<int>& posi_columns);
+	void generate_best_rectangle_11_column(vector<int>& row, vector<int>& column, const vector<int>& posi_rows, const vector<int>& posi_columns);
+	void generate_best_rectangle_10(vector<int>& row, vector<int>& column, const vector<int>& posi_rows);
+	void generate_best_rectangle_01(vector<int>& row, vector<int>& column, const vector<int>& posi_columns);
+	void generate_best_rectangle_00(vector<int>& row, vector<int>& column);
 	bool is_prime(int ri, int ci, const vector<int>& posi_rows, const vector<int>& posi_columns);
 	int value_of_prime_rectangle(vector<int>& row, vector<int>& column);
 	int value_diff_nr(vector<int>& row, vector<int>& column, int nr);
