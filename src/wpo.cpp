@@ -14,6 +14,12 @@ using std::endl;
 using std::set;
 using std::string;
 
+bool pass_filter(const std::string& name)
+{
+	if (name.find_first_of(in_filter) != std::string::npos) return false;
+	else return true;
+}
+
 void debug_out()
 {
 	for (int i = 0; i < vP.size(); ++i)
@@ -32,7 +38,7 @@ void output_func(const string& paraname)
 		if (literal_name(it->_paraid) == paraname)
 		{
 			cout << line_prefix;
-			if (var_style == "in")
+			if (func_style == "in")
 			{
 				cout << type_str << " ";
 			}
@@ -75,7 +81,7 @@ void output_prime_func()
 		if (calced.count(literal_name(it->_paraid)) == 0)
 		{
 			cout << line_prefix;
-			if (var_style == "in")
+			if (func_style == "in")
 			{
 				cout << type_str << " ";
 			}
@@ -106,12 +112,10 @@ int main()
 	//debug_out();
 	find_cube_intersections(vP);
 	//cerr << "//cube intersection finished" << endl;
-
 	reorder(vP);
 	//cerr << "//reorder finished" << endl;
 	int max = rename(vP);
 	//cerr << "//rename finished" << endl;
-
 	if (tmp_style == "array0")
 	{
 		cout << line_prefix
@@ -148,6 +152,9 @@ int main()
 				     << line_suffix << endl;
 			}
 		}
+	}
+	if (func_style == "pre")
+	{
 		for (int i = 0; i < vfunc.size(); ++i)
 		{
 			cout << line_prefix
@@ -156,9 +163,7 @@ int main()
 			     << line_suffix << endl;
 		}
 	}
-
 	output_prime_func();
-
 	set<string> declaredtmp;
 	for (int i = 0; i < vP.size(); ++i)
 	{
@@ -175,7 +180,7 @@ int main()
 		}
 		else
 		{
-			if (var_style == "in")
+			if (var_style == "in" && pass_filter(vP[i].name()))
 			{
 				cout << type_str << " ";
 			}
