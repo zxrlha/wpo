@@ -11,9 +11,9 @@ string line_prefix = "    ";
 string type_str = "double";
 string tmp_style = "array0";//array0 array1 pre in null
 string var_style = "in"; //pre in null
+string var_filter = "[]():.";
 string func_prefix = "func";
 string func_style = "in";
-string in_filter = "[]():.";
 
 int vP_get(const polynomial& P)
 {
@@ -43,9 +43,9 @@ void parse_options(const string& name, const string& value)
 	else if (name == "type") type_str = value;
 	else if (name == "tmp_style") tmp_style = value;
 	else if (name == "var_style") var_style = value;
+	else if (name == "var_filter") var_filter = value;
 	else if (name == "func_prefix") func_prefix = value;
 	else if (name == "func_style") func_style = value;
-	else if (name == "in_filter") in_filter = value;
 	else
 	{
 		std::cerr << "ERROR:Unknown option:" << name << std::endl;

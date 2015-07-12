@@ -16,7 +16,7 @@ using std::string;
 
 bool pass_filter(const std::string& name)
 {
-	if (name.find_first_of(in_filter) != std::string::npos) return false;
+	if (name.find_first_of(var_filter) != std::string::npos) return false;
 	else return true;
 }
 
@@ -144,7 +144,7 @@ int main()
 	{
 		for (int i = 0; i < vP.size(); ++i)
 		{
-			if (!literal_is_tmp(vP[i].name()))
+			if (!literal_is_tmp(vP[i].name()) && pass_filter(vP[i].name()))
 			{
 				cout << line_prefix
 				     << type_str << " "
