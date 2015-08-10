@@ -81,9 +81,8 @@ void find_cube_intersections(vector<polynomial>& vP)
 	while (true)
 	{
 		cim tm(vP);
-		vector<int> vr;
 		monomial m;
-		if (!tm.generate_best_rectangle(vr, m)) return;
+		if (!tm.generate_best_rectangle(m)) return;
 		int li = literal_append_tmp();
 		//rewrote vP
 		for (auto& P : vP)

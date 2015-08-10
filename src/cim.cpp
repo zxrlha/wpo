@@ -3,24 +3,32 @@
 #include "cim.hpp"
 #include "literal.hpp"
 
-llmonomial gcd(const monomial& A, const llmonomial& B, bool& flag)
+int gcd_mn(const monomial& A, const llmonomial& B)
+{
+	int sum = 0;
+	for (auto it = B._vpow.begin(); it != B._vpow.end(); ++it)
+	{
+		int a = A[it->first];
+		sum += std::min(a, it->second);
+	}
+	return sum;
+}
+
+llmonomial gcd(const monomial& A, const llmonomial& B)
 {
 	llmonomial R(B);
-	flag = true;
 	for (auto it = R._vpow.begin(); it != R._vpow.end();)
 	{
 		int a = A[it->first];
 		if (a == 0)
 		{
 			it = R._vpow.erase(it);
-			flag = false;
 		}
 		else
 		{
 			if (a < it->second)
 			{
 				it->second = a;
-				flag = false;
 			}
 			++it;
 		}
@@ -47,88 +55,104 @@ cim::cim(const vector<polynomial>& vP)
 		for (int i = 0; i < P.number(); ++i)
 		{
 			if (P[i].multiplication_number() > 1)
+			{
 				_mat.push_back(P[i]);
+			}
 		}
 	}
 	//std::cout << _mat.size() << std::endl;
 }
 
-bool cim::generate_best_rectangle(vector<int>& row, monomial& m)
+bool cim::generate_best_rectangle(monomial& m)
 {
 	_bv = 0;
-	_br.clear();
+	_bs = 0;
 	_bm = monomial();
+	//for (int i = _mat.size()-1; i >= 0; --i)
 	for (int i = 0; i < _mat.size(); ++i)
 	{
 		generate_best_rectangle(i);
 		//std::cout << i << std::endl;
 	}
-	if (_bv == 0) return false;
-	row = _br;
+	if (_bv == 0)
+	{
+		return false;
+	}
 	m = _bm;
 	return true;
 }
 
 void cim::generate_best_rectangle(int ri)
 {
-	set<int> posi;
-	vector<int> row{ri};
+	//std::cerr << "RI:" << ri << std::endl;
+	vector<int> posi;
+	int rowsize = 1;
 	llmonomial m(_mat[ri]);
+	int mmn = m.multiplication_number();
 	for (int i = 0; i < ri; ++i)
 	{
-		bool flag;
-		llmonomial nm = gcd(_mat[i], m, flag);
-		if (nm.multiplication_number() <= 1) continue;
-		if (flag)
+		int mn = gcd_mn(_mat[i], m);
+		if (mn <= 1)
 		{
-			row.push_back(i);
+			continue;
+		}
+		else if (mn == mmn)
+		{
+			++rowsize;
 		}
 		else
 		{
-			posi.insert(i);
+			posi.push_back(i);
 		}
 	}
-	generate_best_rectangle(row, m, posi);
+	generate_best_rectangle(rowsize, m, posi);
 }
 
-void cim::generate_best_rectangle(vector<int>& row, const llmonomial& m, set<int> posi)
+void cim::generate_best_rectangle(int rowsize, const llmonomial& m, vector<int>& posi)
 {
-	int v = value_of_prime_rectangle(row, m);
+	int v = value_of_prime_rectangle(rowsize, m);
 	if (v > _bv)
 	{
 		_bv = v;
-		_br = row;
+		_bs = rowsize;
 		_bm = tomonomial(m);
 	}
-	int ls = row.size();
-	//pick one
-	for (auto it = posi.begin(); it != posi.end();)
+	v = value_of_prime_rectangle(rowsize + posi.size(), m);
+	if (v < _bv)
 	{
-		bool tf;
-		llmonomial nm = gcd(_mat[*it], m, tf);
-		set<int> nposi;
-		for (auto ni:posi)
+		return;
+	}
+	for (auto i: posi)
+	{
+		llmonomial nm = gcd(_mat[i], m);//require results
+		//std::cerr<<_mat.size()<<" "<<posi.back()<<" "<<posi.size()<<" "<<i<<" "<<nm.multiplication_number()<<std::endl;
+		int nrs = rowsize + 1;
+		if (value_of_prime_rectangle(nrs+posi.size(), nm) < _bv) continue;
+		vector<int> nposi;
+		int mmn = nm.multiplication_number();
+		for (auto ni : posi)
 		{
-			bool flag;
-			llmonomial tnm = gcd(_mat[ni], nm, flag);
-			if (tnm.multiplication_number() <= 1) continue;
-			if (flag)
+			if (ni <= i) continue;
+			int mn = gcd_mn(_mat[ni], nm);
+			if (mn <= 1)
 			{
-				row.push_back(ni);
+				continue;
+			}
+			else if (mn == mmn)
+			{
+				++nrs;
 			}
 			else
 			{
-				nposi.insert(ni);
+				nposi.push_back(ni);
 			}
 		}
-		generate_best_rectangle(row, nm, nposi);
-		row.resize(ls);
-		it = posi.erase(it);
+		if (value_of_prime_rectangle(nrs+nposi.size(), nm) < _bv) continue;
+		generate_best_rectangle(nrs, nm, nposi);
 	}
 }
 
-int cim::value_of_prime_rectangle(vector<int>& row, const llmonomial& m)
+int cim::value_of_prime_rectangle(int rowsize, const llmonomial& m)
 {
-	int R = row.size();
-	return (R - 1) * (m.multiplication_number() - 1);
+	return (rowsize - 1) * (m.multiplication_number() - 1);
 }

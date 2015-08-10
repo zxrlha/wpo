@@ -41,14 +41,14 @@ class cim
 {
 public:
 	explicit cim(const vector<polynomial>& vP);
-	bool generate_best_rectangle(vector<int>& row, monomial& m);
+	bool generate_best_rectangle(monomial& m);
 protected:
 	void generate_best_rectangle(int ri);
-	void generate_best_rectangle(vector<int>& row, const llmonomial& m, set<int> posi);
-	int value_of_prime_rectangle(vector<int>& row, const llmonomial& m);
+	void generate_best_rectangle(int rowsize, const llmonomial& m, vector<int>& posi);
+	int value_of_prime_rectangle(int rowsize, const llmonomial& m);
 	vector<monomial> _mat;
 
-	vector<int> _br;
+	int _bs;
 	monomial _bm;
 	int _bv;
 };
