@@ -78,6 +78,10 @@ void find_kernel_intersections(vector<polynomial>& vP)
 
 void find_cube_intersections(vector<polynomial>& vP)
 {
+	for (auto& P : vP)
+	{
+		P.resize(literal_size());
+	}
 	while (true)
 	{
 		cim tm(vP);

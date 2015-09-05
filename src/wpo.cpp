@@ -111,7 +111,7 @@ void output_prime_func()
 int main()
 {
 	yyparse();
-	if (sequential)
+	if (strategy == "sequential")
 	{
 		vector<polynomial> vtmp(vP);
 		vP.clear();
@@ -121,6 +121,22 @@ int main()
 			vP.push_back(vtmp[i]);
 			find_kernel_intersections(vP);
 		}
+	}
+	else if (strategy == "independent")
+	{
+		vector<polynomial> vtmp(vP);
+		vector<polynomial> vres;
+		for (size_t i = 0; i < vtmp.size(); ++i)
+		{
+			vP.clear();
+			vP.push_back(vtmp[i]);
+			find_kernel_intersections(vP);
+			for (auto j = 0; j < vP.size(); ++j)
+			{
+				vres.push_back(vP[j]);
+			}
+		}
+		vP = vres;
 	}
 	else
 	{
