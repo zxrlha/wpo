@@ -16,8 +16,14 @@ using std::string;
 
 bool pass_filter(const std::string& name)
 {
-	if (name.find_first_of(var_filter) != std::string::npos) return false;
-	else return true;
+	if (name.find_first_of(var_filter) != std::string::npos)
+	{
+		return false;
+	}
+	else
+	{
+		return true;
+	}
 }
 
 void debug_out()
@@ -105,13 +111,26 @@ void output_prime_func()
 int main()
 {
 	yyparse();
-	//debug_out();
-	//cerr << "//Parse finished" << endl;
-	find_kernel_intersections(vP);
+	if (sequential)
+	{
+		vector<polynomial> vtmp(vP);
+		vP.clear();
+		for (size_t i = 0; i < vtmp.size(); ++i)
+		{
+			//cerr<<i<<" "<<vtmp.size()<<endl;
+			vP.push_back(vtmp[i]);
+			find_kernel_intersections(vP);
+		}
+	}
+	else
+	{
+		find_kernel_intersections(vP);
+	}
 	//cerr << "//kernel intersection finished" << endl;
 	//debug_out();
 	find_cube_intersections(vP);
 	//cerr << "//cube intersection finished" << endl;
+	if (clean) doclean(vP);
 	reorder(vP);
 	//cerr << "//reorder finished" << endl;
 	int max = rename(vP);

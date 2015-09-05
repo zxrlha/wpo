@@ -24,6 +24,8 @@ extern string var_style;
 extern string var_filter;
 extern string func_prefix;
 extern string func_style;
+extern bool sequential;
+extern bool clean;
 
 int vP_get(const polynomial& P);
 int vfunc_get(const funcexpr& fe);

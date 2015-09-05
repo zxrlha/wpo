@@ -15,6 +15,86 @@ string output_tmp_name(int i)
 	return tmp_prefix + boost::lexical_cast<string>(i + tmp_start) + tmp_suffix;
 }
 
+void literal_change(vector<polynomial>& vP, int from, int to)
+{
+	for (auto& P : vP)
+	{
+		for (int i = 0; i < P.number(); ++i)
+		{
+			P[i][to] += P[i][from];
+			P[i][from] = 0;
+		}
+	}
+}
+
+void doclean(vector<polynomial>& vP)
+{
+	//find polynomial like A=B
+	set<int> remove_list;
+	for (int i = 0; i < vP.size(); ++i)
+	{
+		if (vP[i].number() == 1 && vP[i][0].is_positive())
+		{
+			int sum = 0;
+			int lj = 0;
+			for (int j = 0; j < vP[i][0].size(); ++j)
+			{
+				int tmp = vP[i][0][j];
+				if (tmp != 0)
+				{
+					sum += tmp;
+					if (sum >= 2)
+					{
+						break;
+					}
+					lj = j;
+				}
+			}
+			if (sum == 1)//this is we wanted
+			{
+				if (literal_is_tmp(vP[i].name()))//A=B,A is a termporary name
+				{
+					remove_list.insert(i);
+					literal_change(vP, literal_get(vP[i].name()), lj);//replace all A by B
+				}
+				else if (literal_is_tmp(literal_name(lj)))//A=B,B is a termporary name
+				{
+					//find the polynomial for B
+					int Bj = -1;
+					for (int j = 0; j < vP.size(); ++j)
+					{
+						if (vP[j].name() == literal_name(lj))
+						{
+							Bj = j;
+							break;
+						}
+					}
+					assert(Bj != -1);
+					//set this polynomial to A
+					vP[Bj].name() = vP[i].name();
+					//change all name from B to A
+					int Al = literal_get(vP[i].name());
+					if (Al != -1)
+					{
+						literal_change(vP, lj, Al);
+					}
+					remove_list.insert(i);
+				}
+			}
+		}
+	}
+	vector<polynomial> vtmp;
+	for (int i = 0; i < vP.size(); ++i)
+	{
+		if (remove_list.count(i) == 0)
+		{
+			vtmp.push_back(vP[i]);
+		}
+	}
+	vP = std::move(vtmp);
+}
+
+
 void update_vf_unknown_literal(int ni, set<int>& unknown_literal)
 {
 	vector<int> vk;
@@ -34,109 +114,120 @@ void update_vf_unknown_literal(int ni, set<int>& unknown_literal)
 	}
 }
 
-	void reorder(vector<polynomial>& vP)
+void reorder(vector<polynomial>& vP)
+{
+	set<int> unknown_literal;
+	for (const auto& P : vP)
 	{
-		set<int> unknown_literal;
-		for (const auto& P : vP)
+		int i = literal_get(P.name());
+		if (i != -1)
+		{
+			unknown_literal.insert(i);
+		}
+	}
+	bool flag = true;
+	vector<funcexpr> tvf(vfunc);
+	while (flag)
+	{
+		flag = false;
+		for (auto it = tvf.begin(); it != tvf.end();)
+		{
+			if (unknown_literal.count(it->_paraid) != 0)//unknown func
+			{
+				flag = true;
+				unknown_literal.insert(literal_get(it->_resname));
+				it = tvf.erase(it);
+			}
+			else
+			{
+				++it;
+			}
+		}
+	}
+	vector<polynomial> rvP;
+	while (vP.size() != 0)
+	{
+		for (int i = 0; i != vP.size();)
+		{
+			if (vP[i].contain_literals(unknown_literal))
+			{
+				++i;
+				continue;
+			}
+			else
+			{
+				rvP.push_back(vP[i]);
+				//mark as known
+				int li = literal_get(vP[i].name());
+				if (li != -1)
+				{
+					unknown_literal.erase(li);
+				}
+				vP.erase(vP.begin() + i);
+				update_vf_unknown_literal(li, unknown_literal);
+			}
+		}
+	}
+	vP = rvP;
+}
+
+
+int rename(vector<polynomial>& rvP)
+{
+	int max = -1;
+	//now rename to optimization space usage
+	vector<polynomial> ornv(rvP.rbegin(), rvP.rend());
+	map<int, int> trans_rule;
+	set<int> inuse;//in use
+	for (auto& P : ornv)
+	{
+		bool t = literal_is_tmp(P.name());
+		if (t)
 		{
 			int i = literal_get(P.name());
-			if (i != -1)
+			auto it = trans_rule.find(i);
+			if (it == trans_rule.end())//new tmp_literal
 			{
-				unknown_literal.insert(i);
+				int ni = 0;
+				while (inuse.count(ni) != 0)
+				{
+					++ni;
+				}
+				trans_rule.insert(make_pair(i, ni));
+				inuse.insert(ni);
+				if (ni > max)
+				{
+					max = ni;
+				}
 			}
+			int pi = trans_rule[i];
+			inuse.erase(pi);
+			P.name() = "#" + output_tmp_name(pi);//mark as tmp variable
 		}
-		bool flag = true;
-		vector<funcexpr> tvf(vfunc);
-		while (flag)
+		set<int> tsi = P.tmp_literals();
+		for (auto i : tsi)
 		{
-			flag = false;
-			for (auto it = tvf.begin(); it != tvf.end();)
+			auto it = trans_rule.find(i);
+			if (it == trans_rule.end())//new tmp_literal
 			{
-				if (unknown_literal.count(it->_paraid) != 0)//unknown func
+				int ni = 0;
+				while (inuse.count(ni) != 0)
 				{
-					flag = true;
-					unknown_literal.insert(literal_get(it->_resname));
-					it = tvf.erase(it);
+					++ni;
 				}
-				else
+				trans_rule.insert(make_pair(i, ni));
+				inuse.insert(ni);
+				if (ni > max)
 				{
-					++it;
+					max = ni;
 				}
 			}
 		}
-		vector<polynomial> rvP;
-		while (vP.size() != 0)
-		{
-			for (int i = 0; i != vP.size();)
-			{
-				if (vP[i].contain_literals(unknown_literal))
-				{
-					++i;
-					continue;
-				}
-				else
-				{
-					rvP.push_back(vP[i]);
-					//mark as known
-					int li = literal_get(vP[i].name());
-					if (li != -1)
-					{
-						unknown_literal.erase(li);
-					}
-					vP.erase(vP.begin() + i);
-					update_vf_unknown_literal(li, unknown_literal);
-				}
-			}
-		}
-		vP = rvP;
 	}
-
-
-	int rename(vector<polynomial>& rvP)
+	for (auto r : trans_rule)
 	{
-		int max = -1;
-		//now rename to optimization space usage
-		vector<polynomial> ornv(rvP.rbegin(), rvP.rend());
-		map<int, int> trans_rule;
-		set<int> inuse;//in use
-		for (auto& P : ornv)
-		{
-			bool t = literal_is_tmp(P.name());
-			if (t)
-			{
-				int i = literal_get(P.name());
-				auto it = trans_rule.find(i);
-				if (it == trans_rule.end())//new tmp_literal
-				{
-					int ni = 0;
-					while (inuse.count(ni) != 0) ++ni;
-					trans_rule.insert(make_pair(i, ni));
-					inuse.insert(ni);
-					if (ni > max) max = ni;
-				}
-				int pi = trans_rule[i];
-				inuse.erase(pi);
-				P.name() = "#" + output_tmp_name(pi);//mark as tmp variable
-			}
-			set<int> tsi = P.tmp_literals();
-			for (auto i : tsi)
-			{
-				auto it = trans_rule.find(i);
-				if (it == trans_rule.end())//new tmp_literal
-				{
-					int ni = 0;
-					while (inuse.count(ni) != 0) ++ni;
-					trans_rule.insert(make_pair(i, ni));
-					inuse.insert(ni);
-					if (ni > max) max = ni;
-				}
-			}
-		}
-		for (auto r : trans_rule)
-		{
-			literal_set_name(r.first, output_tmp_name(r.second));
-		}
-
-		std::copy(ornv.rbegin(), ornv.rend(), rvP.begin());
-		return max;
+		literal_set_name(r.first, output_tmp_name(r.second));
 	}
+	std::copy(ornv.rbegin(), ornv.rend(), rvP.begin());
+	return max;
+}

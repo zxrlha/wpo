@@ -14,6 +14,8 @@ string var_style = "in"; //pre in null
 string var_filter = "[]():.";
 string func_prefix = "func";
 string func_style = "in";
+bool sequential = false;
+bool clean = true;
 
 int vP_get(const polynomial& P)
 {
@@ -46,6 +48,8 @@ void parse_options(const string& name, const string& value)
 	else if (name == "var_filter") var_filter = value;
 	else if (name == "func_prefix") func_prefix = value;
 	else if (name == "func_style") func_style = value;
+	else if (name == "sequential") sequential = (value == "true");
+	else if (name == "clean") clean = (value == "true");
 	else
 	{
 		std::cerr << "ERROR:Unknown option:" << name << std::endl;

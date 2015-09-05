@@ -126,6 +126,12 @@ public:
 		return _vmon[i];
 	}
 
+	//term access
+	monomial& operator[](int i)
+	{
+		return _vmon[i];
+	}
+
 	//information and operation for kcm
 	monomial gcd() const;
 	bool contain(const monomial& m) const;
