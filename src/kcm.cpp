@@ -21,7 +21,7 @@ kcm::kcm(const vector<vector<pair<monomial, polynomial>>>& vkmap, const vector<p
 	{
 		for (auto pr : vkmap[i])
 		{
-			for (int j = 0; j < pr.second.number(); ++j)
+			for (int j = 0; j < pr.second.size(); ++j)
 			{
 				skm.insert(pr.second[j]);
 			}
@@ -39,7 +39,7 @@ kcm::kcm(const vector<vector<pair<monomial, polynomial>>>& vkmap, const vector<p
 
 	for (int i = 0; i < _vcok.size(); ++i)
 	{
-		for (int j = 0; j < tvk[i].number(); ++j)
+		for (int j = 0; j < tvk[i].size(); ++j)
 		{
 			auto it = std::lower_bound(_vk.begin(), _vk.end(), tvk[i][j]);
 			int index = it - _vk.begin();

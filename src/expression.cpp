@@ -6,17 +6,100 @@
 using std::min;
 using std::max;
 
+int monomial::getpow(int i) const
+{
+	auto it = std::lower_bound(_vterm.begin(), _vterm.end(), i,
+	                           [](std::pair<int, int> t, int i) -> bool
+	{
+		return t.first < i;
+	});
+	if (it != _vterm.end() && it->first == i)
+	{
+		return it->second;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
 monomial& monomial::operator*=(const monomial& m2)
 {
-	if (m2.size() > size())
+	vector<std::pair<int, int>> vtmp;
+	vtmp.reserve(_vterm.size() + m2._vterm.size());
+	int i = 0;
+	int j = 0;
+	while (i != _vterm.size() && j != m2._vterm.size())
 	{
-		resize(m2.size());
+		if (_vterm[i].first < m2._vterm[j].first)
+		{
+			vtmp.push_back(_vterm[i]);
+			++i;
+		}
+		else if (m2._vterm[j].first < _vterm[i].first)
+		{
+			vtmp.push_back(m2._vterm[j]);
+			++j;
+		}
+		else
+		{
+			vtmp.push_back(std::make_pair(_vterm[i].first, _vterm[i].second + m2._vterm[j].second));
+			++i;
+			++j;
+		}
 	}
-	for (int i = 0; i < m2.size(); ++i)
+	if (i == _vterm.size())
 	{
-		_vpow[i] += m2[i];
+		while (j != m2._vterm.size())
+		{
+			vtmp.push_back(m2._vterm[j]);
+			++j;
+		}
 	}
-	_posi = !(_posi ^ m2._posi);
+	if (j == m2._vterm.size())
+	{
+		while (i != _vterm.size())
+		{
+			vtmp.push_back(_vterm[i]);
+			++i;
+		}
+	}
+	_vterm = std::move(vtmp);
+	_coef *= m2._coef;
+	return *this;
+}
+
+monomial& monomial::operator/=(const monomial& m2)
+{
+	vector<std::pair<int, int>> vtmp;
+	vtmp.reserve(_vterm.size());
+	int i = 0;
+	int j = 0;
+	while (i != _vterm.size() && j != m2._vterm.size())
+	{
+		if (_vterm[i].first < m2._vterm[j].first)
+		{
+			vtmp.push_back(_vterm[i]);
+			++i;
+			continue;
+		}
+		assert(m2._vterm[j].first == _vterm[i].first);
+		assert(_vterm[i].second >= m2._vterm[j].second);
+		if (_vterm[i].second != m2._vterm[j].second)
+		{
+			vtmp.push_back(std::make_pair(_vterm[i].first, _vterm[i].second - m2._vterm[j].second));
+		}
+		++i;
+		++j;
+	}
+	assert(j == m2._vterm.size());
+	while (i != _vterm.size())
+	{
+		vtmp.push_back(_vterm[i]);
+		++i;
+	}
+	_vterm = std::move(vtmp);
+	_coef /= m2._coef;
 	return *this;
 }
 
@@ -25,85 +108,30 @@ void polynomial::sort()
 	std::sort(_vmon.begin(), _vmon.end());
 }
 
-void polynomial::resize(int ns)
-{
-	assert(ns >= _size);
-	for (auto& m : _vmon)
-	{
-		m.resize(ns);
-	}
-	_size = ns;
-}
-
 polynomial& polynomial::operator+=(const monomial& A)
 {
-	if (A.size() < _size)
-	{
-		monomial B(A);
-		B.resize(_size);
-		_vmon.push_back(B);
-	}
-	else
-	{
-		if (A.size() > _size)
-		{
-			resize(A.size());
-		}
-		_vmon.push_back(A);
-	}
-	this->sort();
+	_vmon.insert(std::upper_bound(_vmon.begin(), _vmon.end(), A), A);
 	return *this;
 }
 
 polynomial& polynomial::operator+=(monomial&& A)
 {
-	if (A.size() < _size)
-	{
-		A.resize(_size);
-	}
-	else if (A.size() > _size)
-	{
-		resize(A.size());
-	}
-	_vmon.push_back(std::move(A));
-	this->sort();
+	_vmon.insert(std::upper_bound(_vmon.begin(), _vmon.end(), A), std::move(A));
 	return *this;
 }
 
 polynomial& polynomial::operator-=(const monomial& A)
 {
-	if (A.size() < _size)
-	{
-		monomial B(A);
-		B.resize(_size);
-		_vmon.push_back(B);
-	}
-	else
-	{
-		if (A.size() > _size)
-		{
-			resize(A.size());
-		}
-		_vmon.push_back(A);
-	}
-	_vmon.back().reverse_sign();
-	this->sort();
+	monomial B(A);
+	B.reverse_sign();
+	_vmon.insert(std::upper_bound(_vmon.begin(), _vmon.end(), B), std::move(B));
 	return *this;
 }
 
 polynomial& polynomial::operator-=(monomial&& A)
 {
 	A.reverse_sign();
-	if (A.size() < _size)
-	{
-		A.resize(_size);
-	}
-	else if (A.size() > _size)
-	{
-		resize(A.size());
-	}
-	_vmon.push_back(std::move(A));
-	this->sort();
+	_vmon.insert(std::upper_bound(_vmon.begin(), _vmon.end(), A), std::move(A));
 	return *this;
 }
 polynomial operator+(const monomial& A, const monomial& B)
@@ -160,7 +188,7 @@ monomial operator*(const monomial& A, const monomial& B)
 polynomial operator+(const polynomial& P1, const polynomial& P2)
 {
 	polynomial res(P1);
-	for (int i = 0; i < P2.number(); ++i)
+	for (int i = 0; i < P2.size(); ++i)
 	{
 		res += P2[i];
 	}
@@ -170,160 +198,70 @@ polynomial operator+(const polynomial& P1, const polynomial& P2)
 polynomial operator-(const polynomial& P1, const polynomial& P2)
 {
 	polynomial res(P1);
-	for (int i = 0; i < P2.number(); ++i)
+	for (int i = 0; i < P2.size(); ++i)
 	{
 		res -= P2[i];
 	}
 	return res;
 }
 
-monomial polynomial::gcd() const
-{
-	assert(_vmon.size() != 0);
-	monomial A;
-	A.resize(_size);
-	for (int i = 0; i < _size; ++i)
-	{
-		A[i] = _vmon[0][i];
-		for (int j = 1; j < _vmon.size(); ++j)
-		{
-			if (_vmon[j][i] < A[i])
-			{
-				A[i] = _vmon[j][i];
-			}
-		}
-	}
-	return A;
-}
-
-monomial gcd(const monomial& A, const monomial& B)
-{
-	monomial R(A);
-	for (int i = 0; i < A.size(); ++i)
-	{
-		if (R[i] > B[i])
-		{
-			R[i] = B[i];
-		}
-	}
-	return R;
-}
-
-
-polynomial operator/(const polynomial& P, const monomial& A)
-{
-	assert(P.size() >= A.size());
-	polynomial res;
-	for (int i = 0; i < P.number(); ++i)
-	{
-		bool flag = true;
-		for (int j = 0; j < A.size(); ++j)
-		{
-			if (P[i][j] < A[j])
-			{
-				flag = false;
-				break;
-			}
-		}
-		if (flag)
-		{
-			monomial C = P[i];
-			for (int j = 0; j < A.size(); ++j)
-			{
-				C[j] -= A[j];
-			}
-			res += C;
-		}
-	}
-	return res;
-}
-
-polynomial mod(const polynomial& P, const monomial& A)
-{
-	assert(P.size() >= A.size());
-	polynomial res;
-	for (int i = 0; i < P.number(); ++i)
-	{
-		bool flag = true;
-		for (int j = 0; j < A.size(); ++j)
-		{
-			if (P[i][j] < A[j])
-			{
-				flag = false;
-				break;
-			}
-		}
-		if (!flag)
-		{
-			res += P[i];
-		}
-	}
-	return res;
-}
-
 bool operator<(const monomial& A, const monomial& B)
 {
-	for (int i = 0; i < min(A.size(), B.size()); ++i)
+	if (A.size() < B.size())
 	{
-		if (A[i] < B[i]) return true;
-		if (A[i] > B[i]) return false;
-	}
-	if (A.size() == B.size())//now A=B except sign
-	{
-		if (A.is_negative() && B.is_positive()) return true;
-		else return false;
+		return true;
 	}
 	if (A.size() > B.size())
 	{
-		for (int i = B.size(); i < A.size(); ++i)
+		return false;
+	}
+	if (A.coef() < B.coef())
+	{
+		return true;
+	}
+	if (A.coef() > B.coef())
+	{
+		return false;
+	}
+	for (int i = 0; i < A.size(); ++i)
+	{
+		if (A.lit(i) < B.lit(i))
 		{
-			if (A[i] != 0)
-				return false;
-		}
-		//now A=B except sign
-		if (A.is_negative() && B.is_positive()) return true;
-		else return false;
-	}
-	//now B.size() > A.size()
-	for (int i = A.size(); i < B.size(); ++i)
-	{
-		if (B[i] != 0)
 			return true;
-	}
-	//now A=B except sign
-	if (A.is_negative() && B.is_positive()) return true;
-	else return false;
-}
-
-
-bool operator==(const monomial& A, const monomial& B)
-{
-	for (int i = 0; i < min(A.size(), B.size()); ++i)
-	{
-		if (A[i] != B[i])
+		}
+		if (A.lit(i) > B.lit(i))
+		{
+			return false;
+		}
+		if (A.pow(i) < B.pow(i))
+		{
+			return true;
+		}
+		if (A.pow(i) > B.pow(i))
 		{
 			return false;
 		}
 	}
-	if (A.is_positive() != B.is_positive())
+	return false;
+}
+
+bool operator==(const monomial& A, const monomial& B)
+{
+	if (A.size() != B.size())
 	{
 		return false;
 	}
-	if (A.size() > B.size())
+	if (A.coef() != B.coef())
 	{
-		for (int i = B.size(); i < A.size(); ++i)
-		{
-			if (A[i] != 0)
-			{
-				return false;
-			}
-		}
-		return true;
+		return false;
 	}
-	//now B.size() > A.size()
-	for (int i = A.size(); i < B.size(); ++i)
+	for (int i = 0; i < A.size(); ++i)
 	{
-		if (B[i] != 0)
+		if (A.lit(i) != B.lit(i))
+		{
+			return false;
+		}
+		if (A.pow(i) != B.pow(i))
 		{
 			return false;
 		}
@@ -331,29 +269,21 @@ bool operator==(const monomial& A, const monomial& B)
 	return true;
 }
 
-/*
-bool operator<(const polynomial& A, const polynomial& B)
-{
-    if (A.number() > B.number()) return false;
-    if (A.number() < B.number()) return true;
-    for (int i = 0; i < A.number(); ++i)
-    {
-        if (A[i] > B[i]) return false;
-        if (A[i] < B[i]) return true;
-    }
-    return false;
-}
-
 bool operator==(const polynomial& A, const polynomial& B)
 {
-    if (A.number() != B.number()) return false;
-    for (int i = 0; i < A.number(); ++i)
-    {
-        if (A[i] != B[i]) return false;
-    }
-    return true;
+	if (A.size() != B.size())
+	{
+		return false;
+	}
+	for (int i = 0; i < A.size(); ++i)
+	{
+		if (A[i] != B[i])
+		{
+			return false;
+		}
+	}
+	return true;
 }
-*/
 
 bool polynomial::contain(const monomial& m) const
 {
@@ -363,49 +293,37 @@ bool polynomial::contain(const monomial& m) const
 int monomial::multiplication_number() const
 {
 	int res = 0;
-	for (int i = 0; i < _vpow.size(); ++i)
+	for (int i = 0; i < _vterm.size(); ++i)
 	{
-		res += _vpow[i];
+		res += _vterm[i].second;
 	}
 	return res;
 }
 
-bool nosort_equal(const polynomial& A, const polynomial& B)
-{
-	if (A.number() != B.number())
-	{
-		return false;
-	}
-	for (int i = 0; i < A.number(); ++i)
-	{
-		if (A[i] != B[i])
-		{
-			return false;
-		}
-	}
-	return true;
-}
-
 ostream& operator<<(ostream& os, const monomial& m)
 {
-	if (m.is_negative())
+	if (m.coef() == 1)
+	{
+	}
+	else if (m.coef() == -1)
 	{
 		os << "-";
+	}
+	else
+	{
+		os << m.coef() << "*";
 	}
 	int status = 0;
 	for (int i = 0; i < m.size(); ++i)
 	{
-		if (m[i] != 0)
+		for (int j = 0; j < m.pow(i); ++j)
 		{
-			for (int j = 0; j < m[i]; ++j)
+			if (status != 0)
 			{
-				if (status != 0)
-				{
-					os << "*";
-				}
-				os << literal_name(i);
-				status = 1;
+				os << "*";
 			}
+			os << literal_name(m.lit(i));
+			status = 1;
 		}
 	}
 	if (status == 0)
@@ -418,7 +336,7 @@ ostream& operator<<(ostream& os, const monomial& m)
 ostream& operator<<(ostream& os, const polynomial& p)
 {
 	os << p.name() << "=";
-	for (int i = 0; i < p.number(); ++i)
+	for (int i = 0; i < p.size(); ++i)
 	{
 		if (i != 0 && p[i].is_positive())
 		{
@@ -436,13 +354,60 @@ void polynomial::remove(const monomial& m)
 	_vmon.erase(it);
 }
 
+monomial polynomial::gcd() const
+{
+	if (size() == 0)
+	{
+		return monomial();
+	}
+	monomial res;
+	std::vector<int> ci(_vmon.size(), 0);
+	int clit = -1;
+	int i = 0;
+	int mi = -1;
+	while (ci[i] < _vmon[i].size())
+	{
+		if (_vmon[i].lit(ci[i]) > clit)
+		{
+			clit = _vmon[i].lit(ci[i]);
+			i = 0;
+			mi = -1;
+		}
+		else if (_vmon[i].lit(ci[i]) == clit)
+		{
+			if (mi != -1)
+			{
+				mi = std::min(mi, _vmon[i].pow(ci[i]));
+			}
+			else
+			{
+				mi = _vmon[i].pow(ci[i]);
+			}
+			++i;
+			if (i == _vmon.size())//one common factor
+			{
+				res *= monomial(clit, mi);
+				//reset
+				i = 0;
+				mi = -1;
+				++ci[i];
+			}
+		}
+		else
+		{
+			++ci[i];
+		}
+	}
+	return res;
+}
+
 bool polynomial::contain_literals(const set<int>& ls)
 {
 	for (int i = 0; i < _vmon.size(); ++i)
 	{
-		for (auto it : ls)
+		for (int j = 0; j < _vmon[i].size(); ++j)
 		{
-			if (_vmon[i][it] != 0)
+			if (ls.count(_vmon[i].lit(j)) != 0)
 			{
 				return true;
 			}
@@ -458,10 +423,7 @@ set<int> polynomial::literals() const
 	{
 		for (int j = 0; j < _vmon[i].size(); ++j)
 		{
-			if (_vmon[i][j] != 0)
-			{
-				res.insert(j);
-			}
+			res.insert(_vmon[i].lit(j));
 		}
 	}
 	return res;
@@ -474,9 +436,9 @@ set<int> polynomial::tmp_literals() const
 	{
 		for (int j = 0; j < _vmon[i].size(); ++j)
 		{
-			if (_vmon[i][j] != 0 && literal_is_tmp(j))
+			if (literal_is_tmp(_vmon[i].lit(j)))
 			{
-				res.insert(j);
+				res.insert(_vmon[i].lit(j));
 			}
 		}
 	}
@@ -485,29 +447,46 @@ set<int> polynomial::tmp_literals() const
 
 int polynomial::single_id() const
 {
-	if (number() != 1)
+	if (_vmon.size() != 1)
 	{
 		return -1;
 	}
-	if (_vmon[0].is_negative())
+	if (_vmon[0].coef() != 1)
 	{
 		return -1;
 	}
-	int si = -1;
-	for (int i = 0; i < _vmon[0].size(); ++i)
+	if (_vmon[0].size() != 1)
 	{
-		if (_vmon[0][i] != 0)
+		return -1;
+	}
+	if (_vmon[0].pow(0) != 1)
+	{
+		return -1;
+	}
+	return _vmon[0].lit(0);
+}
+
+polynomial operator/(const polynomial& P, const monomial& A)
+{
+	polynomial res;
+	for (int i = 0; i < P.size(); ++i)
+	{
+		bool flag = true;
+		for (int j = 0; j < A.size(); ++j)
 		{
-			if (si != -1)
+			if (P[i].getpow(A.lit(j)) < A.pow(j))
 			{
-				return -1;
+				flag = false;
+				break;
 			}
-			if (_vmon[0][i] != 1)
-			{
-				return -1;
-			}
-			si = i;
 		}
+		if (!flag)
+		{
+			continue;
+		}
+		monomial B(P[i]);
+		B /= A;
+		res += B;
 	}
-	return si;
+	return res;
 }

@@ -19,10 +19,17 @@ void literal_change(vector<polynomial>& vP, int from, int to)
 {
 	for (auto& P : vP)
 	{
-		for (int i = 0; i < P.number(); ++i)
+		for (int i = 0; i < P.size(); ++i)
 		{
-			P[i][to] += P[i][from];
-			P[i][from] = 0;
+			for (int j = 0; j < P[i].size(); ++j)
+			{
+				if (P[i].lit(j) == from)
+				{
+					P[i] *= monomial(to, P[i].pow(j));
+					P[i] /= monomial(from, P[i].pow(j));
+					break;
+				}
+			}
 		}
 	}
 }
@@ -33,53 +40,36 @@ void doclean(vector<polynomial>& vP)
 	set<int> remove_list;
 	for (int i = 0; i < vP.size(); ++i)
 	{
-		if (vP[i].number() == 1 && vP[i][0].is_positive())
+		if (vP[i].size() == 1 && vP[i][0].coef() == 1 && vP[i][0].size() == 1 && vP[i][0].pow(0) == 1)
 		{
-			int sum = 0;
-			int lj = 0;
-			for (int j = 0; j < vP[i][0].size(); ++j)
+			int lj = vP[i][0].lit(0);
+			if (literal_is_tmp(vP[i].name()))//A=B,A is a termporary name
 			{
-				int tmp = vP[i][0][j];
-				if (tmp != 0)
+				remove_list.insert(i);
+				literal_change(vP, literal_get(vP[i].name()), lj);//replace all A by B
+			}
+			else if (literal_is_tmp(literal_name(lj)))//A=B,B is a termporary name
+			{
+				//find the polynomial for B
+				int Bj = -1;
+				for (int j = 0; j < vP.size(); ++j)
 				{
-					sum += tmp;
-					if (sum >= 2)
+					if (vP[j].name() == literal_name(lj))
 					{
+						Bj = j;
 						break;
 					}
-					lj = j;
 				}
-			}
-			if (sum == 1)//this is we wanted
-			{
-				if (literal_is_tmp(vP[i].name()))//A=B,A is a termporary name
+				assert(Bj != -1);
+				//set this polynomial to A
+				vP[Bj].name() = vP[i].name();
+				//change all name from B to A
+				int Al = literal_get(vP[i].name());
+				if (Al != -1)
 				{
-					remove_list.insert(i);
-					literal_change(vP, literal_get(vP[i].name()), lj);//replace all A by B
+					literal_change(vP, lj, Al);
 				}
-				else if (literal_is_tmp(literal_name(lj)))//A=B,B is a termporary name
-				{
-					//find the polynomial for B
-					int Bj = -1;
-					for (int j = 0; j < vP.size(); ++j)
-					{
-						if (vP[j].name() == literal_name(lj))
-						{
-							Bj = j;
-							break;
-						}
-					}
-					assert(Bj != -1);
-					//set this polynomial to A
-					vP[Bj].name() = vP[i].name();
-					//change all name from B to A
-					int Al = literal_get(vP[i].name());
-					if (Al != -1)
-					{
-						literal_change(vP, lj, Al);
-					}
-					remove_list.insert(i);
-				}
+				remove_list.insert(i);
 			}
 		}
 	}

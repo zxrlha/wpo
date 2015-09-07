@@ -14,6 +14,8 @@ using std::endl;
 using std::set;
 using std::string;
 
+extern int yyparse();
+
 bool pass_filter(const std::string& name)
 {
 	if (name.find_first_of(var_filter) != std::string::npos)
@@ -111,6 +113,7 @@ void output_prime_func()
 int main()
 {
 	yyparse();
+	//cerr << "//parse finished" << endl;
 	if (strategy == "sequential")
 	{
 		vector<polynomial> vtmp(vP);
@@ -138,6 +141,10 @@ int main()
 		}
 		vP = vres;
 	}
+	else if (strategy == "fastrun")
+	{
+		fr_find_kernel_intersections(vP);
+	}
 	else
 	{
 		find_kernel_intersections(vP);
@@ -146,7 +153,10 @@ int main()
 	//debug_out();
 	find_cube_intersections(vP);
 	//cerr << "//cube intersection finished" << endl;
-	if (clean) doclean(vP);
+	if (clean)
+	{
+		doclean(vP);
+	}
 	reorder(vP);
 	//cerr << "//reorder finished" << endl;
 	int max = rename(vP);

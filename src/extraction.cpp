@@ -9,11 +9,47 @@
 
 using std::map;
 
+void fr_find_kernel_intersections(vector<polynomial>& vP)
+{
+	int sumbv = 0;
+	int pi = 0;
+	while (true)
+	{
+		monomial bk;
+		polynomial bcok;
+		int bv = 0;
+		for (; pi < vP.size(); ++pi)
+		{
+			fr_find_kernels(vP[pi], bk, bcok, bv);
+			if (bv != 0)
+			{
+				break;
+			}
+		}
+		if (bv == 0)
+		{
+			break;
+		}
+		sumbv += bv;
+		//std::cerr<<sumbv<<" "<<bv<<std::endl;
+		//build new literal polynomial
+		int li;
+		li = literal_append_tmp();
+		bcok.name() = literal_name(li);
+		polynomial& P = vP[pi];
+		//rewrote P
+		for (int i = 0; i < bcok.size(); ++i)
+		{
+			P.remove(bk * bcok[i]);
+		}
+		monomial nm(li);
+		P += nm * bk;
+		vP.push_back(bcok);
+	}
+}
+
 void find_kernel_intersections(vector<polynomial>& vP)
 {
-	//first, resize
-	for (auto& P : vP) P.resize(literal_size());
-
 	int i  = 0;
 	while (true)
 	{
@@ -61,27 +97,17 @@ void find_kernel_intersections(vector<polynomial>& vP)
 				{
 					P.remove(tm.row(vri)*tm.column(vci));
 				}
-				monomial nm;
-				nm.resize(li + 1);
-				nm[li] = 1;
+				monomial nm(li);
 				P += nm * tm.row(vri);
 			}
 			vP.push_back(nlp);
 			vP.back().name() = literal_name(li);
-		}
-		for (auto& p : vP)
-		{
-			p.resize(literal_size());
 		}
 	}
 }
 
 void find_cube_intersections(vector<polynomial>& vP)
 {
-	for (auto& P : vP)
-	{
-		P.resize(literal_size());
-	}
 	while (true)
 	{
 		cim tm(vP);
@@ -91,21 +117,18 @@ void find_cube_intersections(vector<polynomial>& vP)
 		//rewrote vP
 		for (auto& P : vP)
 		{
-			P.resize(P.size() + 1);
 			polynomial dres = P / m;
-			if (dres.number() == 0) continue;
-			assert(dres.number() == 1);
-			polynomial nP = mod(P, m);
+			if (dres.size() == 0) continue;
+			assert(dres.size() == 1);
+			polynomial nP(P);
+			nP.remove(dres[0]*m);
 			nP.name() = P.name();
-			monomial nl;
-			nl.resize(li + 1);
-			nl[li] = 1;
+			monomial nl(li);
 			nP += dres[0] * nl;
 			P = nP;
 		}
 		//add this into vP
 		polynomial nl;
-		nl.resize(li + 1);
 		nl += m;
 		nl.name() = literal_name(li);
 		vP.push_back(nl);

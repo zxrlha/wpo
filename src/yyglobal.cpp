@@ -21,7 +21,7 @@ int vP_get(const polynomial& P)
 {
 	for (int i = 0; i < vP.size(); ++i)
 	{
-		if (nosort_equal(P, vP[i])) return i;
+		if (P == vP[i]) return i;
 	}
 	return -1;
 }

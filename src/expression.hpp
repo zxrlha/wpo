@@ -1,5 +1,5 @@
-#ifndef WPO_EXPRESSION_HPP
-#define WPO_EXPRESSION_HPP 1
+#ifndef WPOFR_EXPRESSION_HPP
+#define WPOFR_EXPRESSION_HPP 1
 
 #include <vector>
 #include <set>
@@ -14,10 +14,10 @@ using std::ostream;
 
 class funcexpr
 {
-	public:
-		string _funcname;
-		int _paraid;
-		string _resname;
+public:
+	string _funcname;
+	int _paraid;
+	string _resname;
 };
 
 class monomial
@@ -26,8 +26,14 @@ public:
 	//constructor
 	monomial()
 	{
-		_posi = true;
+		_coef = 1;
 	};
+
+	explicit monomial(int l, int p = 1)
+		:_vterm{std::make_pair(l, p)}
+	{
+		_coef = 1;
+	}
 	monomial(const monomial&) = default;
 	monomial(monomial&&) = default;
 
@@ -38,48 +44,58 @@ public:
 	//sign information
 	bool is_positive() const
 	{
-		return _posi;
+		return _coef > 0;
 	}
 	bool is_negative() const
 	{
-		return !_posi;
+		return !is_positive();
+	}
+
+	//coefficient information
+	int coef() const
+	{
+		return _coef;
+	}
+	int& coef()
+	{
+		return _coef;
 	}
 
 	//sign operation
 	void reverse_sign()
 	{
-		_posi = !_posi;
-	}
-
-	//size information and operation
-	int size() const
-	{
-		return _vpow.size();
-	}
-	void resize(int newsize)
-	{
-		assert(newsize >= size());
-		_vpow.resize(newsize);
+		_coef = -_coef;
 	}
 
 	//term access
-	int operator[](int i) const
+	int getpow(int i) const;
+	//void setpow(int i, int j);
+
+	//non-zero term access
+	int lit(int i) const
 	{
-		return _vpow[i];
+		return _vterm[i].first;
 	}
-	int& operator[](int i)
+	int pow(int i) const
 	{
-		return _vpow[i];
+		return _vterm[i].second;
+	}
+	int size() const
+	{
+		return _vterm.size();
 	}
 
 	//ring operation
 	monomial& operator*=(const monomial& m2);
 
+	//divide operation, m2 | (*this) is assumed
+	monomial& operator/=(const monomial& m2);
+
 	//information for kcm
 	int multiplication_number() const;
 protected:
-	vector<int> _vpow;
-	bool _posi;
+	vector<std::pair<int, int>> _vterm;
+	int _coef;
 };
 
 class polynomial
@@ -88,12 +104,10 @@ public:
 	//constructor
 	polynomial()
 	{
-		_size = 0;
 	}
 	explicit polynomial(const monomial& A)
 		: _vmon{A}
 	{
-		_size = A.size();
 	};
 	polynomial(const polynomial&) = default;
 	polynomial(polynomial&&) = default;
@@ -102,13 +116,7 @@ public:
 	polynomial& operator=(const polynomial&) = default;
 	polynomial& operator=(polynomial&&) = default;
 
-	//size information and operation
 	int size() const
-	{
-		return _size;
-	}
-	void resize(int ns);
-	int number() const
 	{
 		return _vmon.size();
 	}
@@ -132,7 +140,6 @@ public:
 		return _vmon[i];
 	}
 
-	//information and operation for kcm
 	monomial gcd() const;
 	bool contain(const monomial& m) const;
 	void remove(const monomial& m);
@@ -157,7 +164,6 @@ public:
 protected:
 	void sort();
 	vector<monomial> _vmon;
-	int _size;
 	string _name;
 };
 
@@ -168,7 +174,7 @@ monomial operator*(const monomial& A, const monomial& B);
 
 //operation for kcm
 polynomial operator/(const polynomial& P, const monomial& A);
-polynomial mod(const polynomial& P, const monomial& A);
+//polynomial mod(const polynomial& P, const monomial& A);
 
 //ring operator
 polynomial operator+(const polynomial& P1, const polynomial& P2);
@@ -207,22 +213,22 @@ inline bool operator!=(const monomial& A, const monomial& B)
 	return !(A == B);
 }
 
+bool operator==(const polynomial& A, const polynomial& B);
 /*
 bool operator<(const polynomial& A, const polynomial& B);
 inline bool operator>(const polynomial& A, const polynomial& B)
 {
-	return B < A;
+    return B < A;
 }
 inline bool operator<=(const polynomial& A, const polynomial& B)
 {
-	return !(A > B);
+    return !(A > B);
 }
 inline bool operator>=(const polynomial& A, const polynomial& B)
 {
-	return !(A < B);
+    return !(A < B);
 }
 */
-bool nosort_equal(const polynomial& A, const polynomial& B);
 
 //output operator for view and debug
 ostream& operator<<(ostream& os, const monomial& m);

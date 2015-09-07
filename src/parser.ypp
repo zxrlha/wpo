@@ -57,33 +57,35 @@ mono:
 IDENTIFY
 {
 	int i = literal_add(get<string>($1));
-	monomial m;
-	m.resize(i+1);
-	m[i] = 1;
+	monomial m(i);
 	$$ = m;
 }
 | mono '^' NUMBER
 {
-	$$ = $1;
+	assert(get<monomial>($1).size() == 1);
 	int n = get<int>($3);
-	for (int i = 0; i < get<monomial>($$).size(); ++i)
-		get<monomial>($$)[i] *= n;
+	$$ = monomial(get<monomial>($1).lit(0), n);
 }
 | NUMBER
 {
-	int i = literal_add(boost::lexical_cast<string>(get<int>($1)));
-	monomial m;
-	m.resize(i+1);
-	m[i] = 1;
-	$$ = m;
+	if (strategy == "fastrun")
+	{
+		monomial m;
+		m.coef() = get<int>($1);
+		$$ = m;
+	}
+	else
+	{
+		int i = literal_add(boost::lexical_cast<string>(get<int>($1)));
+		monomial m(i);
+		$$ = m;
+	}
 }
 | mono '*' mono { $$ = get<monomial>($1) * get<monomial>($3); }
 | varstr
 {
 	int i = get<int>($1);
-	monomial m;
-	m.resize(i+1);
-	m[i] = 1;
+	monomial m(i);
 	$$ = m;
 }
 
