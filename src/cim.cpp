@@ -45,7 +45,7 @@ monomial gcd(const monomial& A, const monomial& B)
 		}
 		else
 		{
-			res *= monomial(A.lit(i), std::min(A.pow(i), B.pow(j)));
+			res.append(A.lit(i), std::min(A.pow(i), B.pow(j)));
 			++i;
 			++j;
 		}
@@ -73,11 +73,9 @@ bool cim::generate_best_rectangle(monomial& m)
 	_bv = 0;
 	_bs = 0;
 	_bm = monomial();
-	//for (int i = _mat.size()-1; i >= 0; --i)
-	for (int i = 0; i < _mat.size(); ++i)
+	for (int i = _mat.size()-1; i >= 0; --i)
 	{
 		generate_best_rectangle(i);
-		//std::cout << i << std::endl;
 	}
 	if (_bv == 0)
 	{
@@ -116,14 +114,15 @@ void cim::generate_best_rectangle(int ri)
 
 void cim::generate_best_rectangle(int rowsize, const monomial& m, vector<int>& posi)
 {
-	int v = value_of_prime_rectangle(rowsize, m);
+	int tmn = m.multiplication_number();
+	int v = value_of_prime_rectangle(rowsize, tmn);
 	if (v > _bv)
 	{
 		_bv = v;
 		_bs = rowsize;
 		_bm = m;
 	}
-	v = value_of_prime_rectangle(rowsize + posi.size(), m);
+	v = value_of_prime_rectangle(rowsize + posi.size(), tmn - 1);
 	if (v < _bv)
 	{
 		return;
@@ -131,11 +130,10 @@ void cim::generate_best_rectangle(int rowsize, const monomial& m, vector<int>& p
 	for (auto i: posi)
 	{
 		monomial nm = gcd(_mat[i], m);//require results
-		//std::cerr<<_mat.size()<<" "<<posi.back()<<" "<<posi.size()<<" "<<i<<" "<<nm.multiplication_number()<<std::endl;
 		int nrs = rowsize + 1;
-		if (value_of_prime_rectangle(nrs+posi.size(), nm) < _bv) continue;
-		vector<int> nposi;
 		int mmn = nm.multiplication_number();
+		if (value_of_prime_rectangle(rowsize+posi.size(), mmn) < _bv) continue;
+		vector<int> nposi;
 		for (auto ni : posi)
 		{
 			if (ni <= i) continue;
@@ -153,12 +151,11 @@ void cim::generate_best_rectangle(int rowsize, const monomial& m, vector<int>& p
 				nposi.push_back(ni);
 			}
 		}
-		if (value_of_prime_rectangle(nrs+nposi.size(), nm) < _bv) continue;
 		generate_best_rectangle(nrs, nm, nposi);
 	}
 }
 
-int cim::value_of_prime_rectangle(int rowsize, const monomial& m)
+int cim::value_of_prime_rectangle(int rowsize, int mn)
 {
-	return (rowsize - 1) * (m.multiplication_number() - 1);
+	return (rowsize - 1) * (mn - 1);
 }

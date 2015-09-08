@@ -37,6 +37,12 @@ public:
 	monomial(const monomial&) = default;
 	monomial(monomial&&) = default;
 
+	//append, the caller should ensure correct order
+	void append(int l, int p = 1)
+	{
+		_vterm.push_back(std::make_pair(l, p));
+	}
+
 	//assignment
 	monomial& operator=(const monomial&) = default;
 	monomial& operator=(monomial&&) = default;

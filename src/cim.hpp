@@ -17,7 +17,7 @@ public:
 protected:
 	void generate_best_rectangle(int ri);
 	void generate_best_rectangle(int rowsize, const monomial& m, vector<int>& posi);
-	int value_of_prime_rectangle(int rowsize, const monomial& m);
+	int value_of_prime_rectangle(int rowsize, int mn);
 	vector<monomial> _mat;
 
 	int _bs;
