@@ -65,10 +65,11 @@ void doclean(vector<polynomial>& vP)
 				vP[Bj].name() = vP[i].name();
 				//change all name from B to A
 				int Al = literal_get(vP[i].name());
-				if (Al != -1)
+				if (Al == -1)
 				{
-					literal_change(vP, lj, Al);
+					Al = literal_append(vP[i].name());
 				}
+				literal_change(vP, lj, Al);
 				remove_list.insert(i);
 			}
 		}
