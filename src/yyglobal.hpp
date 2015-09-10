@@ -5,7 +5,7 @@
 #include <boost/variant.hpp>
 #include <string>
 using std::string;
-using yystype = boost::variant<int, string, monomial, polynomial>;
+using yystype = boost::variant<int64_t, string, monomial, polynomial>;
 using boost::get;
 
 #define YYSTYPE yystype

@@ -108,7 +108,7 @@ am_wpo_OBJECTS = wpo-expression.$(OBJEXT) wpo-kernel.$(OBJEXT) \
 	wpo-kcm.$(OBJEXT) wpo-cim.$(OBJEXT) wpo-extraction.$(OBJEXT) \
 	wpo-literal.$(OBJEXT) wpo-wpo.$(OBJEXT) wpo-parser.$(OBJEXT) \
 	wpo-lexer.$(OBJEXT) wpo-yyglobal.$(OBJEXT) \
-	wpo-output.$(OBJEXT)
+	wpo-output.$(OBJEXT) wpo-timer.$(OBJEXT)
 wpo_OBJECTS = $(am_wpo_OBJECTS)
 wpo_LDADD = $(LDADD)
 wpo_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(wpo_LDFLAGS) \
@@ -323,7 +323,8 @@ wpo_SOURCES = expression.hpp expression.cpp \
 			  parser.ypp \
 			  lexer.lpp \
 			  yyglobal.hpp yyglobal.cpp \
-			  output.hpp output.cpp
+			  output.hpp output.cpp \
+			  timer.hpp timer.cpp
 
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-am
@@ -424,6 +425,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wpo-literal.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wpo-output.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wpo-parser.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wpo-timer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wpo-wpo.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wpo-yyglobal.Po@am__quote@
 
@@ -594,6 +596,20 @@ wpo-output.obj: output.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='output.cpp' object='wpo-output.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(wpo_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o wpo-output.obj `if test -f 'output.cpp'; then $(CYGPATH_W) 'output.cpp'; else $(CYGPATH_W) '$(srcdir)/output.cpp'; fi`
+
+wpo-timer.o: timer.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(wpo_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT wpo-timer.o -MD -MP -MF $(DEPDIR)/wpo-timer.Tpo -c -o wpo-timer.o `test -f 'timer.cpp' || echo '$(srcdir)/'`timer.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/wpo-timer.Tpo $(DEPDIR)/wpo-timer.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='timer.cpp' object='wpo-timer.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(wpo_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o wpo-timer.o `test -f 'timer.cpp' || echo '$(srcdir)/'`timer.cpp
+
+wpo-timer.obj: timer.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(wpo_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT wpo-timer.obj -MD -MP -MF $(DEPDIR)/wpo-timer.Tpo -c -o wpo-timer.obj `if test -f 'timer.cpp'; then $(CYGPATH_W) 'timer.cpp'; else $(CYGPATH_W) '$(srcdir)/timer.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/wpo-timer.Tpo $(DEPDIR)/wpo-timer.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='timer.cpp' object='wpo-timer.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(wpo_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o wpo-timer.obj `if test -f 'timer.cpp'; then $(CYGPATH_W) 'timer.cpp'; else $(CYGPATH_W) '$(srcdir)/timer.cpp'; fi`
 
 .lpp.cpp:
 	$(AM_V_LEX)$(am__skiplex) $(SHELL) $(YLWRAP) $< $(LEX_OUTPUT_ROOT).c $@ -- $(LEXCOMPILE)

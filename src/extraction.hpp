@@ -5,6 +5,7 @@
 
 void substitution(vector<polynomial>& vP, const polynomial& s);
 void fr_find_kernel_intersections(vector<polynomial>& vP);
+void fr_find_cube_intersections(vector<polynomial>& vP);
 void find_kernel_intersections(vector<polynomial>& vP);
 void find_cube_intersections(vector<polynomial>& vP);
 

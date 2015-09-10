@@ -75,6 +75,37 @@ void fr_find_kernel_intersections(vector<polynomial>& vP)
 	}
 }
 
+void fr_find_cube_intersections(vector<polynomial>& vP)
+{
+	int i = 0;
+	while (true)
+	{
+		//std::cerr<<++i<<std::endl;
+		cim tm(vP);
+		monomial m;
+		if (!tm.fr_generate(m)) return;
+		int li = literal_append_tmp();
+		//rewrote vP
+		for (auto& P : vP)
+		{
+			polynomial dres = P / m;
+			if (dres.size() == 0) continue;
+			assert(dres.size() == 1);
+			polynomial nP(P);
+			nP.remove(dres[0]*m);
+			nP.name() = P.name();
+			monomial nl(li);
+			nP += dres[0] * nl;
+			P = nP;
+		}
+		//add this into vP
+		polynomial nl;
+		nl += m;
+		nl.name() = literal_name(li);
+		vP.push_back(nl);
+	}
+}
+
 void find_kernel_intersections(vector<polynomial>& vP)
 {
 	int i  = 0;

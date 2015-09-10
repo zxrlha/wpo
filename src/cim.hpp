@@ -14,6 +14,7 @@ class cim
 public:
 	explicit cim(const vector<polynomial>& vP);
 	bool generate_best_rectangle(monomial& m);
+	bool fr_generate(monomial& m);
 protected:
 	void generate_best_rectangle(int ri);
 	void generate_best_rectangle(int rowsize, const monomial& m, vector<int>& posi);

@@ -58,11 +58,11 @@ public:
 	}
 
 	//coefficient information
-	int coef() const
+	int64_t coef() const
 	{
 		return _coef;
 	}
-	int& coef()
+	int64_t& coef()
 	{
 		return _coef;
 	}
@@ -101,7 +101,7 @@ public:
 	int multiplication_number() const;
 protected:
 	vector<std::pair<int, int>> _vterm;
-	int _coef;
+	int64_t _coef;
 };
 
 class polynomial

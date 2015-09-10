@@ -146,7 +146,7 @@ int main(int argc, char* argv[])
 			vP.push_back(vtmp[i]);
 			find_kernel_intersections(vP);
 		}
-		find_cube_intersections(vP);
+		fr_find_cube_intersections(vP);
 	}
 	else if (strategy == "independent")
 	{
@@ -163,29 +163,12 @@ int main(int argc, char* argv[])
 			}
 		}
 		vP = vres;
-		find_cube_intersections(vP);
+		fr_find_cube_intersections(vP);
 	}
 	else if (strategy == "fastrun")
 	{
-		vector<polynomial> vtmp;
-		vector<polynomial> vres;
-		size_t i = 0;
-		for (int j = 0; j < vindex.size(); ++j)
-		{
-			for (; i < vindex[j]; ++i)
-			{
-				vtmp.push_back(vP[i]);
-			}
-			//std::cerr<<"K1"<<std::endl;
-			fr_find_kernel_intersections(vtmp);
-			find_cube_intersections(vtmp);
-			for (auto P : vtmp)
-			{
-				vres.push_back(P);
-			}
-			vtmp.clear();
-		}
-		vP = std::move(vres);
+		fr_find_kernel_intersections(vP);
+		fr_find_cube_intersections(vP);
 	}
 	else if (strategy == "substitution")
 	{
@@ -197,7 +180,7 @@ int main(int argc, char* argv[])
 			vtmp.push_back(vP[i]);
 		}
 		fr_find_kernel_intersections(vtmp);
-		find_cube_intersections(vtmp);
+		fr_find_cube_intersections(vtmp);
 		//now vtmp is used to do substitution
 		for (int i = vindex[0]; i < vP.size(); ++i)
 		{
@@ -217,11 +200,8 @@ int main(int argc, char* argv[])
 	else
 	{
 		find_kernel_intersections(vP);
-		find_cube_intersections(vP);
+		fr_find_cube_intersections(vP);
 	}
-	//cerr << "//kernel intersection finished" << endl;
-	//debug_out();
-	//cerr << "//cube intersection finished" << endl;
 	if (clean)
 	{
 		doclean(vP);

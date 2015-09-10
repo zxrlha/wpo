@@ -740,7 +740,7 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 YY_RULE_SETUP
 #line 14 "lexer.lpp"
-{ yylval = boost::lexical_cast<int>(yytext); return NUMBER; }
+{ yylval = boost::lexical_cast<int64_t>(yytext); return NUMBER; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP

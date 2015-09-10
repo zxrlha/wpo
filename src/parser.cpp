@@ -1362,7 +1362,7 @@ yyreduce:
 #line 29 "parser.ypp"
     {
 	if (get<string>((yyvsp[(1) - (2)]))=="tmp_start")
-		tmp_start = get<int>((yyvsp[(2) - (2)]));
+		tmp_start = get<int64_t>((yyvsp[(2) - (2)]));
 	else
 	{
 		std::cerr<<"ERROR:Unknown option:"<<(yyvsp[(1) - (2)])<<std::endl;
@@ -1408,7 +1408,7 @@ yyreduce:
 #line 65 "parser.ypp"
     {
 	assert(get<monomial>((yyvsp[(1) - (3)])).size() == 1);
-	int n = get<int>((yyvsp[(3) - (3)]));
+	int n = get<int64_t>((yyvsp[(3) - (3)]));
 	(yyval) = monomial(get<monomial>((yyvsp[(1) - (3)])).lit(0), n);
 }
     break;
@@ -1419,12 +1419,12 @@ yyreduce:
 	if (strategy == "fastrun")
 	{
 		monomial m;
-		m.coef() = get<int>((yyvsp[(1) - (1)]));
+		m.coef() = get<int64_t>((yyvsp[(1) - (1)]));
 		(yyval) = m;
 	}
 	else
 	{
-		int i = literal_add(boost::lexical_cast<string>(get<int>((yyvsp[(1) - (1)]))));
+		int i = literal_add(boost::lexical_cast<string>(get<int64_t>((yyvsp[(1) - (1)]))));
 		monomial m(i);
 		(yyval) = m;
 	}
@@ -1439,7 +1439,7 @@ yyreduce:
   case 15:
 #line 87 "parser.ypp"
     {
-	int i = get<int>((yyvsp[(1) - (1)]));
+	int i = get<int64_t>((yyvsp[(1) - (1)]));
 	monomial m(i);
 	(yyval) = m;
 }
@@ -1456,7 +1456,7 @@ yyreduce:
 		{
 			nli = literal_append_tmp();
 			get<polynomial>((yyvsp[(2) - (3)])).name() = literal_name(nli);
-			vP.push_back(get<polynomial>((yyvsp[(2) - (3)])));
+			vP.push_back(std::move(get<polynomial>((yyvsp[(2) - (3)]))));
 		}
 	}
 	else 
@@ -1479,7 +1479,7 @@ yyreduce:
 		{
 			nli = literal_append_func();
 			get<polynomial>((yyvsp[(3) - (4)])).name() = literal_name(nli);
-			vP.push_back(get<polynomial>((yyvsp[(3) - (4)])));
+			vP.push_back(std::move(get<polynomial>((yyvsp[(3) - (4)]))));
 		}
 	}
 	else

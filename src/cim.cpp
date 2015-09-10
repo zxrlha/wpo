@@ -68,6 +68,28 @@ cim::cim(const vector<polynomial>& vP)
 	//std::cout << _mat.size() << std::endl;
 }
 
+bool cim::fr_generate(monomial& m)
+{
+	int v = 1;
+	int bi = -1;
+	int bj = -1;
+	for (int i = 0; i < _mat.size(); ++i)
+	{
+		for (int j = i + 1; j < _mat.size(); ++j)
+		{
+			int mn = gcd_mn(_mat[i], _mat[j]);
+			if (mn > v)
+			{
+				bi = i;
+				bj = j;
+				v = mn;
+			}
+		}
+	}
+	if (bi == -1) return false;
+	m = gcd(_mat[bi], _mat[bj]);
+}
+
 bool cim::generate_best_rectangle(monomial& m)
 {
 	_bv = 0;

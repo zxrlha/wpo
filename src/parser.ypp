@@ -28,7 +28,7 @@ OPTION IDENTIFY { parse_options(get<string>($1), get<string>($2)); }
 |OPTION NUMBER
 {
 	if (get<string>($1)=="tmp_start")
-		tmp_start = get<int>($2);
+		tmp_start = get<int64_t>($2);
 	else
 	{
 		std::cerr<<"ERROR:Unknown option:"<<$1<<std::endl;
@@ -64,7 +64,7 @@ IDENTIFY
 | mono '^' NUMBER
 {
 	assert(get<monomial>($1).size() == 1);
-	int n = get<int>($3);
+	int n = get<int64_t>($3);
 	$$ = monomial(get<monomial>($1).lit(0), n);
 }
 | NUMBER
@@ -72,12 +72,12 @@ IDENTIFY
 	if (strategy == "fastrun")
 	{
 		monomial m;
-		m.coef() = get<int>($1);
+		m.coef() = get<int64_t>($1);
 		$$ = m;
 	}
 	else
 	{
-		int i = literal_add(boost::lexical_cast<string>(get<int>($1)));
+		int i = literal_add(boost::lexical_cast<string>(get<int64_t>($1)));
 		monomial m(i);
 		$$ = m;
 	}
@@ -85,7 +85,7 @@ IDENTIFY
 | mono '*' mono { $$ = get<monomial>($1) * get<monomial>($3); }
 | varstr
 {
-	int i = get<int>($1);
+	int i = get<int64_t>($1);
 	monomial m(i);
 	$$ = m;
 }
@@ -101,7 +101,7 @@ varstr:
 		{
 			nli = literal_append_tmp();
 			get<polynomial>($2).name() = literal_name(nli);
-			vP.push_back(get<polynomial>($2));
+			vP.push_back(std::move(get<polynomial>($2)));
 		}
 	}
 	else 
@@ -121,7 +121,7 @@ varstr:
 		{
 			nli = literal_append_func();
 			get<polynomial>($3).name() = literal_name(nli);
-			vP.push_back(get<polynomial>($3));
+			vP.push_back(std::move(get<polynomial>($3)));
 		}
 	}
 	else
