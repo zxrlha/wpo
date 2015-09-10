@@ -25,8 +25,9 @@ void literal_change(vector<polynomial>& vP, int from, int to)
 			{
 				if (P[i].lit(j) == from)
 				{
-					P[i] *= monomial(to, P[i].pow(j));
-					P[i] /= monomial(from, P[i].pow(j));
+					int p = P[i].pow(j);
+					P[i] *= monomial(to, p);
+					P[i] /= monomial(from, p);
 					break;
 				}
 			}
