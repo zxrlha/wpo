@@ -167,6 +167,9 @@ public:
 
 	//variable reduction
 	int single_id() const;
+
+	//multiplication number
+	int multiplication_number() const;
 protected:
 	void sort();
 	vector<monomial> _vmon;
@@ -241,4 +244,5 @@ ostream& operator<<(ostream& os, const monomial& m);
 ostream& operator<<(ostream& os, const polynomial& m);
 
 monomial gcd(const monomial& A, const monomial& B);
+int gcd_mn(const monomial& A, const monomial& B);
 #endif

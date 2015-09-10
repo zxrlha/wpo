@@ -414,9 +414,9 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    21,    21,    22,    23,    26,    27,    28,    40,    49,
-      50,    58,    64,    70,    85,    86,    94,   113,   149,   150,
-     155
+       0,    21,    21,    22,    23,    26,    27,    28,    40,    50,
+      51,    59,    65,    71,    86,    87,    95,   114,   150,   151,
+     156
 };
 #endif
 
@@ -1378,16 +1378,17 @@ yyreduce:
 	P.name() = get<string>((yyvsp[(1) - (3)]));
 	vP.push_back(P);
 	vindex.push_back(vP.size());
+	std::cerr<<"Parsing..."<<vindex.size()<<" polynomials have been parsed\r";
 }
     break;
 
   case 9:
-#line 49 "parser.ypp"
+#line 50 "parser.ypp"
     { (yyval) = (yyvsp[(1) - (1)]); }
     break;
 
   case 10:
-#line 51 "parser.ypp"
+#line 52 "parser.ypp"
     {
 	auto& t = get<monomial>((yyvsp[(2) - (2)]));
 	t.reverse_sign();
@@ -1396,7 +1397,7 @@ yyreduce:
     break;
 
   case 11:
-#line 59 "parser.ypp"
+#line 60 "parser.ypp"
     {
 	int i = literal_add(get<string>((yyvsp[(1) - (1)])));
 	monomial m(i);
@@ -1405,7 +1406,7 @@ yyreduce:
     break;
 
   case 12:
-#line 65 "parser.ypp"
+#line 66 "parser.ypp"
     {
 	assert(get<monomial>((yyvsp[(1) - (3)])).size() == 1);
 	int n = get<int64_t>((yyvsp[(3) - (3)]));
@@ -1414,30 +1415,30 @@ yyreduce:
     break;
 
   case 13:
-#line 71 "parser.ypp"
+#line 72 "parser.ypp"
     {
-	if (strategy == "fastrun")
+	if (coefmode == "literal")
 	{
-		monomial m;
-		m.coef() = get<int64_t>((yyvsp[(1) - (1)]));
+		int i = literal_add(boost::lexical_cast<string>(get<int64_t>((yyvsp[(1) - (1)]))));
+		monomial m(i);
 		(yyval) = m;
 	}
 	else
 	{
-		int i = literal_add(boost::lexical_cast<string>(get<int64_t>((yyvsp[(1) - (1)]))));
-		monomial m(i);
+		monomial m;
+		m.coef() = get<int64_t>((yyvsp[(1) - (1)]));
 		(yyval) = m;
 	}
 }
     break;
 
   case 14:
-#line 85 "parser.ypp"
+#line 86 "parser.ypp"
     { (yyval) = get<monomial>((yyvsp[(1) - (3)])) * get<monomial>((yyvsp[(3) - (3)])); }
     break;
 
   case 15:
-#line 87 "parser.ypp"
+#line 88 "parser.ypp"
     {
 	int i = get<int64_t>((yyvsp[(1) - (1)]));
 	monomial m(i);
@@ -1446,7 +1447,7 @@ yyreduce:
     break;
 
   case 16:
-#line 95 "parser.ypp"
+#line 96 "parser.ypp"
     {
 	int nli = vP_get(get<polynomial>((yyvsp[(2) - (3)])));
 	if (nli == -1)
@@ -1468,7 +1469,7 @@ yyreduce:
     break;
 
   case 17:
-#line 114 "parser.ypp"
+#line 115 "parser.ypp"
     {
 	/*a function call*/
 	int nli = vP_get(get<polynomial>((yyvsp[(3) - (4)])));
@@ -1505,12 +1506,12 @@ yyreduce:
     break;
 
   case 18:
-#line 149 "parser.ypp"
+#line 150 "parser.ypp"
     { (yyval) = polynomial(get<monomial>((yyvsp[(1) - (1)]))); }
     break;
 
   case 19:
-#line 151 "parser.ypp"
+#line 152 "parser.ypp"
     {
 	(yyval) = std::move(get<polynomial>((yyvsp[(1) - (3)])));
 	get<polynomial>((yyval)) += std::move(get<monomial>((yyvsp[(3) - (3)])));
@@ -1518,7 +1519,7 @@ yyreduce:
     break;
 
   case 20:
-#line 156 "parser.ypp"
+#line 157 "parser.ypp"
     {
 	(yyval) = std::move(get<polynomial>((yyvsp[(1) - (3)])));
 	get<polynomial>((yyval)) -= std::move(get<monomial>((yyvsp[(3) - (3)])));
@@ -1527,7 +1528,7 @@ yyreduce:
 
 
 /* Line 1267 of yacc.c.  */
-#line 1531 "parser.cpp"
+#line 1532 "parser.cpp"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);

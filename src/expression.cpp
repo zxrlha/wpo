@@ -490,3 +490,65 @@ polynomial operator/(const polynomial& P, const monomial& A)
 	}
 	return res;
 }
+
+int polynomial::multiplication_number() const
+{
+	int sum = 0;
+	for (int i = 0; i < _vmon.size(); ++i)
+	{
+		sum += _vmon[i].multiplication_number() - 1;
+		if (_vmon[i].coef() != 1 && _vmon[i].coef() != -1)
+			++sum;
+	}
+	return sum;
+}
+
+int gcd_mn(const monomial& A, const monomial& B)
+{
+	int sum = 0;
+	int i = 0;
+	int j = 0;
+	while (i != A.size() && j != B.size())
+	{
+		if (A.lit(i) < B.lit(j))
+		{
+			++i;
+		}
+		else if (A.lit(i) > B.lit(j))
+		{
+			++j;
+		}
+		else
+		{
+			sum += std::min(A.pow(i), B.pow(j));
+			++i;
+			++j;
+		}
+	}
+	return sum;
+}
+
+monomial gcd(const monomial& A, const monomial& B)
+{
+	monomial res;
+	int i = 0;
+	int j = 0;
+	while (i != A.size() && j != B.size())
+	{
+		if (A.lit(i) < B.lit(j))
+		{
+			++i;
+		}
+		else if (A.lit(i) > B.lit(j))
+		{
+			++j;
+		}
+		else
+		{
+			res.append(A.lit(i), std::min(A.pow(i), B.pow(j)));
+			++i;
+			++j;
+		}
+	}
+	return res;
+}

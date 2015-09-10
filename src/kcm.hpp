@@ -15,7 +15,7 @@ class kcm
 {
 public:
 	kcm(const vector<vector<pair<monomial, polynomial>>>& vkmap, const vector<polynomial>& vP);
-	bool generate_best_rectangle(vector<int>& row, vector<int>& column);
+	int generate_best_rectangle(vector<int>& row, vector<int>& column);
 	const monomial& row(int i) const { return _vcok[i]; };
 	const monomial& column(int i) const { return _vk[i]; };
 	int index(int i) const { return _icok[i]; };

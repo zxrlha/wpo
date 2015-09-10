@@ -56,7 +56,7 @@ kcm::kcm(const vector<vector<pair<monomial, polynomial>>>& vkmap, const vector<p
 	}
 }
 
-bool kcm::generate_best_rectangle(vector<int>& row, vector<int>& column)
+int kcm::generate_best_rectangle(vector<int>& row, vector<int>& column)
 {
 	_bv = 0;
 	_br.clear();
@@ -95,11 +95,11 @@ bool kcm::generate_best_rectangle(vector<int>& row, vector<int>& column)
 		}
 	}
 
-	if (_bv == 0) return false;
-	if (_br.size() == 1 && _bc.size() == 1) return false;
+	if (_bv == 0) return -1;
+	if (_br.size() == 1 && _bc.size() == 1) return -1;
 	row = _br;
 	column = _bc;
-	return true;
+	return _bv;
 }
 
 void kcm::generate_best_rectangle(int ri, int ci1, int ci2, const vector<int>& aposi_rows, const vector<int>& posi_columns)

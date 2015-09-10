@@ -3,56 +3,6 @@
 #include "cim.hpp"
 #include "literal.hpp"
 
-int gcd_mn(const monomial& A, const monomial& B)
-{
-	int sum = 0;
-	int i = 0;
-	int j = 0;
-	while (i != A.size() && j != B.size())
-	{
-		if (A.lit(i) < B.lit(j))
-		{
-			++i;
-		}
-		else if (A.lit(i) > B.lit(j))
-		{
-			++j;
-		}
-		else
-		{
-			sum += std::min(A.pow(i), B.pow(j));
-			++i;
-			++j;
-		}
-	}
-	return sum;
-}
-
-monomial gcd(const monomial& A, const monomial& B)
-{
-	monomial res;
-	int i = 0;
-	int j = 0;
-	while (i != A.size() && j != B.size())
-	{
-		if (A.lit(i) < B.lit(j))
-		{
-			++i;
-		}
-		else if (A.lit(i) > B.lit(j))
-		{
-			++j;
-		}
-		else
-		{
-			res.append(A.lit(i), std::min(A.pow(i), B.pow(j)));
-			++i;
-			++j;
-		}
-	}
-	return res;
-}
-
 cim::cim(const vector<polynomial>& vP)
 {
 	for (auto P : vP)
@@ -66,28 +16,6 @@ cim::cim(const vector<polynomial>& vP)
 		}
 	}
 	//std::cout << _mat.size() << std::endl;
-}
-
-bool cim::fr_generate(monomial& m)
-{
-	int v = 1;
-	int bi = -1;
-	int bj = -1;
-	for (int i = 0; i < _mat.size(); ++i)
-	{
-		for (int j = i + 1; j < _mat.size(); ++j)
-		{
-			int mn = gcd_mn(_mat[i], _mat[j]);
-			if (mn > v)
-			{
-				bi = i;
-				bj = j;
-				v = mn;
-			}
-		}
-	}
-	if (bi == -1) return false;
-	m = gcd(_mat[bi], _mat[bj]);
 }
 
 bool cim::generate_best_rectangle(monomial& m)

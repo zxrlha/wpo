@@ -17,6 +17,12 @@ string func_prefix = "func";
 string func_style = "in";
 string strategy = "all";//all sequential independent
 bool clean = true;
+string cubemode = "different";
+string frkernelmode = "iterative";
+string coefmode = "literal";
+
+int64_t summul = 0;
+int64_t osummul = 0;
 
 int vP_get(const polynomial& P)
 {
@@ -51,6 +57,9 @@ void parse_options(const string& name, const string& value)
 	else if (name == "func_style") func_style = value;
 	else if (name == "strategy") strategy = value;
 	else if (name == "clean") clean = (value == "true");
+	else if (name == "cubemode") cubemode = value;
+	else if (name == "coefmode") coefmode = value;
+	else if (name == "frkernelmode") frkernelmode = value;
 	else
 	{
 		std::cerr << "ERROR:Unknown option:" << name << std::endl;

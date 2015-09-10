@@ -27,6 +27,12 @@ extern string func_prefix;
 extern string func_style;
 extern string strategy;
 extern bool clean;
+extern string cubemode;
+extern string frkernelmode;
+extern string coefmode;
+
+extern int64_t summul;
+extern int64_t osummul;
 
 int vP_get(const polynomial& P);
 int vfunc_get(const funcexpr& fe);

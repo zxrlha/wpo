@@ -43,6 +43,7 @@ IDENTIFY '=' exp
 	P.name() = get<string>($1);
 	vP.push_back(P);
 	vindex.push_back(vP.size());
+	std::cerr<<"Parsing..."<<vindex.size()<<" polynomials have been parsed\r";
 }
 
 monowithsign:
@@ -69,16 +70,16 @@ IDENTIFY
 }
 | NUMBER
 {
-	if (strategy == "fastrun")
+	if (coefmode == "literal")
 	{
-		monomial m;
-		m.coef() = get<int64_t>($1);
+		int i = literal_add(boost::lexical_cast<string>(get<int64_t>($1)));
+		monomial m(i);
 		$$ = m;
 	}
 	else
 	{
-		int i = literal_add(boost::lexical_cast<string>(get<int64_t>($1)));
-		monomial m(i);
+		monomial m;
+		m.coef() = get<int64_t>($1);
 		$$ = m;
 	}
 }
