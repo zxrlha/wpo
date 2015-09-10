@@ -12,6 +12,7 @@ using boost::get;
 
 extern vector<polynomial> vP;
 extern vector<funcexpr> vfunc;
+extern vector<int> vindex;
 
 extern string tmp_prefix;
 extern string tmp_suffix;

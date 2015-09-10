@@ -2,6 +2,7 @@
 
 vector<polynomial> vP;
 vector<funcexpr> vfunc;
+vector<int> vindex;
 
 string tmp_prefix = "tmp[";
 string tmp_suffix = "]";

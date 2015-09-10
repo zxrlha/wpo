@@ -9,6 +9,33 @@
 
 using std::map;
 
+void substitution(vector<polynomial>& vP, const polynomial& s)
+{
+	if (s.size() != 1) return;
+	if (s[0].multiplication_number() < 2) return;
+	for (auto& P: vP)
+	{
+		for (int i = 0; i < P.size(); ++i)
+		{
+			polynomial dres = P / s[0];
+			int li = literal_get(s.name());
+			if (li == -1)
+			{
+				li = literal_append(s.name());
+			}
+			monomial nl(li);
+			polynomial nP(P);
+			for (int j = 0; j < dres.size(); ++j)
+			{
+				nP.remove(dres[0]*s[0]);
+				nP += dres[0] * nl;
+			}
+			nP.name() = P.name();
+			P = nP;
+		}
+	}
+}
+
 void fr_find_kernel_intersections(vector<polynomial>& vP)
 {
 	int sumbv = 0;

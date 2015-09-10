@@ -42,6 +42,7 @@ IDENTIFY '=' exp
 	auto& P = get<polynomial>($3);
 	P.name() = get<string>($1);
 	vP.push_back(P);
+	vindex.push_back(vP.size());
 }
 
 monowithsign:

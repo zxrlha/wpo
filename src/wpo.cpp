@@ -1,5 +1,6 @@
 #include <iostream>
 #include <set>
+#include <boost/program_options.hpp>
 #include "kernel.hpp"
 #include "extraction.hpp"
 #include "kcm.hpp"
@@ -7,6 +8,7 @@
 #include "yyglobal.hpp"
 #include "parser.hpp"
 #include "output.hpp"
+#include "config.h"
 
 using std::cout;
 using std::cerr;
@@ -110,8 +112,29 @@ void output_prime_func()
 	}
 }
 
-int main()
+namespace po = boost::program_options;
+
+int main(int argc, char* argv[])
 {
+	po::options_description desc("Allowd options");
+	desc.add_options()
+		("help", "print help message")
+		("version", "print version information")
+		("verbose", "verbose")
+		;
+	po::variables_map vm;
+	po::store(po::parse_command_line(argc, argv, desc), vm);
+	po::notify(vm);
+	if (vm.count("help"))
+	{
+		std::cout<<desc<<std::endl;
+		return 0;
+	}
+	if (vm.count("version"))
+	{
+		std::cout<<PACKAGE_STRING<<std::endl;
+		return 0;
+	}
 	yyparse();
 	//cerr << "//parse finished" << endl;
 	if (strategy == "sequential")
@@ -120,10 +143,10 @@ int main()
 		vP.clear();
 		for (size_t i = 0; i < vtmp.size(); ++i)
 		{
-			//cerr<<i<<" "<<vtmp.size()<<endl;
 			vP.push_back(vtmp[i]);
 			find_kernel_intersections(vP);
 		}
+		find_cube_intersections(vP);
 	}
 	else if (strategy == "independent")
 	{
@@ -140,18 +163,64 @@ int main()
 			}
 		}
 		vP = vres;
+		find_cube_intersections(vP);
 	}
 	else if (strategy == "fastrun")
 	{
-		fr_find_kernel_intersections(vP);
+		vector<polynomial> vtmp;
+		vector<polynomial> vres;
+		size_t i = 0;
+		for (int j = 0; j < vindex.size(); ++j)
+		{
+			for (; i < vindex[j]; ++i)
+			{
+				vtmp.push_back(vP[i]);
+			}
+			//std::cerr<<"K1"<<std::endl;
+			fr_find_kernel_intersections(vtmp);
+			find_cube_intersections(vtmp);
+			for (auto P : vtmp)
+			{
+				vres.push_back(P);
+			}
+			vtmp.clear();
+		}
+		vP = std::move(vres);
+	}
+	else if (strategy == "substitution")
+	{
+		vector<polynomial> vtmp;
+		vector<polynomial> vres;
+		if (vindex.size() == 0) return 0;
+		for (size_t i = 0; i < vindex[0]; ++i)
+		{
+			vtmp.push_back(vP[i]);
+		}
+		fr_find_kernel_intersections(vtmp);
+		find_cube_intersections(vtmp);
+		//now vtmp is used to do substitution
+		for (int i = vindex[0]; i < vP.size(); ++i)
+		{
+			vres.push_back(vP[i]);
+		}
+		fr_find_kernel_intersections(vres);
+		for (int i = 0; i < vtmp.size(); ++i)
+		{
+			substitution(vres, vtmp[i]);
+		}
+		for (int i = 0; i < vtmp.size(); ++i)
+		{
+			vres.push_back(vtmp[i]);
+		}
+		vP = std::move(vres);
 	}
 	else
 	{
 		find_kernel_intersections(vP);
+		find_cube_intersections(vP);
 	}
 	//cerr << "//kernel intersection finished" << endl;
 	//debug_out();
-	find_cube_intersections(vP);
 	//cerr << "//cube intersection finished" << endl;
 	if (clean)
 	{

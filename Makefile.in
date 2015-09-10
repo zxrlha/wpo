@@ -90,6 +90,7 @@ host_triplet = @host@
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_boost_base.m4 \
+	$(top_srcdir)/m4/ax_boost_program_options.m4 \
 	$(top_srcdir)/m4/ax_cxx_compile_stdcxx_11.m4 \
 	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -220,6 +221,7 @@ AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
 BOOST_CPPFLAGS = @BOOST_CPPFLAGS@
 BOOST_LDFLAGS = @BOOST_LDFLAGS@
+BOOST_PROGRAM_OPTIONS_LIB = @BOOST_PROGRAM_OPTIONS_LIB@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
