@@ -36,6 +36,21 @@ void kernels(int i, const polynomial& P, const monomial& d, vector<pair<monomial
 			{
 				polynomial FI = Ft / C;//kernel
 				monomial DI = d * C * Lj;//co-kernel
+				//special for if FI=1+...
+				/*
+				if (FI.contain(monomial()))
+				{
+					for (int l = 0; l < C.size(); ++l)
+					{
+						polynomial NFI = FI * monomial(C.lit(l));
+						monomial NDI = DI;
+						NDI /= monomial(C.lit(l));
+						std::cout<<NDI<<" "<<NFI<<std::endl;
+						kernelmap.push_back(make_pair(NDI, NFI));
+						kernels(j, NFI, NDI, kernelmap);
+					}
+				}
+				*/
 				kernelmap.push_back(make_pair(DI, FI));
 				kernels(j, FI, DI, kernelmap);
 			}

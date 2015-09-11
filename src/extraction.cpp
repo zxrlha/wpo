@@ -252,7 +252,7 @@ void fr_find_kernel_intersections(vector<polynomial>& vP)
 	}
 	else
 	{
-		std::cerr<<"ERROR: Unknown frkernelmode "<<frkernelmode<<std::endl;
+		std::cerr << "ERROR: Unknown frkernelmode " << frkernelmode << std::endl;
 		exit(1);
 	}
 }
@@ -277,12 +277,17 @@ void fr1_find_cube_intersections(vector<polynomial>& vP)
 				continue;
 			}
 			++rs;
-			assert(dres.size() == 1);
 			polynomial nP(P);
-			nP.remove(dres[0]*m);
+			for (int i = 0; i < dres.size(); ++i)
+			{
+				nP.remove(dres[i]*m);
+			}
 			nP.name() = P.name();
 			monomial nl(li);
-			nP += dres[0] * nl;
+			for (int i = 0; i < dres.size(); ++i)
+			{
+				nP += dres[i] * nl;
+			}
 			P = nP;
 		}
 		int64_t bv = (rs - 1) * (m.multiplication_number() - 1);
@@ -319,12 +324,17 @@ void fr2_find_cube_intersections(vector<polynomial>& vP)
 				continue;
 			}
 			++rs;
-			assert(dres.size() == 1);
 			polynomial nP(P);
-			nP.remove(dres[0]*m);
+			for (int i = 0; i < dres.size(); ++i)
+			{
+				nP.remove(dres[i]*m);
+			}
 			nP.name() = P.name();
 			monomial nl(li);
-			nP += dres[0] * nl;
+			for (int i = 0; i < dres.size(); ++i)
+			{
+				nP += dres[i] * nl;
+			}
 			P = nP;
 		}
 		int64_t bv = (rs - 1) * (m.multiplication_number() - 1);
@@ -431,12 +441,17 @@ void old_find_cube_intersections(vector<polynomial>& vP)
 				continue;
 			}
 			++rs;
-			assert(dres.size() == 1);
 			polynomial nP(P);
-			nP.remove(dres[0]*m);
+			for (int i = 0; i < dres.size(); ++i)
+			{
+				nP.remove(dres[i]*m);
+			}
 			nP.name() = P.name();
 			monomial nl(li);
-			nP += dres[0] * nl;
+			for (int i = 0; i < dres.size(); ++i)
+			{
+				nP += dres[i] * nl;
+			}
 			P = nP;
 		}
 		int64_t bv = (rs - 1) * (m.multiplication_number() - 1);
@@ -469,7 +484,7 @@ void find_cube_intersections(vector<polynomial>& vP)
 	}
 	else
 	{
-		std::cerr<<"ERROR:"<<"Unknown cubemode "<<cubemode;
+		std::cerr << "ERROR:" << "Unknown cubemode " << cubemode;
 		exit(1);
 	}
 }
