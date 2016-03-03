@@ -482,6 +482,10 @@ void find_cube_intersections(vector<polynomial>& vP)
 	{
 		old_find_cube_intersections(vP);
 	}
+	else if (cubemode == "ignore")
+	{
+		return;
+	}
 	else
 	{
 		std::cerr << "ERROR:" << "Unknown cubemode " << cubemode;
