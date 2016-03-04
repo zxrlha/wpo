@@ -17,7 +17,7 @@ int sumbv2 = 0;
 
 bool fr_cube_intersection(const polynomial& P, monomial& m)
 {
-	int v = 1;
+	int v = 0;
 	int bi = -1;
 	int bj = -1;
 	for (int i = 0; i < P.size(); ++i)
@@ -177,20 +177,37 @@ void fr1_find_kernel_intersections(vector<polynomial>& vP)
 			break;
 		}
 		//build new literal polynomial
-		int li;
-		li = literal_append_tmp();
 		polynomial& P = vP[pi];
 		polynomial bcok = P / bk;
-		bcok.name() = literal_name(li);
 		//rewrote P
 		for (int i = 0; i < bcok.size(); ++i)
 		{
 			P.remove(bk * bcok[i]);
 		}
+		int li;
+		li = vP_get(bcok);
+		bool newflag = false;
+		if (li == -1)
+		{
+			newflag = true;
+			li = literal_append_tmp();
+		}
+		else
+		{
+			li = literal_get(vP[li].name());
+		}
+		bcok.name() = literal_name(li);
 		monomial nm(li);
 		P += nm * bk;
-		vP.push_back(bcok);
+		if (newflag)
+		{
+			vP.push_back(bcok);
+		}
 		int bv = bk.multiplication_number() * (bcok.size() - 1);
+		if (newflag)
+		{
+			bv += bcok.multiplication_number();
+		}
 		sumbv1 += bv;
 		summul -= bv;
 		std::cerr << "Step 1: Descrease by" << std::setw(7) << bv << "."
