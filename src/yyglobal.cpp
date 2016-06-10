@@ -15,11 +15,9 @@ string var_style = "in"; //pre in null
 string var_filter = "[]():.";
 string func_prefix = "func";
 string func_style = "in";
-string strategy = "all";//all sequential independent
-bool clean = true;
-string cubemode = "different";
-string frkernelmode = "iterative";
-string coefmode = "literal";
+string strategy = "kcm";//kcm fastrun
+bool flag_clean = true;
+bool flag_reuse = true;
 
 int64_t summul = 0;
 int64_t osummul = 0;
@@ -56,10 +54,8 @@ void parse_options(const string& name, const string& value)
 	else if (name == "func_prefix") func_prefix = value;
 	else if (name == "func_style") func_style = value;
 	else if (name == "strategy") strategy = value;
-	else if (name == "clean") clean = (value == "true");
-	else if (name == "cubemode") cubemode = value;
-	else if (name == "coefmode") coefmode = value;
-	else if (name == "frkernelmode") frkernelmode = value;
+	else if (name == "clean") flag_clean = (value == "true");
+	else if (name == "reuse") flag_reuse = (value == "true");
 	else
 	{
 		std::cerr << "ERROR:Unknown option:" << name << std::endl;

@@ -26,10 +26,8 @@ extern string var_filter;
 extern string func_prefix;
 extern string func_style;
 extern string strategy;
-extern bool clean;
-extern string cubemode;
-extern string frkernelmode;
-extern string coefmode;
+extern bool flag_clean;
+extern bool flag_reuse;
 
 extern int64_t summul;
 extern int64_t osummul;

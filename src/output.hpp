@@ -8,7 +8,7 @@
 using std::ostream;
 
 string output_tmp_name(int i);
-void doclean(vector<polynomial>& vP);
+void clean(vector<polynomial>& vP);
 void reorder(vector<polynomial>& vP);
 int rename(vector<polynomial>& vP);
 

@@ -1,5 +1,5 @@
-#ifndef WPOFR_EXPRESSION_HPP
-#define WPOFR_EXPRESSION_HPP 1
+#ifndef WPO_EXPRESSION_HPP
+#define WPO_EXPRESSION_HPP 1
 
 #include <vector>
 #include <set>

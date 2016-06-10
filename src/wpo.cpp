@@ -174,108 +174,16 @@ int main(int argc, char* argv[])
 	}
 	osummul = summul;
 	cerr << summul << " multiplications" << endl;
-	if (strategy == "sequential")
+	find_kernel_intersections(vP);
+	find_cube_intersections(vP);
+	if (flag_clean)
 	{
-		vector<polynomial> vtmp(vP);
-		vP.clear();
-		for (size_t i = 0; i < vtmp.size(); ++i)
-		{
-			vP.push_back(vtmp[i]);
-			find_kernel_intersections(vP);
-		}
-		std::cerr << std::endl;
-		find_cube_intersections(vP);
-		std::cerr << std::endl;
-	}
-	else if (strategy == "independent")
-	{
-		vector<polynomial> vtmp(vP);
-		vector<polynomial> vres;
-		for (size_t i = 0; i < vtmp.size(); ++i)
-		{
-			vP.clear();
-			vP.push_back(vtmp[i]);
-			find_kernel_intersections(vP);
-			for (auto j = 0; j < vP.size(); ++j)
-			{
-				vres.push_back(vP[j]);
-			}
-		}
-		std::cerr << std::endl;
-		vP = vres;
-		find_cube_intersections(vP);
-		std::cerr << std::endl;
-	}
-	else if (strategy == "fastrun")
-	{
-		fr_find_kernel_intersections(vP);
-		std::cerr << std::endl;
-		find_cube_intersections(vP);
-		std::cerr << std::endl;
-	}
-	else if (strategy == "substitution")
-	{
-		vector<polynomial> vtmp;
-		vector<polynomial> vres;
-		if (vindex.size() == 0)
-		{
-			return 0;
-		}
-		for (size_t i = 0; i < vindex[0]; ++i)
-		{
-			vtmp.push_back(vP[i]);
-		}
-		fr_find_kernel_intersections(vtmp);
-		std::cerr<<std::endl;
-		find_cube_intersections(vtmp);
-		std::cerr<<std::endl;
-		//now vtmp is used to do substitution
-		for (int i = vindex[0]; i < vP.size(); ++i)
-		{
-			vres.push_back(vP[i]);
-		}
-		fr_find_kernel_intersections(vres);
-		std::cerr<<std::endl;
-		for (int i = 0; i < vtmp.size(); ++i)
-		{
-			substitution(vres, vtmp[i]);
-		}
-		std::cerr<<std::endl;
-		for (int i = 0; i < vtmp.size(); ++i)
-		{
-			vres.push_back(vtmp[i]);
-		}
-		vP = std::move(vres);
-	}
-	else
-	{
-		find_kernel_intersections(vP);
-		std::cerr << std::endl;
-		find_cube_intersections(vP);
-		std::cerr << std::endl;
-	}
-	if (clean)
-	{
-		doclean(vP);
+		clean(vP);
 	}
 	reorder(vP);
 	//cerr << "//reorder finished" << endl;
 	int max = rename(vP);
 	//cerr << "//rename finished" << endl;
-	if (tmp_style == "array0")
-	{
-		os << line_prefix
-		   << type_str << " "
-		   << output_tmp_name(max + 1)
-		   << line_suffix << endl;
-	}
-	if (tmp_style == "array1")
-	{
-		os << line_prefix
-		   << type_str << " "
-		   << output_tmp_name(max)
-		   << line_suffix << endl;
-	}
 	if (tmp_style == "pre")
 	{
 		for (int i = 0; i <= max; ++i)

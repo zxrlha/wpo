@@ -35,7 +35,7 @@ void literal_change(vector<polynomial>& vP, int from, int to)
 	}
 }
 
-void doclean(vector<polynomial>& vP)
+void clean(vector<polynomial>& vP)
 {
 	//find polynomial like A=B
 	set<int> remove_list;
@@ -193,7 +193,10 @@ int rename(vector<polynomial>& rvP)
 				}
 			}
 			int pi = trans_rule[i];
-			inuse.erase(pi);
+			if (flag_reuse)
+			{
+				inuse.erase(pi);
+			}
 			P.name() = "#" + output_tmp_name(pi);//mark as tmp variable
 		}
 		set<int> tsi = P.tmp_literals();

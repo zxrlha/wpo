@@ -70,18 +70,9 @@ IDENTIFY
 }
 | NUMBER
 {
-	if (coefmode == "literal")
-	{
-		int i = literal_add(boost::lexical_cast<string>(get<int64_t>($1)));
-		monomial m(i);
-		$$ = m;
-	}
-	else
-	{
-		monomial m;
-		m.coef() = get<int64_t>($1);
-		$$ = m;
-	}
+	int i = literal_add(boost::lexical_cast<string>(get<int64_t>($1)));
+	monomial m(i);
+	$$ = m;
 }
 | mono '*' mono { $$ = get<monomial>($1) * get<monomial>($3); }
 | varstr

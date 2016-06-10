@@ -23,40 +23,10 @@ This option control the main run procedure of WPO.
 
 Supported values are the following:
 \begin{itemize}
-\item \textbf{all}: This is the traditional run mode for WPO. It will give best results, but take longest run time. Recommend if need deep optimization.
-\item \textbf{sequential}: Not recommend.
-\item \textbf{independent}: Not recommend.
-\item \textbf{substitution}: Not recommend.
+  \item \textbf{kcm}: using kcm method.
 \item \textbf{fastrun}: Do simple optimization, which is fast but results are not so good. Recommend for extreme heavy input expressions.
 \end{itemize}
 
-\item \textbf{\%coefmode}
-This option control the treatment of the coefficients.
-
-Currently two value are supported:
-\begin{itemize}
-\item \textbf{literal}: in this mode, coefficients will be treat as literal, i.e., 2 will be treat as a symbol whose name is ``2''.
-\item \textbf{coefficient}: in this mode, coefficients will be treat as an interger.
-NOTE: only under \textbf{``fastrun''} strategy this mode can be used.
-\end{itemize}
-
-\item \textbf{\%cubemode}
-This option control the algorithm used in the second step.
-
-Currently three value are supported.
-\begin{itemize}
-\item \textbf{together}:This strategy will process all terms together.
-\item \textbf{different}: This strategy will process all terms, but ignore term in the same polynomial.
-\item \textbf{old}: This is the traditional strategy, and it should be better than the other two in theory. But in practice, it is much slower and the result is not so better or even worse. Not recommend.
-\item \textbf{ignore}: This option means this step will be passed.
-\end{itemize}
-
-\item \textbf{\%frkernelmode}
-This option control kernel mode used in \textbf{``fastrun''} strategy
-\begin{itemize}
-\item \textbf{iterative}: recommend.
-\item \textbf{recursive}: not recommend.
-\end{itemize}
 \end{itemize}
 
 \subsection{Options that control output style}
@@ -66,10 +36,6 @@ This option controls the output style for temporary variables.
 
 There are two possible values for this option:
 \begin{itemize}
-%currently not working
-%\item \textbf{array0}: an array is used for temporary variables, and this array is start from 0(like in C).
-%currently not working
-%\item \textbf{array1}: like \textbf{array0}, but the array is start from 1 instead of 0.
 \item \textbf{pre}: the declaration of temporary variables will be put before the calculation.
 \item \textbf{in}: the declaration of temporary variable will be put when it first appears(recommend, default).
 \end{itemize}

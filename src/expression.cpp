@@ -496,7 +496,7 @@ int polynomial::multiplication_number() const
 	int sum = 0;
 	for (int i = 0; i < _vmon.size(); ++i)
 	{
-		sum += _vmon[i].multiplication_number() - 1;
+		sum += std::max(0, _vmon[i].multiplication_number() - 1);
 		if (_vmon[i].coef() != 1 && _vmon[i].coef() != -1)
 			++sum;
 	}
