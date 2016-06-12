@@ -54,11 +54,11 @@ void output_func(const string& paraname, std::ostream& os)
 			os << line_prefix;
 			if (func_style == "in")
 			{
-				os << type_str << " ";
+				os << it->ring_type() << " ";
 			}
 			os << it->_resname << "="
-			     << it->_funcname << "(" << literal_name(it->_paraid) << ")"
-			     << line_suffix << endl;
+			   << it->_funcname << "(" << literal_name(it->_paraid) << ")"
+			   << line_suffix << endl;
 			vn.push_back(it->_resname);
 			it = vfunc.erase(it);
 		}
@@ -97,11 +97,11 @@ void output_prime_func(std::ostream& os)
 			os << line_prefix;
 			if (func_style == "in")
 			{
-				os << type_str << " ";
+				os << it->ring_type() << " ";
 			}
 			os << it->_resname << "="
-			     << it->_funcname << "(" << literal_name(it->_paraid) << ")"
-			     << line_suffix << endl;
+			   << it->_funcname << "(" << literal_name(it->_paraid) << ")"
+			   << line_suffix << endl;
 			vn.push_back(it->_resname);
 			it = vfunc.erase(it);
 		}
@@ -174,6 +174,11 @@ int main(int argc, char* argv[])
 	}
 	osummul = summul;
 	cerr << summul << " multiplications" << endl;
+	if (!literal_ring_type_check())
+	{
+		cerr << "Ring type check failed, please check your ring configuration!" << endl;
+		return 1;
+	}
 	find_kernel_intersections(vP);
 	find_cube_intersections(vP);
 	if (flag_clean)
@@ -186,12 +191,16 @@ int main(int argc, char* argv[])
 	//cerr << "//rename finished" << endl;
 	if (tmp_style == "pre")
 	{
-		for (int i = 0; i <= max; ++i)
+		for (int i = 0; i < vP.size(); ++i)
 		{
-			os << line_prefix
-			   << type_str << " "
-			   << output_tmp_name(i)
-			   << line_suffix << endl;
+			if (literal_is_tmp(vP[i].name()))
+			{
+				vP[i].name().erase(vP[i].name().begin());
+				os << line_prefix
+				   << vP[i].ring_type() << " "
+				   << vP[i].name()
+				   << line_suffix << endl;
+			}
 		}
 	}
 	if (var_style == "pre")
@@ -201,7 +210,7 @@ int main(int argc, char* argv[])
 			if (!literal_is_tmp(vP[i].name()) && pass_filter(vP[i].name()))
 			{
 				os << line_prefix
-				   << type_str << " "
+				   << vP[i].ring_type() << " "
 				   << vP[i].name()
 				   << line_suffix << endl;
 			}
@@ -212,7 +221,7 @@ int main(int argc, char* argv[])
 		for (int i = 0; i < vfunc.size(); ++i)
 		{
 			os << line_prefix
-			   << type_str << " "
+			   << vfunc[i].ring_type() << " "
 			   << vfunc[i]._resname
 			   << line_suffix << endl;
 		}
@@ -228,7 +237,7 @@ int main(int argc, char* argv[])
 			if (tmp_style == "in" && declaredtmp.count(name) == 0)
 			{
 				declaredtmp.insert(name);
-				os << type_str << " ";
+				os << vP[i].ring_type() << " ";
 			}
 			vP[i].name().erase(vP[i].name().begin());
 		}
@@ -236,7 +245,7 @@ int main(int argc, char* argv[])
 		{
 			if (var_style == "in" && pass_filter(vP[i].name()))
 			{
-				os << type_str << " ";
+				os << vP[i].ring_type() << " ";
 			}
 		}
 		os << vP[i] << line_suffix << endl;

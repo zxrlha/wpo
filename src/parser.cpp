@@ -448,8 +448,8 @@ static const yytype_int8 yyrhs[] =
 static const yytype_uint8 yyrline[] =
 {
        0,    21,    21,    22,    23,    26,    27,    28,    40,    50,
-      51,    59,    65,    71,    77,    78,    86,   105,   141,   142,
-     147
+      51,    59,    65,    71,    77,    78,    86,   106,   144,   145,
+     150
 };
 #endif
 
@@ -1453,7 +1453,7 @@ yyreduce:
 /* Line 1792 of yacc.c  */
 #line 72 "parser.ypp"
     {
-	int i = literal_add(boost::lexical_cast<string>(get<int64_t>((yyvsp[(1) - (1)]))));
+	int i = literal_add(boost::lexical_cast<string>(get<int64_t>((yyvsp[(1) - (1)]))), true);
 	monomial m(i);
 	(yyval) = m;
 }
@@ -1487,6 +1487,7 @@ yyreduce:
 		{
 			nli = literal_append_tmp();
 			get<polynomial>((yyvsp[(2) - (3)])).name() = literal_name(nli);
+			literal_set_ring_level(nli, get<polynomial>((yyvsp[(2) - (3)])).ring_level());
 			vP.push_back(std::move(get<polynomial>((yyvsp[(2) - (3)]))));
 		}
 	}
@@ -1500,7 +1501,7 @@ yyreduce:
 
   case 17:
 /* Line 1792 of yacc.c  */
-#line 106 "parser.ypp"
+#line 107 "parser.ypp"
     {
 	/*a function call*/
 	int nli = vP_get(get<polynomial>((yyvsp[(3) - (4)])));
@@ -1511,6 +1512,7 @@ yyreduce:
 		{
 			nli = literal_append_func();
 			get<polynomial>((yyvsp[(3) - (4)])).name() = literal_name(nli);
+			literal_set_ring_level(nli, get<polynomial>((yyvsp[(3) - (4)])).ring_level());
 			vP.push_back(std::move(get<polynomial>((yyvsp[(3) - (4)]))));
 		}
 	}
@@ -1527,6 +1529,7 @@ yyreduce:
 		nfi = literal_append_func(); 
 		nf._resname = literal_name(nfi); 
 		vfunc.push_back(nf);
+		literal_set_ring_level(nfi, nf.ring_level());
 	}
 	else
 	{
@@ -1538,13 +1541,13 @@ yyreduce:
 
   case 18:
 /* Line 1792 of yacc.c  */
-#line 141 "parser.ypp"
+#line 144 "parser.ypp"
     { (yyval) = polynomial(get<monomial>((yyvsp[(1) - (1)]))); }
     break;
 
   case 19:
 /* Line 1792 of yacc.c  */
-#line 143 "parser.ypp"
+#line 146 "parser.ypp"
     {
 	(yyval) = std::move(get<polynomial>((yyvsp[(1) - (3)])));
 	get<polynomial>((yyval)) += std::move(get<monomial>((yyvsp[(3) - (3)])));
@@ -1553,7 +1556,7 @@ yyreduce:
 
   case 20:
 /* Line 1792 of yacc.c  */
-#line 148 "parser.ypp"
+#line 151 "parser.ypp"
     {
 	(yyval) = std::move(get<polynomial>((yyvsp[(1) - (3)])));
 	get<polynomial>((yyval)) -= std::move(get<monomial>((yyvsp[(3) - (3)])));
@@ -1562,7 +1565,7 @@ yyreduce:
 
 
 /* Line 1792 of yacc.c  */
-#line 1566 "parser.cpp"
+#line 1569 "parser.cpp"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires

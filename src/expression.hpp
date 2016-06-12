@@ -18,6 +18,8 @@ public:
 	string _funcname;
 	int _paraid;
 	string _resname;
+	int ring_level() const;
+	string ring_type() const;
 };
 
 class monomial
@@ -99,6 +101,9 @@ public:
 
 	//information for kcm
 	int multiplication_number() const;
+
+	int ring_level() const;
+	string ring_type() const;
 protected:
 	vector<std::pair<int, int>> _vterm;
 	int64_t _coef;
@@ -170,6 +175,9 @@ public:
 
 	//multiplication number
 	int multiplication_number() const;
+
+	int ring_level() const;
+	string ring_type() const;
 protected:
 	void sort();
 	vector<monomial> _vmon;

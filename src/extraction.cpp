@@ -76,6 +76,7 @@ void kcm_find_kernel_intersections(vector<polynomial>& vP)
 			}
 			vP.push_back(nlp);
 			vP.back().name() = literal_name(li);
+			literal_set_ring_level(li, nlp.ring_level());
 			bv -= nlp.multiplication_number();
 			sumbv1 += bv;
 			summul -= bv;
@@ -161,6 +162,7 @@ void fr_find_kernel_intersections(vector<polynomial>& vP)
 		if (newflag)
 		{
 			vP.push_back(bcok);
+			literal_set_ring_level(li, bcok.ring_level());
 		}
 		if (newflag)
 		{
@@ -274,6 +276,7 @@ void find_cube_intersections(vector<polynomial>& vP)
 		nl += m;
 		nl.name() = literal_name(li);
 		vP.push_back(nl);
+		literal_set_ring_level(li, nl.ring_level());
 	}
 	std::cerr << std::endl;
 }

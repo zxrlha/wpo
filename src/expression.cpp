@@ -552,3 +552,50 @@ monomial gcd(const monomial& A, const monomial& B)
 	}
 	return res;
 }
+
+int monomial::ring_level() const
+{
+	int min = literal_maxium_ring_level();
+	for (int i = 0; i < _vterm.size(); ++i)
+	{
+		int t = literal_get_ring_level(_vterm[i].first);
+		if (min > t)
+		{
+			min = t;
+		}
+	}
+	return min;
+}
+
+int polynomial::ring_level() const
+{
+	int min = literal_maxium_ring_level();
+	for (int i = 0; i < _vmon.size(); ++i)
+	{
+		int t = _vmon[i].ring_level();
+		if (min > t)
+		{
+			min = t;
+		}
+	}
+	return min;
+}
+int funcexpr::ring_level() const
+{
+	return literal_find_ring_level(_funcname);
+}
+
+string monomial::ring_type() const
+{
+	return literal_get_ring_type(ring_level());
+}
+
+string polynomial::ring_type() const
+{
+	return literal_get_ring_type(ring_level());
+}
+
+string funcexpr::ring_type() const
+{
+	return literal_get_ring_type(ring_level());
+}

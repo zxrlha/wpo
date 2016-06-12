@@ -1,16 +1,16 @@
 #include "yyglobal.hpp"
+#include "literal.hpp"
 
 vector<polynomial> vP;
 vector<funcexpr> vfunc;
 vector<int> vindex;
 
-string tmp_prefix = "tmp[";
-string tmp_suffix = "]";
+string tmp_prefix = "tmp";
+string tmp_suffix = "";
 int tmp_start = 0;
 string line_suffix = ";";
 string line_prefix = "    ";
-string type_str = "double";
-string tmp_style = "array0";//array0 array1 pre in null
+string tmp_style = "in";//pre in null
 string var_style = "in"; //pre in null
 string var_filter = "[]():.";
 string func_prefix = "func";
@@ -41,13 +41,17 @@ int vfunc_get(const funcexpr& fe)
 	}
 	return -1;
 }
+
 void parse_options(const string& name, const string& value)
 {
 	if (name == "tmp_prefix") tmp_prefix = value;
 	else if (name == "tmp_suffix") tmp_suffix = value;
 	else if (name == "line_prefix") line_prefix = value;
 	else if (name == "line_suffix") line_suffix = value;
-	else if (name == "type") type_str = value;
+	else if (name == "type")
+	{
+		literal_parse_ring("type0", value);
+	}
 	else if (name == "tmp_style") tmp_style = value;
 	else if (name == "var_style") var_style = value;
 	else if (name == "var_filter") var_filter = value;
@@ -56,6 +60,10 @@ void parse_options(const string& name, const string& value)
 	else if (name == "strategy") strategy = value;
 	else if (name == "clean") flag_clean = (value == "true");
 	else if (name == "reuse") flag_reuse = (value == "true");
+	else if (name.compare(0, 4, "ring") == 0)
+	{
+		literal_parse_ring(name.substr(4), value);
+	}
 	else
 	{
 		std::cerr << "ERROR:Unknown option:" << name << std::endl;

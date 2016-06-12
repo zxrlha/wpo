@@ -70,7 +70,7 @@ IDENTIFY
 }
 | NUMBER
 {
-	int i = literal_add(boost::lexical_cast<string>(get<int64_t>($1)));
+	int i = literal_add(boost::lexical_cast<string>(get<int64_t>($1)), true);
 	monomial m(i);
 	$$ = m;
 }
@@ -93,6 +93,7 @@ varstr:
 		{
 			nli = literal_append_tmp();
 			get<polynomial>($2).name() = literal_name(nli);
+			literal_set_ring_level(nli, get<polynomial>($2).ring_level());
 			vP.push_back(std::move(get<polynomial>($2)));
 		}
 	}
@@ -113,6 +114,7 @@ varstr:
 		{
 			nli = literal_append_func();
 			get<polynomial>($3).name() = literal_name(nli);
+			literal_set_ring_level(nli, get<polynomial>($3).ring_level());
 			vP.push_back(std::move(get<polynomial>($3)));
 		}
 	}
@@ -129,6 +131,7 @@ varstr:
 		nfi = literal_append_func(); 
 		nf._resname = literal_name(nfi); 
 		vfunc.push_back(nf);
+		literal_set_ring_level(nfi, nf.ring_level());
 	}
 	else
 	{
