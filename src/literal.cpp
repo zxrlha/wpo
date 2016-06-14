@@ -166,7 +166,7 @@ void literal_parse_ring(const string& name, const string& value)
 	else
 	{
 		std::cerr << "ERROR:" << "Unknown ring options: " << name << std::endl;
-		::exit(1);
+		error_end();
 	}
 }
 
