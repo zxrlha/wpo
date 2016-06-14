@@ -29,6 +29,8 @@ extern string strategy;
 extern bool flag_clean;
 extern bool flag_reuse;
 
+extern string in_file;
+
 extern int64_t summul;
 extern int64_t osummul;
 
@@ -36,4 +38,7 @@ int vP_get(const polynomial& P);
 int vfunc_get(const funcexpr& fe);
 
 void parse_options(const string& name, const string& value);
+
+void error_end();
+
 #endif

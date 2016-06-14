@@ -191,7 +191,7 @@ void find_kernel_intersections(vector<polynomial>& vP)
 	else
 	{
 		std::cerr << "ERROR: unknown strategy " << strategy << std::endl;
-		exit(1);
+		error_end();
 	}
 	std::cerr << std::endl;
 }

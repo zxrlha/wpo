@@ -127,7 +127,7 @@ int main(int argc, char* argv[])
 	("version,v", "print version information")
 	("input,i", po::value<std::string>(), "input file")
 	("output,o", po::value<std::string>(), "output file")
-	("append,a", "append instead of overwrite")
+	("append,a", "append to the output file instead of overwrite it")
 	;
 	po::variables_map vm;
 	po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -144,10 +144,11 @@ int main(int argc, char* argv[])
 	}
 	if (vm.count("input"))
 	{
-		yyin = fopen(vm["input"].as<std::string>().c_str(), "r");
+		in_file = vm["input"].as<std::string>();
+		yyin = fopen(in_file.c_str(), "r");
 		if (!yyin)
 		{
-			std::cerr << "ERROR: Cannot open input file " << vm["input"].as<std::string>() << std::endl;
+			std::cerr << "ERROR: Cannot open input file " << in_file << std::endl;
 			return 1;
 		}
 	}
@@ -163,6 +164,7 @@ int main(int argc, char* argv[])
 		if (!tofs->is_open())
 		{
 			std::cerr << "ERROR: Cannot open output file " << vm["output"].as<std::string>() << std::endl;
+			return 1;
 		}
 		pos = tofs;
 	}
