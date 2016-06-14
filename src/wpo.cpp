@@ -127,6 +127,7 @@ int main(int argc, char* argv[])
 	("version,v", "print version information")
 	("input,i", po::value<std::string>(), "input file")
 	("output,o", po::value<std::string>(), "output file")
+	("append,a", "append instead of overwrite")
 	;
 	po::variables_map vm;
 	po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -153,7 +154,12 @@ int main(int argc, char* argv[])
 	std::ostream* pos;
 	if (vm.count("output"))
 	{
-		std::ofstream* tofs = new std::ofstream(vm["output"].as<std::string>());
+		auto mode = std::ios::out;
+		if (vm.count("append"))
+		{
+			mode |= std::ios::app;
+		}
+		std::ofstream* tofs = new std::ofstream(vm["output"].as<std::string>(), mode);
 		if (!tofs->is_open())
 		{
 			std::cerr << "ERROR: Cannot open output file " << vm["output"].as<std::string>() << std::endl;
