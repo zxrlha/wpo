@@ -34,6 +34,7 @@ public:
 	explicit monomial(int l, int p = 1)
 		:_vterm{std::make_pair(l, p)}
 	{
+        assert(l >= 0);
 		_coef = 1;
 	}
 	monomial(const monomial&) = default;

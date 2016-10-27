@@ -44,6 +44,8 @@ IDENTIFY '=' exp
 	vP.push_back(P);
 	vindex.push_back(vP.size());
 	std::cerr<<"Parsing..."<<vindex.size()<<" polynomials have been parsed\r";
+    //add this polynomial into literal if not added, so if this part appear in another polynomial can be replaced by this literal
+    literal_add(P.name());
 }
 
 monowithsign:

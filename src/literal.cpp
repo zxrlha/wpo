@@ -66,6 +66,8 @@ bool literal_is_tmp(const string& name)
 
 bool literal_is_tmp(int i)
 {
+    if (i > vlit.size()) std::cerr<<i<<std::endl;
+    assert(i<vlit.size());
 	return literal_is_tmp(vlit[i]);
 }
 
@@ -107,14 +109,19 @@ int literal_get(const string& name)
 
 int literal_add(const string& name, bool numflag)
 {
+    string newname = name;
+    if (numflag)//we need to add prefix and suffix
+    {
+        newname = num_prefix + name + num_suffix;
+    }
 	for (int i = 0; i < vlit.size(); ++i)
 	{
-		if (vlit[i] == name)
+		if (vlit[i] == newname)
 		{
 			return i;
 		}
 	}
-	int i = literal_append(name);
+	int i = literal_append(newname);
 	if (numflag)
 	{
 		literal_set_ring_level(i, literal_maxium_ring_level());//set maxium level for numbers

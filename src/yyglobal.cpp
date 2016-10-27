@@ -7,6 +7,8 @@ vector<int> vindex;
 
 string tmp_prefix = "tmp";
 string tmp_suffix = "";
+string num_prefix = "";
+string num_suffix = "";
 int tmp_start = 0;
 string line_suffix = ";";
 string line_prefix = "    ";
@@ -59,6 +61,14 @@ void parse_options(const string& name, const string& value)
 	{
 		tmp_suffix = value;
 	}
+    else if (name == "num_prefix")
+    {
+        num_prefix = value;
+    }
+    else if (name == "num_suffix")
+    {
+        num_suffix = value;
+    }
 	else if (name == "line_prefix")
 	{
 		line_prefix = value;

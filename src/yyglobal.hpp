@@ -16,6 +16,8 @@ extern vector<int> vindex;
 
 extern string tmp_prefix;
 extern string tmp_suffix;
+extern string num_prefix;
+extern string num_suffix;
 extern int tmp_start;
 extern string line_prefix;
 extern string line_suffix;

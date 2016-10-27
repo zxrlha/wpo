@@ -2,6 +2,7 @@
 #include <algorithm>
 #include "expression.hpp"
 #include "literal.hpp"
+#include "yyglobal.hpp"
 
 using std::min;
 using std::max;
@@ -328,7 +329,7 @@ ostream& operator<<(ostream& os, const monomial& m)
 	}
 	if (status == 0)
 	{
-		os << "1";
+		os << num_prefix << "1" << num_suffix;
 	}
 	return os;
 }
