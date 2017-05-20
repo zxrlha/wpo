@@ -30,6 +30,7 @@ extern string func_style;
 extern string strategy;
 extern bool flag_clean;
 extern bool flag_reuse;
+extern int64_t max_terms;
 
 extern string in_file;
 

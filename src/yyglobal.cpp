@@ -20,6 +20,7 @@ string func_style = "in";
 string strategy = "kcm";//kcm fastrun
 bool flag_clean = true;
 bool flag_reuse = true;
+int64_t max_terms = 0;
 
 string in_file = "";
 

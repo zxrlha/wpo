@@ -27,6 +27,9 @@ Supported values are the following:
 \item \textbf{fastrun}: Do simple optimization, which is fast but results are not so good. Recommend for extreme heavy input expressions.
 \end{itemize}
 
+\item \textbf{\%max\_terms}: This is an option followed by a number,
+    which indicates the maximal number of polynomials considered at the same time in Step 2. By default it is set to zero, which means all polynomials are considered at the same time.
+        To reduce the running time, it can be set to a number much smaller than the total number of polynomial, like 1000.
 \end{itemize}
 
 \subsection{Options that control output style}
