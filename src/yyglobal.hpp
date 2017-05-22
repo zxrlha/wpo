@@ -31,6 +31,7 @@ extern string strategy;
 extern bool flag_clean;
 extern bool flag_reuse;
 extern int64_t max_terms;
+extern int64_t threads_num;
 
 extern string in_file;
 
@@ -41,6 +42,7 @@ int vP_get(const polynomial& P);
 int vfunc_get(const funcexpr& fe);
 
 void parse_options(const string& name, const string& value);
+void parse_options(const string& name, int64_t value);
 
 void error_end();
 

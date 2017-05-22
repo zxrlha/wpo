@@ -4,6 +4,7 @@
 #include <iomanip>
 #include <cstdlib>
 #include <functional>
+#include <thread>
 #include "kcm.hpp"
 #include "extraction.hpp"
 #include "kernel.hpp"
@@ -197,16 +198,8 @@ void find_kernel_intersections(vector<polynomial>& vP)
     std::cerr << std::endl;
 }
 
-bool fr_parts_cube_intersection(const vector<polynomial>& vP, monomial& m, size_t start, size_t end)
+bool fr_parts_cube_intersection(const vector<monomial>& mat, monomial& m)
 {
-    std::vector<monomial> mat;
-    for (int i = start; i < end; ++i)
-    {
-        for (int j = 0; j < vP[i].size(); ++j)
-        {
-            mat.push_back(vP[i][j]);
-        }
-    }
     int v = 1;
     int bi = -1;
     int bj = -1;
@@ -233,18 +226,57 @@ bool fr_parts_cube_intersection(const vector<polynomial>& vP, monomial& m, size_
 
 bool fr_cube_intersection(const vector<polynomial>& vP, monomial& m)
 {
-    //for simplify, we just return the first true part
-    if (max_terms == 0) { return fr_parts_cube_intersection(vP, m, 0, vP.size()); }
+    if (max_terms == 0)
+    {
+        std::vector<monomial> mat;
+        for (int i = 0; i < vP.size(); ++i)
+        {
+            for (int j = 0; j < vP[i].size(); ++j)
+            {
+                mat.push_back(vP[i][j]);
+            }
+        }
+        return fr_parts_cube_intersection(mat, m);
+    }
     else
     {
-        for (size_t start = 0; start < vP.size(); start += max_terms)
+        //Inspired by Shellsort
+        //We record previous runs to speed up
+        //This is the steps size
+        static int64_t steps = 0;
+        static int64_t base_shift = 0;
+        static int64_t start_index = 0;
+        //Initialize step size according to max_terms
+        if (steps == 0) { steps = vP.size() / max_terms + 1; }
+        //now start
+        for (; steps != 0; --steps)
         {
-            size_t end = std::min(start + max_terms, vP.size());
-            bool status = fr_parts_cube_intersection(vP, m, start, end);
-            if (status) { return true; }
+            for (; base_shift < vP.size(); base_shift += steps * max_terms)
+            {
+                for (; start_index < steps; ++start_index)
+                {
+                    //set the matrix
+                    std::vector<monomial> mat;
+                    for (int cti = 0; cti < max_terms; ++cti)
+                    {
+                        int index = start_index + cti * steps + base_shift;
+                        if (index >= vP.size()) { break; }
+                        for (int j = 0; j < vP[index].size(); ++j)
+                        {
+                            mat.push_back(vP[index][j]);
+                        }
+                    }
+                    int status = fr_parts_cube_intersection(mat, m);
+                    if (status) { return true; }
+                }
+                //reset start_index
+                start_index = 0;
+            }
+            //reset base_shift
+            base_shift = 0;
         }
+        return false;
     }
-    return false;
 }
 
 void find_cube_intersections(vector<polynomial>& vP)
