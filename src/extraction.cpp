@@ -247,6 +247,8 @@ bool fr_cube_intersection(const vector<polynomial>& vP, monomial& m)
         static int64_t base_shift = 0;
         static int64_t start_index = 0;
         //Initialize step size according to max_terms
+        //the predefined setting for max_terms
+        if (max_terms == -1) { max_terms = sqrt(vP.size()); }
         if (steps == 0) { steps = vP.size() / max_terms + 1; }
         //now start
         for (; steps != 0; --steps)
