@@ -1,6 +1,10 @@
 #include "yyglobal.hpp"
 #include "literal.hpp"
+#include <map>
 
+using std::map;
+
+map<polynomial, int> vPmap;
 vector<polynomial> vP;
 vector<funcexpr> vfunc;
 vector<int> vindex;
@@ -28,16 +32,37 @@ string in_file = "";
 int64_t summul = 0;
 int64_t osummul = 0;
 
-int vP_get(const polynomial& P)
+void vP_replace(int i, const polynomial& nP)
 {
+    polynomial& P = vP[i];
+    auto it = vPmap.find(P);
+    assert(it != vPmap.end());
+    assert(it->second == i);
+    vPmap.erase(it);
+    vPmap.insert(std::make_pair(nP, i));
+    P = nP;
+}
+
+void vP_rebuild_map()
+{
+    vPmap.clear();
     for (int i = 0; i < vP.size(); ++i)
     {
-        if (P == vP[i])
-        {
-            return i;
-        }
+        vPmap.insert(std::make_pair(vP[i], i));
     }
-    return -1;
+}
+
+void vP_push(const polynomial& P)
+{
+    vPmap.insert(std::make_pair(P, vP.size()));
+    vP.push_back(P);
+}
+
+int vP_get(const polynomial& P)
+{
+    auto it = vPmap.find(P);
+    if (it != vPmap.end()) return it->second;
+    else return -1;
 }
 
 int vfunc_get(const funcexpr& fe)

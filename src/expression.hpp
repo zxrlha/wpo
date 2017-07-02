@@ -232,7 +232,8 @@ inline bool operator!=(const monomial& A, const monomial& B)
 }
 
 bool operator==(const polynomial& A, const polynomial& B);
-/*
+
+//for vPmap
 bool operator<(const polynomial& A, const polynomial& B);
 inline bool operator>(const polynomial& A, const polynomial& B)
 {
@@ -246,7 +247,6 @@ inline bool operator>=(const polynomial& A, const polynomial& B)
 {
     return !(A < B);
 }
-*/
 
 //output operator for view and debug
 ostream& operator<<(ostream& os, const monomial& m);

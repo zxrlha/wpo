@@ -137,13 +137,12 @@ void fr_find_kernel_intersections(vector<polynomial>& vP)
             break;
         }
         //build new literal polynomial
-        polynomial& P = vP[pi];
-        polynomial bcok = P / bk;
-        int64_t before = P.multiplication_number();
-        //rewrote P
+        polynomial nP = vP[pi];
+        polynomial bcok = nP / bk;
+        int64_t before = nP.multiplication_number();
         for (int i = 0; i < bcok.size(); ++i)
         {
-            P.remove(bk * bcok[i]);
+            nP.remove(bk * bcok[i]);
         }
         int li;
         li = vP_get(bcok);
@@ -159,11 +158,13 @@ void fr_find_kernel_intersections(vector<polynomial>& vP)
         }
         bcok.name() = literal_name(li);
         monomial nm(li);
-        P += nm * bk;
-        int64_t after = P.multiplication_number();
+        nP += nm * bk;
+        //now we should modify both P in vP and vPmap
+        vP_replace(pi, nP);
+        int64_t after = nP.multiplication_number();
         if (newflag)
         {
-            vP.push_back(bcok);
+            vP_push(bcok);
             literal_set_ring_level(li, bcok.ring_level());
         }
         if (newflag)

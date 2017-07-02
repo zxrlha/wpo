@@ -128,6 +128,7 @@ int main(int argc, char* argv[])
 	("input,i", po::value<std::string>(), "input file")
 	("output,o", po::value<std::string>(), "output file")
 	("append,a", "append to the output file instead of overwrite it")
+    ("coef,", po::value<std::string>(), "create a new file, see manual for more detail")
 	;
 	po::variables_map vm;
 	po::store(po::parse_command_line(argc, argv, desc), vm);

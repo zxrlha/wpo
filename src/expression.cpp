@@ -286,6 +286,30 @@ bool operator==(const polynomial& A, const polynomial& B)
 	return true;
 }
 
+bool operator<(const polynomial& A, const polynomial& B)
+{
+	if (A.size() < B.size())
+	{
+		return true;
+	}
+	if (A.size() > B.size())
+	{
+		return false;
+	}
+	for (int i = 0; i < A.size(); ++i)
+	{
+		if (A[i] < B[i])
+		{
+			return true;
+		}
+        if (A[i] > B[i])
+        {
+            return false;
+        }
+	}
+	return false;
+}
+
 bool polynomial::contain(const monomial& m) const
 {
 	return std::binary_search(_vmon.begin(), _vmon.end(), m);
