@@ -171,7 +171,7 @@ int main(int argc, char* argv[])
         }
         ostream& os = *tpos;
         //first information
-        os<<vinfo_prefix[rl]<<vmax[rl]<<vinfo_suffix[rl]<<std::endl;
+        os<<vinfo_prefix[rl]<<vmax[rl]+1<<vinfo_suffix[rl]<<std::endl;
         //pre declarations
         for (int i = 0; i < vorder[rl].size(); ++i)
         {
