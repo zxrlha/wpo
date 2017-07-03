@@ -22,251 +22,244 @@ using std::string;
 extern int yyparse();
 extern FILE* yyin;
 
-bool pass_filter(const std::string& name)
+bool pass_filter(const std::string& name, int rl)
 {
-	if (name.find_first_of(var_filter) != std::string::npos)
-	{
-		return false;
-	}
-	else
-	{
-		return true;
-	}
+    if (name.find_first_of(vvar_filter[rl]) != std::string::npos)
+    {
+        return false;
+    }
+    else
+    {
+        return true;
+    }
 }
 
 void debug_out()
 {
-	for (int i = 0; i < vP.size(); ++i)
-	{
-		string name = vP[i].name();
-		cout << line_prefix;
-		cout << vP[i] << line_suffix << endl;
-	}
+    for (int i = 0; i < vP.size(); ++i)
+    {
+        string name = vP[i].name();
+        cout << vP[i] << endl;
+    }
 }
-
-void output_func(const string& paraname, std::ostream& os)
+void debug_out(vector<vector<int>>& vorder)
 {
-	vector<string> vn;
-	for (auto it = vfunc.begin(); it != vfunc.end();)
-	{
-		if (literal_name(it->_paraid) == paraname)
-		{
-			os << line_prefix;
-			if (func_style == "in")
-			{
-				os << it->ring_type() << " ";
-			}
-			os << it->_resname << "="
-			   << it->_funcname << "(" << literal_name(it->_paraid) << ")"
-			   << line_suffix << endl;
-			vn.push_back(it->_resname);
-			it = vfunc.erase(it);
-		}
-		else
-		{
-			++it;
-		}
-	}
-	for (auto str : vn)
-	{
-		output_func(str, os);
-	}
-}
-
-void output_prime_func(std::ostream& os)
-{
-	set<string> calced;
-	for (auto P : vP)
-	{
-		string ns(P.name());
-		if (literal_is_tmp(P.name()))
-		{
-			ns.erase(ns.begin());
-		}
-		calced.insert(ns);
-	}
-	for (auto fe : vfunc)
-	{
-		calced.insert(fe._resname);
-	}
-	vector<string> vn;
-	for (auto it = vfunc.begin(); it != vfunc.end();)
-	{
-		if (calced.count(literal_name(it->_paraid)) == 0)
-		{
-			os << line_prefix;
-			if (func_style == "in")
-			{
-				os << it->ring_type() << " ";
-			}
-			os << it->_resname << "="
-			   << it->_funcname << "(" << literal_name(it->_paraid) << ")"
-			   << line_suffix << endl;
-			vn.push_back(it->_resname);
-			it = vfunc.erase(it);
-		}
-		else
-		{
-			++it;
-		}
-	}
-	for (auto str : vn)
-	{
-		output_func(str, os);
-	}
+    for (int i = 0; i < vorder.size(); ++i)
+    {
+        for (int j = 0; j < vorder[i].size(); ++j)
+        {
+            if (vorder[i][j] < 0)
+            {
+                cout << vline_prefix[i];
+                cout << literal_get_ring_type(i) << " " << vfunc[-vorder[i][j] - 1]._resname << "=" << vfunc[-vorder[i][j] - 1]._funcname << "(" << literal_name(vfunc[-vorder[i][j] - 1]._paraid) << ")" << vline_suffix[i] << endl;
+            }
+            else
+            {
+                cout << vline_prefix[i];
+                cout << literal_get_ring_type(i) << " " << vP[vorder[i][j]] << vline_suffix[i] << endl;
+            }
+        }
+    }
 }
 
 namespace po = boost::program_options;
 
 int main(int argc, char* argv[])
 {
-	std::cerr.precision(4);
-	po::options_description desc("Allowd options");
-	desc.add_options()
-	("help,h", "print help message")
-	("version,v", "print version information")
-	("input,i", po::value<std::string>(), "input file")
-	("output,o", po::value<std::string>(), "output file")
-	("append,a", "append to the output file instead of overwrite it")
-    ("coef,", po::value<std::string>(), "create a new file, see manual for more detail")
-	;
-	po::variables_map vm;
-	po::store(po::parse_command_line(argc, argv, desc), vm);
-	po::notify(vm);
-	if (vm.count("help"))
-	{
-		std::cout << desc << std::endl;
-		return 0;
-	}
-	if (vm.count("version"))
-	{
-		std::cout << PACKAGE_STRING << std::endl;
-		return 0;
-	}
-	if (vm.count("input"))
-	{
-		in_file = vm["input"].as<std::string>();
-		yyin = fopen(in_file.c_str(), "r");
-		if (!yyin)
-		{
-			std::cerr << "ERROR: Cannot open input file " << in_file << std::endl;
-			return 1;
-		}
-	}
-	std::ostream* pos;
-	if (vm.count("output"))
-	{
-		auto mode = std::ios::out;
-		if (vm.count("append"))
-		{
-			mode |= std::ios::app;
-		}
-		std::ofstream* tofs = new std::ofstream(vm["output"].as<std::string>(), mode);
-		if (!tofs->is_open())
-		{
-			std::cerr << "ERROR: Cannot open output file " << vm["output"].as<std::string>() << std::endl;
-			return 1;
-		}
-		pos = tofs;
-	}
-	else
-	{
-		pos = &cout;
-	}
-	std::ostream& os = *pos;
-	cerr << "Parsing\r";
-	yyparse();
-	cerr << "Total " << vP.size() << " polynomials, ";
-	for (int i = 0; i < vP.size(); ++i)
-	{
-		summul += vP[i].multiplication_number();
-	}
-	osummul = summul;
-	cerr << summul << " multiplications" << endl;
-	if (!literal_ring_type_check())
-	{
-		cerr << "Ring type check failed, please check your ring configuration!" << endl;
-		return 1;
-	}
-	find_kernel_intersections(vP);
-	find_cube_intersections(vP);
-	if (flag_clean)
-	{
-		clean(vP);
-	}
-	reorder(vP);
-	//cerr << "//reorder finished" << endl;
-	int max = rename(vP);
-	//cerr << "//rename finished" << endl;
-	if (tmp_style == "pre")
-	{
-		for (int i = 0; i < vP.size(); ++i)
-		{
-			if (literal_is_tmp(vP[i].name()))
-			{
-				vP[i].name().erase(vP[i].name().begin());
-				os << line_prefix
-				   << vP[i].ring_type() << " "
-				   << vP[i].name()
-				   << line_suffix << endl;
-			}
-		}
-	}
-	if (var_style == "pre")
-	{
-		for (int i = 0; i < vP.size(); ++i)
-		{
-			if (!literal_is_tmp(vP[i].name()) && pass_filter(vP[i].name()))
-			{
-				os << line_prefix
-				   << vP[i].ring_type() << " "
-				   << vP[i].name()
-				   << line_suffix << endl;
-			}
-		}
-	}
-	if (func_style == "pre")
-	{
-		for (int i = 0; i < vfunc.size(); ++i)
-		{
-			os << line_prefix
-			   << vfunc[i].ring_type() << " "
-			   << vfunc[i]._resname
-			   << line_suffix << endl;
-		}
-	}
-	output_prime_func(os);
-	set<string> declaredtmp;
-	for (int i = 0; i < vP.size(); ++i)
-	{
-		string name = vP[i].name();
-		os << line_prefix;
-		if (literal_is_tmp(name))
-		{
-			if (tmp_style == "in" && declaredtmp.count(name) == 0)
-			{
-				declaredtmp.insert(name);
-				os << vP[i].ring_type() << " ";
-			}
-			vP[i].name().erase(vP[i].name().begin());
-		}
-		else
-		{
-			if (var_style == "in" && pass_filter(vP[i].name()))
-			{
-				os << vP[i].ring_type() << " ";
-			}
-		}
-		os << vP[i] << line_suffix << endl;
-		output_func(vP[i].name(), os);
-	}
-	if (vm.count("input"))
-	{
-		fclose(yyin);
-	}
-	if (vm.count("output"))
-	{
-		delete pos;
-	}
-	return 0;
+    std::cerr.precision(4);
+    po::options_description desc("Allowd options");
+    desc.add_options()
+    ("help,h", "print help message")
+    ("version,v", "print version information")
+    ("input,i", po::value<std::string>(), "input file")
+    ("output,o", po::value<std::string>(), "output file")
+    ("append,a", "append to the output file instead of overwrite it")
+    ;
+    po::variables_map vm;
+    po::store(po::parse_command_line(argc, argv, desc), vm);
+    po::notify(vm);
+    if (vm.count("help"))
+    {
+        std::cout << desc << std::endl;
+        return 0;
+    }
+    if (vm.count("version"))
+    {
+        std::cout << PACKAGE_STRING << std::endl;
+        return 0;
+    }
+    if (vm.count("input"))
+    {
+        in_file = vm["input"].as<std::string>();
+        yyin = fopen(in_file.c_str(), "r");
+        if (!yyin)
+        {
+            std::cerr << "ERROR: Cannot open input file " << in_file << std::endl;
+            return 1;
+        }
+    }
+    std::ostream* pos;
+    if (vm.count("output"))
+    {
+        auto mode = std::ios::out;
+        if (vm.count("append"))
+        {
+            mode |= std::ios::app;
+        }
+        std::ofstream* tofs = new std::ofstream(vm["output"].as<std::string>(), mode);
+        if (!tofs->is_open())
+        {
+            std::cerr << "ERROR: Cannot open output file " << vm["output"].as<std::string>() << std::endl;
+            return 1;
+        }
+        pos = tofs;
+    }
+    else
+    {
+        pos = &cout;
+    }
+    cerr << "Parsing\r";
+    yyparse();
+    cerr << "Total " << vP.size() << " polynomials, ";
+    for (int i = 0; i < vP.size(); ++i)
+    {
+        summul += vP[i].multiplication_number();
+    }
+    osummul = summul;
+    cerr << summul << " multiplications" << endl;
+    if (!literal_ring_type_check())
+    {
+        cerr << "Ring type check failed, please check your declaration for ringtype!" << endl;
+        return 1;
+    }
+    init_ring_defaults();
+    find_kernel_intersections(vP);
+    find_cube_intersections(vP);
+    if (flag_clean)
+    {
+        clean();
+    }
+    vector<vector<int>> vorder;
+    reorder(vorder);
+    //cerr << "//reorder finished" << endl;
+    vector<int> vmax;
+    rename(vorder, vmax);
+    //cerr << "//rename finished" << endl;
+    //now output
+    for (int rl = 0; rl < vorder.size(); ++rl)
+    {
+        ostream* tpos;
+        if (voutput_filename.size() == 0)//use output specified from command line
+        {
+            tpos = pos;
+        }
+        else
+        {
+            assert(voutput_filename.size() > rl);
+            auto mode = std::ios::out;
+            if (vm.count("append"))
+            {
+                mode |= std::ios::app;
+            }
+            std::ofstream* vrlos = new std::ofstream(voutput_filename[rl], mode);
+            if (!vrlos->is_open())
+            {
+                std::cerr << "ERROR: Cannot open output file " << vm["output"].as<std::string>() << std::endl;
+                return 1;
+            }
+            tpos = vrlos;
+        }
+        ostream& os = *tpos;
+        //first information
+        os<<vinfo_prefix[rl]<<vmax[rl]<<vinfo_suffix[rl]<<std::endl;
+        //pre declarations
+        for (int i = 0; i < vorder[rl].size(); ++i)
+        {
+            int index = vorder[rl][i];
+            if (index < 0)//functions
+            {
+                index = -1 - index;
+                assert(literal_is_tmp(vfunc[index]._resname));
+                if (vtmp_style[rl] == "pre")
+                {
+                    vfunc[index]._resname.erase(vfunc[index]._resname.begin());
+                    os << vline_prefix[rl]
+                       << vfunc[index].ring_type() << " "
+                       << vfunc[index]._resname
+                       << vline_suffix[rl] << endl;
+                }
+            }
+            else
+            {
+                if (vtmp_style[rl] == "pre" && literal_is_tmp(vP[index].name()))
+                {
+                    vP[index].name().erase(vP[index].name().begin());
+                    os << vline_prefix[rl]
+                       << vP[index].ring_type() << " "
+                       << vP[index].name()
+                       << vline_suffix[rl] << endl;
+                }
+                else if (vvar_style[rl] == "pre" && pass_filter(vP[index].name(), rl))
+                    os << vline_prefix[rl]
+                       << vP[i].ring_type() << " "
+                       << vP[i].name()
+                       << vline_suffix[rl] << endl;
+            }
+        }
+        //then output them in order
+        set<string> declaredtmp;
+        for (int i = 0; i < vorder[rl].size(); ++i)
+        {
+            int index = vorder[rl][i];
+            if (index < 0)//functions
+            {
+                index = -1 - index;
+                if (vtmp_style[rl] != "pre")//for in,null,we may need to declare it here
+                {
+                    assert(literal_is_tmp(vfunc[index]._resname));
+                    vfunc[index]._resname.erase(vfunc[index]._resname.begin());
+                }
+                os << vline_prefix[rl];
+                if (vtmp_style[rl] == "in" && declaredtmp.count(vfunc[index]._resname) == 0)
+                {
+                    declaredtmp.insert(vfunc[index]._resname);
+                    os << vfunc[index].ring_type() << " ";
+                }
+                os << vfunc[index]._resname << "="
+                   << vfunc[index]._funcname << "(" << literal_name(vfunc[index]._paraid) << ")"
+                   << vline_suffix[rl] << endl;
+            }
+            else
+            {
+                os << vline_prefix[rl];
+                if (literal_is_tmp(vP[index].name()))
+                {
+                    if (vtmp_style[rl] == "in" && declaredtmp.count(vP[index].name()) == 0)
+                    {
+                        declaredtmp.insert(vP[index].name());
+                        os << vP[index].ring_type() << " ";
+                    }
+                    vP[index].name().erase(vP[index].name().begin());
+                }
+                else if (vvar_style[rl] == "in" && pass_filter(vP[index].name(), rl))
+                {
+                    os << vP[index].ring_type() << " ";
+                }
+                os << vP[index] << vline_suffix[rl] << endl;
+            }
+        }
+        if (voutput_filename.size() != 0)//use output specified from command line
+        {
+            delete tpos;
+        }
+    }
+    if (vm.count("input"))
+    {
+        fclose(yyin);
+    }
+    if (vm.count("output"))
+    {
+        delete pos;
+    }
+    return 0;
 }

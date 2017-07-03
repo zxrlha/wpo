@@ -252,6 +252,6 @@ inline bool operator>=(const polynomial& A, const polynomial& B)
 ostream& operator<<(ostream& os, const monomial& m);
 ostream& operator<<(ostream& os, const polynomial& m);
 
-monomial gcd(const monomial& A, const monomial& B);
-int gcd_mn(const monomial& A, const monomial& B);
+monomial gcd(const monomial& A, const monomial& B, int minlvl, int maxlvl);
+int gcd_mn(const monomial& A, const monomial& B, int minlvl, int maxlvl);
 #endif

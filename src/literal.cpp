@@ -14,9 +14,9 @@ namespace
     map<string, int> vlit_map;
     vector<int> vlitlvl;
     int tmpi = 0;
-    int funci = 0;
     vector<string> vrtype;
     map<string, int> vidlvl;
+    int dftlvl = 0;
 }
 
 int literal_append(const string& name)
@@ -37,7 +37,7 @@ int literal_find_ring_level(const string& name)
     }
     else
     {
-        lvl = 0;
+        lvl = dftlvl;
     }
     return lvl;
 }
@@ -46,12 +46,6 @@ int literal_append_tmp()
 {
     ++tmpi;
     return literal_append("#tmp" + boost::lexical_cast<string>(tmpi));
-}
-
-int literal_append_func()
-{
-    ++funci;
-    return literal_append(func_prefix + boost::lexical_cast<string>(funci));
 }
 
 bool literal_is_tmp(const string& name)
@@ -124,7 +118,7 @@ int literal_add(const string& name, bool numflag)
     i = literal_append(newname);
     if (numflag)
     {
-        literal_set_ring_level(i, literal_maxium_ring_level());//set maxium level for numbers
+        literal_set_ring_level(i, literal_maximum_ring_level());//set maximum level for numbers
     }
     return i;
 }
@@ -132,9 +126,10 @@ int literal_add(const string& name, bool numflag)
 void literal_set_name(int i, const string& name)
 {
     auto it = vlit_map.find(vlit[i]);
-    vlit_map.erase(it);
+    //this function is called when output code, so we shouldn't change vlit_map, because different literals may have same name(if reuse is on)
+    //vlit_map.erase(it);
     vlit[i] = name;
-    vlit_map.insert(std::make_pair(name, i));
+    //vlit_map.insert(std::make_pair(name, i));
 }
 
 void literal_set_ring_level(int i, int lvl)
@@ -147,7 +142,7 @@ int literal_get_ring_level(int i)
     return vlitlvl[i];
 }
 
-int literal_maxium_ring_level()
+int literal_maximum_ring_level()
 {
     return vrtype.size() - 1;
 }
@@ -172,6 +167,11 @@ void literal_parse_ring(const string& name, const string& value)
     {
         int level = boost::lexical_cast<std::int64_t>(name.substr(2));
         vidlvl[value] = level;
+    }
+    else if (name == "_default_level")
+    {
+        int level = boost::lexical_cast<std::int64_t>(value);
+        dftlvl = level;
     }
     else
     {

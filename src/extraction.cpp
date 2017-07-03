@@ -90,7 +90,7 @@ void kcm_find_kernel_intersections(vector<polynomial>& vP)
     }
 }
 
-bool fr_cube_intersection(const polynomial& P, monomial& m)
+bool fr_cube_intersection(const polynomial& P, monomial& m, int minlvl, int maxlvl)
 {
     int v = 0;
     int bi = -1;
@@ -99,7 +99,7 @@ bool fr_cube_intersection(const polynomial& P, monomial& m)
     {
         for (int j = i + 1; j < P.size(); ++j)
         {
-            int mn = gcd_mn(P[i], P[j]);
+            int mn = gcd_mn(P[i], P[j], minlvl, maxlvl);
             if (mn > v)
             {
                 bi = i;
@@ -112,7 +112,7 @@ bool fr_cube_intersection(const polynomial& P, monomial& m)
     {
         return false;
     }
-    m = gcd(P[bi], P[bj]);
+    m = gcd(P[bi], P[bj], minlvl, maxlvl);
     return true;
 }
 
@@ -120,13 +120,16 @@ void fr_find_kernel_intersections(vector<polynomial>& vP)
 {
     int sumbv1 = 0;
     int pi = 0;
+    //for kernel part, minlvl is always 0, and we increase maxlvl till maximum ring level
+    int minlvl = 0;
+    int maxlvl = 0;
     while (true)
     {
         monomial bk;
-        bool flag = flag;
+        bool flag = false;
         for (; pi < vP.size(); ++pi)
         {
-            flag = fr_cube_intersection(vP[pi], bk);
+            flag = fr_cube_intersection(vP[pi], bk, minlvl, maxlvl);
             if (flag)
             {
                 break;
@@ -134,7 +137,12 @@ void fr_find_kernel_intersections(vector<polynomial>& vP)
         }
         if (!flag)
         {
-            break;
+            if (maxlvl == literal_maximum_ring_level()) { break; }
+            else
+            {
+                ++maxlvl;
+                continue;
+            }
         }
         //build new literal polynomial
         polynomial nP = vP[pi];
@@ -199,7 +207,7 @@ void find_kernel_intersections(vector<polynomial>& vP)
     std::cerr << std::endl;
 }
 
-bool fr_parts_cube_intersection(const vector<monomial>& mat, monomial& m)
+bool fr_parts_cube_intersection(const vector<monomial>& mat, monomial& m, int minlvl, int maxlvl)
 {
     int v = 1;
     int bi = -1;
@@ -208,7 +216,7 @@ bool fr_parts_cube_intersection(const vector<monomial>& mat, monomial& m)
     {
         for (int j = i + 1; j < mat.size(); ++j)
         {
-            int mn = gcd_mn(mat[i], mat[j]);
+            int mn = gcd_mn(mat[i], mat[j], minlvl, maxlvl);
             if (mn > v)
             {
                 bi = i;
@@ -221,11 +229,11 @@ bool fr_parts_cube_intersection(const vector<monomial>& mat, monomial& m)
     {
         return false;
     }
-    m = gcd(mat[bi], mat[bj]);
+    m = gcd(mat[bi], mat[bj], minlvl, maxlvl);
     return true;
 }
 
-bool fr_cube_intersection(const vector<polynomial>& vP, monomial& m)
+bool fr_cube_intersection(const vector<polynomial>& vP, monomial& m, int minlvl, int maxlvl)
 {
     if (max_terms == 0)
     {
@@ -237,7 +245,7 @@ bool fr_cube_intersection(const vector<polynomial>& vP, monomial& m)
                 mat.push_back(vP[i][j]);
             }
         }
-        return fr_parts_cube_intersection(mat, m);
+        return fr_parts_cube_intersection(mat, m, minlvl, maxlvl);
     }
     else
     {
@@ -269,7 +277,7 @@ bool fr_cube_intersection(const vector<polynomial>& vP, monomial& m)
                             mat.push_back(vP[index][j]);
                         }
                     }
-                    int status = fr_parts_cube_intersection(mat, m);
+                    int status = fr_parts_cube_intersection(mat, m, minlvl, maxlvl);
                     if (status) { return true; }
                 }
                 //reset start_index
@@ -285,12 +293,21 @@ bool fr_cube_intersection(const vector<polynomial>& vP, monomial& m)
 void find_cube_intersections(vector<polynomial>& vP)
 {
     int sumbv2 = 0;
+    //for cube part, maxlvl is always maximum ring level,
+    //and we decrease minlvl till 0
+    int minlvl = literal_maximum_ring_level();
+    int maxlvl = literal_maximum_ring_level();
     while (true)
     {
         monomial m;
-        if (!fr_cube_intersection(vP, m))
+        if (!fr_cube_intersection(vP, m, minlvl, maxlvl))
         {
-            break;
+            if (minlvl == 0) { break; }
+            else
+            {
+                --minlvl;
+                continue;
+            }
         }
         int li = literal_append_tmp();
         //rewrote vP

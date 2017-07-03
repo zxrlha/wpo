@@ -14,19 +14,18 @@ extern vector<polynomial> vP;
 extern vector<funcexpr> vfunc;
 extern vector<int> vindex;
 
-extern string tmp_prefix;
-extern string tmp_suffix;
+extern vector<string> vtmp_prefix;
+extern vector<string> vtmp_suffix;
+extern vector<string> vline_prefix;
+extern vector<string> vline_suffix;
+extern vector<string> vtmp_style;
+extern vector<string> vvar_style;
+extern vector<string> vinfo_prefix;
+extern vector<string> vinfo_suffix;
+extern vector<string> vvar_filter;
+extern vector<string> voutput_filename;
 extern string num_prefix;
 extern string num_suffix;
-extern int tmp_start;
-extern string line_prefix;
-extern string line_suffix;
-extern string type_str;
-extern string tmp_style;
-extern string var_style;
-extern string var_filter;
-extern string func_prefix;
-extern string func_style;
 extern string strategy;
 extern bool flag_clean;
 extern bool flag_reuse;
@@ -49,6 +48,7 @@ int vfunc_get(const funcexpr& fe);
 
 void parse_options(const string& name, const string& value);
 void parse_options(const string& name, int64_t value);
+void init_ring_defaults();
 
 void error_end();
 

@@ -8,8 +8,9 @@
 using std::ostream;
 
 string output_tmp_name(int i);
-void clean(vector<polynomial>& vP);
-void reorder(vector<polynomial>& vP);
-int rename(vector<polynomial>& vP);
+void clean();
+//In vorder, negative number means -1-index in vfunc, while positive number means index in vP
+void reorder(vector<vector<int>>& vorder);
+void rename(const vector<vector<int>>& vorder, vector<int>& max);
 
 #endif

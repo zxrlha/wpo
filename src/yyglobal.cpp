@@ -1,6 +1,7 @@
 #include "yyglobal.hpp"
 #include "literal.hpp"
 #include <map>
+#include <boost/lexical_cast.hpp>
 
 using std::map;
 
@@ -9,18 +10,18 @@ vector<polynomial> vP;
 vector<funcexpr> vfunc;
 vector<int> vindex;
 
-string tmp_prefix = "tmp";
-string tmp_suffix = "";
+vector<string> vtmp_prefix{"tmp"};
+vector<string> vtmp_suffix{""};
 string num_prefix = "";
 string num_suffix = "";
-int tmp_start = 0;
-string line_suffix = ";";
-string line_prefix = "    ";
-string tmp_style = "in";//pre in null
-string var_style = "in"; //pre in null
-string var_filter = "[]():.";
-string func_prefix = "func";
-string func_style = "in";
+vector<string> vline_prefix{"    "};
+vector<string> vline_suffix{";"};
+vector<string> vtmp_style{"in"};//pre in null
+vector<string> vvar_style{"in"};//pre in null
+vector<string> vinfo_prefix{"//"};
+vector<string> vinfo_suffix{""};
+vector<string> vvar_filter{"[]():."};
+vector<string> voutput_filename;
 string strategy = "kcm";//kcm fastrun
 bool flag_clean = true;
 bool flag_reuse = true;
@@ -61,8 +62,8 @@ void vP_push(const polynomial& P)
 int vP_get(const polynomial& P)
 {
     auto it = vPmap.find(P);
-    if (it != vPmap.end()) return it->second;
-    else return -1;
+    if (it != vPmap.end()) { return it->second; }
+    else { return -1; }
 }
 
 int vfunc_get(const funcexpr& fe)
@@ -80,53 +81,29 @@ int vfunc_get(const funcexpr& fe)
 
 void parse_options(const string& name, const string& value)
 {
-    if (name == "tmp_prefix")
+    vector<string> vstr_fix{"tmp_prefix", "tmp_suffix", "line_prefix", "line_suffix", "info_prefix", "info_suffix", "tmp_style", "var_style", "var_filter", "output_filename"};
+    vector<vector<string>*> vp_fix{&vtmp_prefix, &vtmp_suffix, &vline_prefix, &vline_suffix, &vinfo_prefix, &vinfo_suffix, &vtmp_style, &vvar_style, &vvar_filter, &voutput_filename};
+    assert(vstr_fix.size() == vp_fix.size());
+    for (int i = 0; i < vstr_fix.size(); ++i)
     {
-        tmp_prefix = value;
+        if (name.compare(0, vstr_fix[i].size(), vstr_fix[i]) == 0)
+        {
+            string s_lvl = name.substr(vstr_fix[i].size());
+            int lvl;
+            if (s_lvl.size() == 0) { lvl = 0; }
+            else { lvl = boost::lexical_cast<std::int64_t>(s_lvl); }
+            if (vp_fix[i]->size() <= lvl) { vp_fix[i]->resize(lvl + 1); }
+            vp_fix[i]->at(lvl) = value;
+            return;
+        }
     }
-    else if (name == "tmp_suffix")
-    {
-        tmp_suffix = value;
-    }
-    else if (name == "num_prefix")
+    if (name == "num_prefix")
     {
         num_prefix = value;
     }
     else if (name == "num_suffix")
     {
         num_suffix = value;
-    }
-    else if (name == "line_prefix")
-    {
-        line_prefix = value;
-    }
-    else if (name == "line_suffix")
-    {
-        line_suffix = value;
-    }
-    else if (name == "type")
-    {
-        literal_parse_ring("type0", value);
-    }
-    else if (name == "tmp_style")
-    {
-        tmp_style = value;
-    }
-    else if (name == "var_style")
-    {
-        var_style = value;
-    }
-    else if (name == "var_filter")
-    {
-        var_filter = value;
-    }
-    else if (name == "func_prefix")
-    {
-        func_prefix = value;
-    }
-    else if (name == "func_style")
-    {
-        func_style = value;
     }
     else if (name == "strategy")
     {
@@ -153,11 +130,7 @@ void parse_options(const string& name, const string& value)
 
 void parse_options(const string& name, int64_t value)
 {
-    if (name == "tmp_start")
-    {
-        tmp_start = value;
-    }
-    else if (name == "max_terms")
+    if (name == "max_terms")
     {
         max_terms = value;
     }
@@ -171,6 +144,26 @@ void parse_options(const string& name, int64_t value)
         error_end();
     }
 }
+
+void init_ring_defaults()
+{
+    vector<vector<string>*> vp_fix{&vtmp_prefix, &vtmp_suffix, &vline_prefix, &vline_suffix, &vinfo_prefix, &vinfo_suffix, &vtmp_style, &vvar_style, &vvar_filter};
+    for (int i = 0; i < vp_fix.size(); ++i)
+    {
+        if (vp_fix[i]->size() != literal_maximum_ring_level()+1)
+        {
+            vp_fix[i]->resize(literal_maximum_ring_level() + 1);
+        }
+        for (int j = 0; j < vp_fix[i]->size(); ++j)
+        {
+            if (vp_fix[i]->at(j).size() == 0)
+            {
+                vp_fix[i]->at(j) = vp_fix[i]->at(0);
+            }
+        }
+    }
+}
+
 
 void error_end()
 {

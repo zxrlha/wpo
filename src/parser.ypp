@@ -4,7 +4,7 @@
 #include "literal.hpp"
 #include "yyglobal.hpp"
 	int yylex(void);
-	inline void yyerror(char const *) { std::cerr<<"YYERROR:"<<std::endl; exit(1);}
+	inline void yyerror(char const * str) { std::cerr<<"YYERROR:"<<str<<std::endl; exit(1);}
 
 	%}
 
@@ -120,7 +120,7 @@ varstr:
 		nli = get<polynomial>($3).single_id();
 		if (nli == -1)//new polynomial
 		{
-			nli = literal_append_func();
+			nli = literal_append_tmp();
 			get<polynomial>($3).name() = literal_name(nli);
 			literal_set_ring_level(nli, get<polynomial>($3).ring_level());
 			vP_push(std::move(get<polynomial>($3)));
@@ -133,11 +133,11 @@ varstr:
 	funcexpr nf;
 	nf._funcname=get<string>($1);
 	nf._paraid=nli;
-	int nfi = vfunc_get(nf); 
+	int nfi = vfunc_get(nf);
 	if (nfi == -1)
 	{
-		nfi = literal_append_func(); 
-		nf._resname = literal_name(nfi); 
+		nfi = literal_append_tmp();
+		nf._resname = literal_name(nfi);
 		vfunc.push_back(nf);
 		literal_set_ring_level(nfi, nf.ring_level());
 	}

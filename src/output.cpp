@@ -10,219 +10,234 @@ using std::make_pair;
 using std::map;
 using std::string;
 
-string output_tmp_name(int i)
+string output_tmp_name(int i, int rl)
 {
-	return tmp_prefix + boost::lexical_cast<string>(i + tmp_start) + tmp_suffix;
+    return vtmp_prefix[rl] + boost::lexical_cast<string>(i) + vtmp_suffix[rl];
 }
 
 void literal_change(vector<polynomial>& vP, int from, int to)
 {
-	for (auto& P : vP)
-	{
-		for (int i = 0; i < P.size(); ++i)
-		{
-			for (int j = 0; j < P[i].size(); ++j)
-			{
-				if (P[i].lit(j) == from)
-				{
-					int p = P[i].pow(j);
-					P[i] *= monomial(to, p);
-					P[i] /= monomial(from, p);
-					break;
-				}
-			}
-		}
-	}
+    for (auto& P : vP)
+    {
+        for (int i = 0; i < P.size(); ++i)
+        {
+            for (int j = 0; j < P[i].size(); ++j)
+            {
+                if (P[i].lit(j) == from)
+                {
+                    int p = P[i].pow(j);
+                    P[i] *= monomial(to, p);
+                    P[i] /= monomial(from, p);
+                    break;
+                }
+            }
+        }
+    }
 }
 
-void clean(vector<polynomial>& vP)
+void clean()
 {
-	//find polynomial like A=B
-	set<int> remove_list;
-	for (int i = 0; i < vP.size(); ++i)
-	{
-		if (vP[i].size() == 1 && vP[i][0].coef() == 1 && vP[i][0].size() == 1 && vP[i][0].pow(0) == 1)
-		{
-			int lj = vP[i][0].lit(0);
-			if (literal_is_tmp(vP[i].name()))//A=B,A is a termporary name
-			{
-				remove_list.insert(i);
-				literal_change(vP, literal_get(vP[i].name()), lj);//replace all A by B
-			}
-			else if (literal_is_tmp(literal_name(lj)))//A=B,B is a termporary name
-			{
-				//find the polynomial for B
-				int Bj = -1;
-				for (int j = 0; j < vP.size(); ++j)
-				{
-					if (vP[j].name() == literal_name(lj))
-					{
-						Bj = j;
-						break;
-					}
-				}
-				assert(Bj != -1);
-				//set this polynomial to A
-				vP[Bj].name() = vP[i].name();
-				//change all name from B to A
-				int Al = literal_get(vP[i].name());
-				if (Al == -1)
-				{
-					Al = literal_append(vP[i].name());
-				}
-				literal_change(vP, lj, Al);
-				remove_list.insert(i);
-			}
-		}
-	}
-	vector<polynomial> vtmp;
-	for (int i = 0; i < vP.size(); ++i)
-	{
-		if (remove_list.count(i) == 0)
-		{
-			vtmp.push_back(vP[i]);
-		}
-	}
-	vP = std::move(vtmp);
+    //find polynomial like A=B
+    set<int> remove_list;
+    for (int i = 0; i < vP.size(); ++i)
+    {
+        if (vP[i].size() == 1 && vP[i][0].coef() == 1 && vP[i][0].size() == 1 && vP[i][0].pow(0) == 1)
+        {
+            int lj = vP[i][0].lit(0);
+            if (literal_is_tmp(vP[i].name()))//A=B,A is a termporary name
+            {
+                remove_list.insert(i);
+                literal_change(vP, literal_get(vP[i].name()), lj);//replace all A by B
+            }
+            else if (literal_is_tmp(literal_name(lj)))//A=B,B is a termporary name
+            {
+                //find the polynomial for B
+                int Bj = -1;
+                for (int j = 0; j < vP.size(); ++j)
+                {
+                    if (vP[j].name() == literal_name(lj))
+                    {
+                        Bj = j;
+                        break;
+                    }
+                }
+                assert(Bj != -1);
+                //set this polynomial to A
+                vP[Bj].name() = vP[i].name();
+                //change all name from B to A
+                int Al = literal_get(vP[i].name());
+                if (Al == -1)
+                {
+                    Al = literal_append(vP[i].name());
+                }
+                literal_change(vP, lj, Al);
+                remove_list.insert(i);
+            }
+        }
+    }
+    vector<polynomial> vtmp;
+    for (int i = 0; i < vP.size(); ++i)
+    {
+        if (remove_list.count(i) == 0)
+        {
+            vtmp.push_back(vP[i]);
+        }
+    }
+    vP = std::move(vtmp);
 }
 
-
-void update_vf_unknown_literal(int ni, set<int>& unknown_literal)
+void reorder(vector<vector<int>>& vorder)
 {
-	vector<int> vk;
-	//now also update known vfunc
-	for (int fi = 0; fi < vfunc.size(); ++fi)
-	{
-		if (vfunc[fi]._paraid == ni)
-		{
-			int ki = literal_get(vfunc[fi]._resname);
-			unknown_literal.erase(ki);
-			vk.push_back(ki);
-		}
-	}
-	for (auto ti : vk)
-	{
-		update_vf_unknown_literal(ti, unknown_literal);
-	}
+    vorder.clear();
+    vorder.resize(literal_maximum_ring_level() + 1);
+    //stage 1: build unknown literal
+    set<int> unknown_literal;
+    //loop over vP and vfunc
+    for (const auto& P : vP)
+    {
+        int i = literal_get(P.name());
+        assert(i != -1);
+        unknown_literal.insert(i);
+    }
+    for (const auto& F : vfunc)
+    {
+        int i = literal_get(F._resname);
+        assert(i != -1);
+        unknown_literal.insert(i);
+    }
+    //stage 2: find known literal
+    vector<int> un_vf(vfunc.size());//index of all unknown vfunc
+    for (int i = 0; i < vfunc.size(); ++i) { un_vf[i] = i; }
+    vector<int> un_vp(vP.size());//index of all unknown vP
+    for (int i = 0; i < vP.size(); ++i) { un_vp[i] = i; }
+    bool flag = true;
+    while (flag)
+    {
+        flag = false;
+        for (auto it = un_vf.begin(); it != un_vf.end();)
+        {
+            if (unknown_literal.count(vfunc[*it]._paraid) == 0)//known!
+            {
+                flag = true;
+                vorder[vfunc[*it].ring_level()].push_back(-1 - (*it));
+                //mark as known
+                int li = literal_get(vfunc[*it]._resname);
+                assert(li != -1);
+                unknown_literal.erase(li);
+                it = un_vf.erase(it);
+            }
+            else
+            {
+                ++it;
+            }
+        }
+        for (auto it = un_vp.begin(); it != un_vp.end();)
+        {
+            if (!vP[*it].contain_literals(unknown_literal))//known!
+            {
+                flag = true;
+                vorder[vP[*it].ring_level()].push_back(*it);
+                //mark as known
+                int li = literal_get(vP[*it].name());
+                assert(li != -1);
+                unknown_literal.erase(li);
+                it = un_vp.erase(it);
+            }
+            else
+            {
+                ++it;
+            }
+        }
+    }
+    assert(un_vf.size() == 0);
+    assert(un_vp.size() == 0);
 }
 
-void reorder(vector<polynomial>& vP)
+//trans_rule: tmp index -> final index in each ring level
+string translate_tmp(int id, vector<map<int, int>>& trans_rule, vector<set<int>>& inuse, vector<int>& vmax, bool newflag, bool removeflag)
 {
-	set<int> unknown_literal;
-	for (const auto& P : vP)
-	{
-		int i = literal_get(P.name());
-		if (i != -1)
-		{
-			unknown_literal.insert(i);
-		}
-	}
-	bool flag = true;
-	vector<funcexpr> tvf(vfunc);
-	while (flag)
-	{
-		flag = false;
-		for (auto it = tvf.begin(); it != tvf.end();)
-		{
-			if (unknown_literal.count(it->_paraid) != 0)//unknown func
-			{
-				flag = true;
-				unknown_literal.insert(literal_get(it->_resname));
-				it = tvf.erase(it);
-			}
-			else
-			{
-				++it;
-			}
-		}
-	}
-	vector<polynomial> rvP;
-	while (vP.size() != 0)
-	{
-		for (int i = 0; i != vP.size();)
-		{
-			if (vP[i].contain_literals(unknown_literal))
-			{
-				++i;
-				continue;
-			}
-			else
-			{
-				rvP.push_back(vP[i]);
-				//mark as known
-				int li = literal_get(vP[i].name());
-				if (li != -1)
-				{
-					unknown_literal.erase(li);
-				}
-				vP.erase(vP.begin() + i);
-				update_vf_unknown_literal(li, unknown_literal);
-			}
-		}
-	}
-	vP = rvP;
+    int rl = literal_get_ring_level(id);
+    auto it = trans_rule[rl].find(id);
+    string newname;
+    if (it == trans_rule[rl].end())
+    {
+        assert(newflag);
+        int ni = 0;
+        while (inuse[rl].count(ni) != 0)
+        {
+            ++ni;
+        }
+        if (vmax[rl] < ni) { vmax[rl] = ni; }
+        newname = '#' + output_tmp_name(ni, rl);
+        trans_rule[rl].insert(make_pair(id, ni));
+        inuse[rl].insert(ni);
+    }
+    else
+    {
+        newname = '#' + output_tmp_name(it->second, rl);
+    }
+    if (removeflag)
+    {
+        inuse[rl].erase(trans_rule[rl][id]);
+    }
+    return newname;
 }
-
-
-int rename(vector<polynomial>& rvP)
+void rename(const vector<vector<int>>& vorder, vector<int>& vmax)
 {
-	int max = -1;
-	//now rename to optimization space usage
-	vector<polynomial> ornv(rvP.rbegin(), rvP.rend());
-	map<int, int> trans_rule;
-	set<int> inuse;//in use
-	for (auto& P : ornv)
-	{
-		bool t = literal_is_tmp(P.name());
-		if (t)
-		{
-			int i = literal_get(P.name());
-			auto it = trans_rule.find(i);
-			if (it == trans_rule.end())//new tmp_literal
-			{
-				int ni = 0;
-				while (inuse.count(ni) != 0)
-				{
-					++ni;
-				}
-				trans_rule.insert(make_pair(i, ni));
-				inuse.insert(ni);
-				if (ni > max)
-				{
-					max = ni;
-				}
-			}
-			int pi = trans_rule[i];
-			if (flag_reuse)
-			{
-				inuse.erase(pi);
-			}
-			P.name() = "#" + output_tmp_name(pi);//mark as tmp variable
-		}
-		set<int> tsi = P.tmp_literals();
-		for (auto i : tsi)
-		{
-			auto it = trans_rule.find(i);
-			if (it == trans_rule.end())//new tmp_literal
-			{
-				int ni = 0;
-				while (inuse.count(ni) != 0)
-				{
-					++ni;
-				}
-				trans_rule.insert(make_pair(i, ni));
-				inuse.insert(ni);
-				if (ni > max)
-				{
-					max = ni;
-				}
-			}
-		}
-	}
-	for (auto r : trans_rule)
-	{
-		literal_set_name(r.first, output_tmp_name(r.second));
-	}
-	std::copy(ornv.rbegin(), ornv.rend(), rvP.begin());
-	return max;
+    vmax.clear();
+    for (int i = 0; i < vorder.size(); ++i)
+    {
+        vmax.push_back(0);
+    }
+    vector<map<int, int>> trans_rule(vorder.size());
+    vector<set<int>> inuse(vorder.size());
+    //rename temporary variables to their approxiate output name,
+    //and try to optimize space usage
+    for (int rl = 0; rl <= literal_maximum_ring_level(); ++rl)
+    {
+        //the temporary variables in use for current ring level
+        //reverse order
+        for (int i = vorder[rl].size() - 1; i >= 0; --i)
+        {
+            int index = vorder[rl][i];
+            if (index < 0)//a func
+            {
+                index = - 1 - index;
+                bool t = literal_is_tmp(vfunc[index]._resname);
+                if (t)
+                {
+                    int ni = literal_get(vfunc[index]._resname);
+                    string newname = translate_tmp(ni, trans_rule, inuse, vmax, false, flag_reuse);
+                    vfunc[index]._resname = newname;
+                }
+                t = literal_is_tmp(vfunc[index]._paraid);
+                if (t)
+                {
+                    translate_tmp(vfunc[index]._paraid, trans_rule, inuse, vmax, true, false);
+                }
+            }
+            else//a polynomial
+            {
+                bool t = literal_is_tmp(vP[index].name());
+                if (t)
+                {
+                    int ni = literal_get(vP[index].name());
+                    string newname = translate_tmp(ni, trans_rule, inuse, vmax, false, flag_reuse);
+                    vP[index].name() = newname;
+                }
+                set<int> tsi = vP[index].tmp_literals();
+                for (auto ni : tsi)
+                {
+                    translate_tmp(ni, trans_rule, inuse, vmax, true, false);
+                }
+            }
+        }
+    }
+    for (int i = 0; i < trans_rule.size(); ++i)
+    {
+        for (auto r : trans_rule[i])
+        {
+            literal_set_name(r.first, output_tmp_name(r.second, i));
+        }
+    }
 }
