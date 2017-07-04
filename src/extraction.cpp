@@ -26,9 +26,9 @@ void kcm_find_kernel_intersections(vector<polynomial>& vP, int minlvl, int maxlv
         {
             int lvl = vP[i].ring_level();
             if (lvl < minlvl || lvl > maxlvl) { continue; }
-            vtrans.push_back(i);
             find_kernels(vP[i], vmp);
             vkmap.push_back(std::move(vmp));
+            vtrans.push_back(i);
         }
         kcm tm(vkmap);
         vkmap.clear();
@@ -65,7 +65,7 @@ void kcm_find_kernel_intersections(vector<polynomial>& vP, int minlvl, int maxlv
             for (auto vri : vr) //loop over co-kernel
             {
                 int pi = vtrans[tm.index(vri)];//P index
-                if (pi == bpi) continue;//NOTE that one polynomial itself may be the co-kernel, in this case we should skip
+                if (pi == bpi) { continue; }//NOTE that one polynomial itself may be the co-kernel, in this case we should skip
                 polynomial nP = vP[pi];
                 bool flag = true;
                 //check
@@ -115,8 +115,8 @@ void kcm_find_kernel_intersections(vector<polynomial>& vP, int minlvl, int maxlv
                       << "(" << std::setw(5) << double(summul) / osummul * 100 << "%)" << "\r";
         }
     }
+    std::cerr << std::endl;
 }
-
 bool fr_ring_factorization(const polynomial& P, monomial& m, polynomial& bcok)
 {
     int rl = literal_get_ring_level(literal_get(P.name()));
@@ -159,44 +159,8 @@ bool fr_ring_factorization(const polynomial& P, monomial& m, polynomial& bcok)
     }
     return false;
 }
-
-bool fr_kernel_intersection(const polynomial& P, monomial& m)
-{
-    int minlvl = literal_get_ring_level(literal_get(P.name()));
-    int maxlvl = minlvl;
-    //Our test examples only has two levels, and we found
-    //if we enforce only perform kernel intersection on level 0
-    //will yield much better results.
-    //We don't know why..........
-    if (minlvl == literal_maximum_ring_level()) { return false; }
-    int v = 0;
-    int bi = -1;
-    int bj = -1;
-    for (int i = 0; i < P.size(); ++i)
-    {
-        for (int j = i + 1; j < P.size(); ++j)
-        {
-            int mn = gcd_mn(P[i], P[j], minlvl, maxlvl);
-            if (mn > v)
-            {
-                bi = i;
-                bj = j;
-                v = mn;
-            }
-        }
-    }
-    if (bi == -1)
-    {
-        return false;
-    }
-    m = gcd(P[bi], P[bj], minlvl, maxlvl);
-    return true;
-}
-
 void fr_find_ring_factorization(vector<polynomial>& vP)
 {
-    int total_terms = 0;
-    for (int i = 0; i < vP.size(); ++i);
     int sumbv1 = 0;
     int pi = 0;
     while (true)
@@ -260,11 +224,40 @@ void fr_find_ring_factorization(vector<polynomial>& vP)
     }
     std::cerr << std::endl;
 }
-
+bool fr_kernel_intersection(const polynomial& P, monomial& m)
+{
+    int minlvl = literal_get_ring_level(literal_get(P.name()));
+    int maxlvl = minlvl;
+    //Our test examples only has two levels, and we found
+    //if we enforce only perform kernel intersection on level 0
+    //will yield much better results.
+    //We don't know why..........
+    if (minlvl == literal_maximum_ring_level()) { return false; }
+    int v = 0;
+    int bi = -1;
+    int bj = -1;
+    for (int i = 0; i < P.size(); ++i)
+    {
+        for (int j = i + 1; j < P.size(); ++j)
+        {
+            int mn = gcd_mn(P[i], P[j], minlvl, maxlvl);
+            if (mn > v)
+            {
+                bi = i;
+                bj = j;
+                v = mn;
+            }
+        }
+    }
+    if (bi == -1)
+    {
+        return false;
+    }
+    m = gcd(P[bi], P[bj], minlvl, maxlvl);
+    return true;
+}
 void fr_find_kernel_intersections(vector<polynomial>& vP)
 {
-    int total_terms = 0;
-    for (int i = 0; i < vP.size(); ++i);
     int sumbv1 = 0;
     int pi = 0;
     while (true)
@@ -328,7 +321,6 @@ void fr_find_kernel_intersections(vector<polynomial>& vP)
     }
     std::cerr << std::endl;
 }
-
 bool fr_parts_cube_intersection(const vector<monomial>& mat, monomial& m, int minlvl, int maxlvl)
 {
     int v = 1;
@@ -354,7 +346,6 @@ bool fr_parts_cube_intersection(const vector<monomial>& mat, monomial& m, int mi
     m = gcd(mat[bi], mat[bj], minlvl, maxlvl);
     return true;
 }
-
 bool fr_cube_intersection(const vector<polynomial>& vP, monomial& m, int minlvl, int maxlvl)
 {
     if (max_terms == 0)
@@ -411,7 +402,6 @@ bool fr_cube_intersection(const vector<polynomial>& vP, monomial& m, int minlvl,
         return false;
     }
 }
-
 void find_cube_intersections(vector<polynomial>& vP)
 {
     int sumbv2 = 0;
@@ -472,7 +462,6 @@ void find_cube_intersections(vector<polynomial>& vP)
     }
     std::cerr << std::endl;
 }
-
 void find_intersections(vector<polynomial>& vP)
 {
     if (strategy == "kcm")

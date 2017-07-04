@@ -68,6 +68,8 @@ void find_kernels(const polynomial& P, vector<pair<monomial, polynomial>>& kerne
 	}
 }
 
+//The fr_kernels part are part of initial fastrun stategy
+//Now they are deprecated, but we still keep these code in case.
 int fr_value(const monomial& bk, const polynomial& bcok)
 {
 	return (bcok.size() - 1) * bk.multiplication_number();
