@@ -4,8 +4,11 @@
 #include "expression.hpp"
 #include <boost/variant.hpp>
 #include <string>
+#include <memory>
+
 using std::string;
-using yystype = boost::variant<int64_t, string, monomial, polynomial>;
+using spp = std::shared_ptr<polynomial>;
+using yystype = boost::variant<int64_t, string, monomial, spp>;
 using boost::get;
 
 #define YYSTYPE yystype

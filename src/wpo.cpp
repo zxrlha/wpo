@@ -133,8 +133,7 @@ int main(int argc, char* argv[])
         return 1;
     }
     init_ring_defaults();
-    find_kernel_intersections(vP);
-    find_cube_intersections(vP);
+    find_intersections(vP);
     if (flag_clean)
     {
         clean();

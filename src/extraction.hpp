@@ -3,7 +3,6 @@
 
 #include "expression.hpp"
 
-void find_kernel_intersections(vector<polynomial>& vP);
-void find_cube_intersections(vector<polynomial>& vP);
+void find_intersections(vector<polynomial>& vP);
 
 #endif

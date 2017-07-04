@@ -31,7 +31,7 @@ OPTION IDENTIFY { parse_options(get<string>($1), get<string>($2)); }
 poly_def:
 IDENTIFY '=' exp
 {
-	auto& P = get<polynomial>($3);
+	auto& P = *get<spp>($3);
     int nli = vP_get(P);
 	if (nli == -1)
 	{
@@ -52,6 +52,8 @@ IDENTIFY '=' exp
 	std::cerr<<"Parsing..."<<vindex.size()<<" polynomials have been parsed\r";
     //add this polynomial into literal if not added, so if this part appear in another polynomial can be replaced by this literal
     literal_add(P.name());
+    //set correct ring level
+    literal_set_ring_level(literal_get(P.name()), P.ring_level());
 }
 
 monowithsign:
@@ -93,16 +95,16 @@ IDENTIFY
 varstr:
 '(' exp ')'
 {
-	int nli = vP_get(get<polynomial>($2));
+	int nli = vP_get(*get<spp>($2));
 	if (nli == -1)
 	{
-		nli = get<polynomial>($2).single_id();
+		nli = get<spp>($2)->single_id();
 		if (nli == -1)//new polynomial
 		{
 			nli = literal_append_tmp();
-			get<polynomial>($2).name() = literal_name(nli);
-			literal_set_ring_level(nli, get<polynomial>($2).ring_level());
-			vP_push(std::move(get<polynomial>($2)));
+			get<spp>($2)->name() = literal_name(nli);
+			literal_set_ring_level(nli, get<spp>($2)->ring_level());
+			vP_push(std::move(*get<spp>($2)));
 		}
 	}
 	else 
@@ -114,16 +116,16 @@ varstr:
 | IDENTIFY '(' exp ')'
 {
 	/*a function call*/
-	int nli = vP_get(get<polynomial>($3));
+	int nli = vP_get(*get<spp>($3));
 	if (nli == -1)
 	{
-		nli = get<polynomial>($3).single_id();
+		nli = get<spp>($3)->single_id();
 		if (nli == -1)//new polynomial
 		{
 			nli = literal_append_tmp();
-			get<polynomial>($3).name() = literal_name(nli);
-			literal_set_ring_level(nli, get<polynomial>($3).ring_level());
-			vP_push(std::move(get<polynomial>($3)));
+			get<spp>($3)->name() = literal_name(nli);
+			literal_set_ring_level(nli, get<spp>($3)->ring_level());
+			vP_push(std::move(*get<spp>($3)));
 		}
 	}
 	else
@@ -149,14 +151,14 @@ varstr:
 }
 
 exp:
-monowithsign { $$ = polynomial(get<monomial>($1)); }
+monowithsign { $$ = spp(new polynomial(get<monomial>($1))); }
 | exp '+' mono
 {
-	$$ = std::move(get<polynomial>($1));
-	get<polynomial>($$) += std::move(get<monomial>($3));
+	$$ = std::move(get<spp>($1));
+	*get<spp>($$) += std::move(get<monomial>($3));
 }
 | exp '-' mono
 {
-	$$ = std::move(get<polynomial>($1));
-	get<polynomial>($$) -= std::move(get<monomial>($3));
+	$$ = std::move(get<spp>($1));
+	*get<spp>($$) -= std::move(get<monomial>($3));
 }
