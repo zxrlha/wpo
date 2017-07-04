@@ -150,6 +150,10 @@ void reorder(vector<vector<int>>& vorder)
         }
     }
     assert(un_vf.size() == 0);
+    for (int i = 0; i < un_vp.size(); ++i)
+    {
+        std::cerr<<vP[un_vp[i]]<<std::endl;
+    }
     assert(un_vp.size() == 0);
 }
 
@@ -161,7 +165,7 @@ string translate_tmp(int id, vector<map<int, int>>& trans_rule, vector<set<int>>
     string newname;
     if (it == trans_rule[rl].end())
     {
-        assert(newflag);
+        //assert(newflag);
         int ni = 0;
         while (inuse[rl].count(ni) != 0)
         {
@@ -171,6 +175,7 @@ string translate_tmp(int id, vector<map<int, int>>& trans_rule, vector<set<int>>
         newname = '#' + output_tmp_name(ni, rl);
         trans_rule[rl].insert(make_pair(id, ni));
         inuse[rl].insert(ni);
+        if (!newflag) std::cerr<<newname<<std::endl;
     }
     else
     {

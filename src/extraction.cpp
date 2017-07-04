@@ -13,7 +13,7 @@
 
 using std::map;
 
-void kcm_find_kernel_intersections(vector<polynomial>& vP)
+void kcm_find_kernel_intersections(vector<polynomial>& vP, int minlvl, int maxlvl)
 {
     int sumbv1 = 0;
     int bv = 0;
@@ -21,9 +21,13 @@ void kcm_find_kernel_intersections(vector<polynomial>& vP)
     {
         vector<pair<monomial, polynomial>> vmp;
         vector<vector<pair<monomial, polynomial>>> vkmap;
-        for (auto P : vP)
+        vector<int> vtrans;//index trans, since now index in vkmap is no longer index in vP
+        for (int i = 0; i < vP.size(); ++i)
         {
-            find_kernels(P, vmp);
+            int lvl = vP[i].ring_level();
+            if (lvl < minlvl || lvl > maxlvl) { continue; }
+            vtrans.push_back(i);
+            find_kernels(vP[i], vmp);
             vkmap.push_back(std::move(vmp));
         }
         kcm tm(vkmap);
@@ -39,16 +43,29 @@ void kcm_find_kernel_intersections(vector<polynomial>& vP)
         {
             //build new literal polynomial
             polynomial nlp;
-            int li;
-            li = literal_append_tmp();
             for (auto vci : vc)
             {
                 nlp += tm.column(vci);
             }
+            int bpi;
+            bpi = vP_get(nlp);
+            bool newflag = false;
+            int li;
+            if (bpi == -1)
+            {
+                newflag = true;
+                li = literal_append_tmp();
+            }
+            else
+            {
+                li = literal_get(vP[bpi].name());
+            }
             bv = 0;
+            bool rewrote = false;//indicate this (co-)kernel is really used
             for (auto vri : vr) //loop over co-kernel
             {
-                int pi = tm.index(vri);//P index
+                int pi = vtrans[tm.index(vri)];//P index
+                if (pi == bpi) continue;//NOTE that one polynomial itself may be the co-kernel, in this case we should skip
                 polynomial nP = vP[pi];
                 bool flag = true;
                 //check
@@ -64,6 +81,7 @@ void kcm_find_kernel_intersections(vector<polynomial>& vP)
                 {
                     continue;
                 }
+                rewrote = true;
                 //rewrote P
                 int64_t before = nP.multiplication_number();
                 for (auto vci : vc)
@@ -77,9 +95,18 @@ void kcm_find_kernel_intersections(vector<polynomial>& vP)
                 bv += before - after;
             }
             nlp.name() = literal_name(li);
-            literal_set_ring_level(li, nlp.ring_level());
-            vP_push(nlp);
-            bv -= nlp.multiplication_number();
+            if (newflag)
+            {
+                literal_set_ring_level(li, nlp.ring_level());
+                if (rewrote) //only push this if it is really used
+                {
+                    vP_push(nlp);
+                }
+            }
+            if (newflag)
+            {
+                bv -= nlp.multiplication_number();
+            }
             sumbv1 += bv;
             summul -= bv;
             std::cerr << "Step 1: Descrease by" << std::setw(7) << bv << "."
@@ -90,9 +117,10 @@ void kcm_find_kernel_intersections(vector<polynomial>& vP)
     }
 }
 
-bool fr_ring_factorization(const polynomial& P, monomial& m)
+bool fr_ring_factorization(const polynomial& P, monomial& m, polynomial& bcok)
 {
     int rl = literal_get_ring_level(literal_get(P.name()));
+    if (rl == literal_maximum_ring_level()) { return false; }
     int v = 0;
     int b1 = -1;
     for (int i = 0; i < P.size(); ++i)
@@ -111,6 +139,22 @@ bool fr_ring_factorization(const polynomial& P, monomial& m)
     if (b1 != -1)
     {
         m = P[b1].ring_sub_mon(rl, rl);
+        bcok = P / m;
+        return true;
+    }
+    //now try to factorize a+b
+    bcok = polynomial();
+    m = monomial();
+    for (int i = 0; i < P.size(); ++i)
+    {
+        int ps = P[i].ring_pow_sum(rl, rl);
+        if (ps == 0)
+        {
+            bcok += P[i];
+        }
+    }
+    if (bcok.size() >= 2 || (bcok.size() == 1 && bcok[0].multiplication_number() >= 2))
+    {
         return true;
     }
     return false;
@@ -124,7 +168,7 @@ bool fr_kernel_intersection(const polynomial& P, monomial& m)
     //if we enforce only perform kernel intersection on level 0
     //will yield much better results.
     //We don't know why..........
-    if (minlvl == literal_maximum_ring_level()) return false;
+    if (minlvl == literal_maximum_ring_level()) { return false; }
     int v = 0;
     int bi = -1;
     int bj = -1;
@@ -149,7 +193,75 @@ bool fr_kernel_intersection(const polynomial& P, monomial& m)
     return true;
 }
 
-void fr_one_by_one_aux(vector<polynomial>& vP, int type)
+void fr_find_ring_factorization(vector<polynomial>& vP)
+{
+    int total_terms = 0;
+    for (int i = 0; i < vP.size(); ++i);
+    int sumbv1 = 0;
+    int pi = 0;
+    while (true)
+    {
+        monomial bk;
+        polynomial bcok;
+        bool flag = false;
+        for (; pi < vP.size(); ++pi)
+        {
+            flag = fr_ring_factorization(vP[pi], bk, bcok);
+            if (flag)
+            {
+                break;
+            }
+        }
+        if (!flag)
+        {
+            break;
+        }
+        //build new literal polynomial
+        polynomial nP = vP[pi];
+        int64_t before = nP.multiplication_number();
+        for (int i = 0; i < bcok.size(); ++i)
+        {
+            nP.remove(bk * bcok[i]);
+        }
+        int li;
+        li = vP_get(bcok);
+        bool newflag = false;
+        if (li == -1)
+        {
+            newflag = true;
+            li = literal_append_tmp();
+        }
+        else
+        {
+            li = literal_get(vP[li].name());
+        }
+        bcok.name() = literal_name(li);
+        monomial nm(li);
+        nP += nm * bk;
+        //now we should modify both P in vP and vPmap
+        vP_replace(pi, nP);
+        int64_t after = nP.multiplication_number();
+        if (newflag)
+        {
+            vP_push(bcok);
+            literal_set_ring_level(li, bcok.ring_level());
+        }
+        if (newflag)
+        {
+            after += bcok.multiplication_number();
+        }
+        int bv = before - after;
+        sumbv1 += bv;
+        summul -= bv;
+        std::cerr << "Step " << 0 << ": Descrease by" << std::setw(7) << bv << "."
+                  << "Total descreased:" << std::setw(8) << sumbv1 << "."
+                  << "Remain" << std::setw(8) << summul
+                  << "(" << std::setw(5) << double(summul) / osummul * 100 << "%)" << "\r";
+    }
+    std::cerr << std::endl;
+}
+
+void fr_find_kernel_intersections(vector<polynomial>& vP)
 {
     int total_terms = 0;
     for (int i = 0; i < vP.size(); ++i);
@@ -161,18 +273,7 @@ void fr_one_by_one_aux(vector<polynomial>& vP, int type)
         bool flag = false;
         for (; pi < vP.size(); ++pi)
         {
-            if (type == 0)//ring factorization
-            {
-                flag = fr_ring_factorization(vP[pi], bk);
-            }
-            else if (type == 1) //pre-cube kernel intersection
-            {
-                flag = fr_kernel_intersection(vP[pi], bk);
-            }
-            else if (type == 3)
-            {
-                flag = fr_kernel_intersection(vP[pi], bk);
-            }
+            flag = fr_kernel_intersection(vP[pi], bk);
             if (flag)
             {
                 break;
@@ -220,27 +321,13 @@ void fr_one_by_one_aux(vector<polynomial>& vP, int type)
         int bv = before - after;
         sumbv1 += bv;
         summul -= bv;
-        std::cerr << "Step " << type << ": Descrease by" << std::setw(7) << bv << "."
+        std::cerr << "Step " << 1 << ": Descrease by" << std::setw(7) << bv << "."
                   << "Total descreased:" << std::setw(8) << sumbv1 << "."
                   << "Remain" << std::setw(8) << summul
                   << "(" << std::setw(5) << double(summul) / osummul * 100 << "%)" << "\r";
     }
     std::cerr << std::endl;
 }
-
-void fr_ring_factorization(vector<polynomial>& vP)
-{
-    fr_one_by_one_aux(vP, 0);
-}
-void fr_find_kernel_intersections_pre(vector<polynomial>& vP)
-{
-    fr_one_by_one_aux(vP, 1);
-}
-void fr_find_kernel_intersections_fin(vector<polynomial>& vP)
-{
-    fr_one_by_one_aux(vP, 3);
-}
-
 
 bool fr_parts_cube_intersection(const vector<monomial>& mat, monomial& m, int minlvl, int maxlvl)
 {
@@ -390,15 +477,21 @@ void find_intersections(vector<polynomial>& vP)
 {
     if (strategy == "kcm")
     {
-        kcm_find_kernel_intersections(vP);
+        kcm_find_kernel_intersections(vP, 0, literal_maximum_ring_level());
         find_cube_intersections(vP);
     }
     else if (strategy == "fastrun")
     {
-        fr_ring_factorization(vP);//ring factorization
-        fr_find_kernel_intersections_pre(vP);//previous kernel intersection
+        fr_find_ring_factorization(vP);//ring factorization
+        fr_find_kernel_intersections(vP);//previous kernel intersection
         find_cube_intersections(vP);//cube factorization
-        fr_find_kernel_intersections_fin(vP);//final kernel intersection
+    }
+    else if (strategy == "kcm0fr")
+    {
+        fr_find_ring_factorization(vP);//ring factorization
+        kcm_find_kernel_intersections(vP, 0, 0);
+        //fr_find_kernel_intersections(vP);//previous kernel intersection,useless since we have kcm
+        find_cube_intersections(vP);//cube factorization
     }
     else
     {

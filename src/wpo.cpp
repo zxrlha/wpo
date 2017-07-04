@@ -142,6 +142,7 @@ int main(int argc, char* argv[])
     reorder(vorder);
     //cerr << "//reorder finished" << endl;
     vector<int> vmax;
+    //debug_out(vorder);
     rename(vorder, vmax);
     //cerr << "//rename finished" << endl;
     //now output
@@ -233,12 +234,12 @@ int main(int argc, char* argv[])
                 os << vline_prefix[rl];
                 if (literal_is_tmp(vP[index].name()))
                 {
+                    vP[index].name().erase(vP[index].name().begin());
                     if (vtmp_style[rl] == "in" && declaredtmp.count(vP[index].name()) == 0)
                     {
                         declaredtmp.insert(vP[index].name());
                         os << vP[index].ring_type() << " ";
                     }
-                    vP[index].name().erase(vP[index].name().begin());
                 }
                 else if (vvar_style[rl] == "in" && pass_filter(vP[index].name(), rl))
                 {

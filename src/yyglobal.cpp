@@ -3,9 +3,9 @@
 #include <map>
 #include <boost/lexical_cast.hpp>
 
-using std::map;
+using std::multimap;
 
-map<polynomial, int> vPmap;
+multimap<polynomial, int> vPmap;
 vector<polynomial> vP;
 vector<funcexpr> vfunc;
 vector<int> vindex;
@@ -36,12 +36,21 @@ int64_t osummul = 0;
 void vP_replace(int i, const polynomial& nP)
 {
     polynomial& P = vP[i];
-    auto it = vPmap.find(P);
-    assert(it != vPmap.end());
-    assert(it->second == i);
-    vPmap.erase(it);
-    vPmap.insert(std::make_pair(nP, i));
-    P = nP;
+    auto er = vPmap.equal_range(P);
+    assert(er.first != vPmap.end());
+    bool found = false;
+    for (auto it = er.first; it != er.second; ++it)
+    {
+        if (it->second == i)
+        {
+            vPmap.erase(it);
+            vPmap.insert(std::make_pair(nP, i));
+            P = nP;
+            found = true;
+            return;
+        }
+    }
+    assert(found);
 }
 
 void vP_rebuild_map()
@@ -55,8 +64,6 @@ void vP_rebuild_map()
 
 void vP_push(const polynomial& P)
 {
-    auto it = vPmap.find(P);
-    assert(it == vPmap.end());
     vPmap.insert(std::make_pair(P, vP.size()));
     vP.push_back(P);
 }
