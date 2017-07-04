@@ -26,7 +26,7 @@ void kcm_find_kernel_intersections(vector<polynomial>& vP)
             find_kernels(P, vmp);
             vkmap.push_back(std::move(vmp));
         }
-        kcm tm(vkmap, vP);
+        kcm tm(vkmap);
         vkmap.clear();
         vector<int> vr;
         vector<int> vc;
@@ -49,12 +49,12 @@ void kcm_find_kernel_intersections(vector<polynomial>& vP)
             for (auto vri : vr) //loop over co-kernel
             {
                 int pi = tm.index(vri);//P index
-                polynomial& P = vP[pi];
+                polynomial nP = vP[pi];
                 bool flag = true;
                 //check
                 for (auto vci : vc)
                 {
-                    if (!P.contain(tm.row(vri)*tm.column(vci)))
+                    if (!nP.contain(tm.row(vri)*tm.column(vci)))
                     {
                         flag = false;
                         break;
@@ -65,20 +65,20 @@ void kcm_find_kernel_intersections(vector<polynomial>& vP)
                     continue;
                 }
                 //rewrote P
-                polynomial nP;
-                int64_t before = P.multiplication_number();
+                int64_t before = nP.multiplication_number();
                 for (auto vci : vc)
                 {
-                    P.remove(tm.row(vri)*tm.column(vci));
+                    nP.remove(tm.row(vri)*tm.column(vci));
                 }
                 monomial nm(li);
-                P += nm * tm.row(vri);
-                int64_t after = P.multiplication_number();
+                nP += nm * tm.row(vri);
+                vP_replace(pi, nP);
+                int64_t after = nP.multiplication_number();
                 bv += before - after;
             }
-            vP.push_back(nlp);
-            vP.back().name() = literal_name(li);
+            nlp.name() = literal_name(li);
             literal_set_ring_level(li, nlp.ring_level());
+            vP_push(nlp);
             bv -= nlp.multiplication_number();
             sumbv1 += bv;
             summul -= bv;
