@@ -90,8 +90,36 @@ void kcm_find_kernel_intersections(vector<polynomial>& vP)
     }
 }
 
-bool fr_cube_intersection(const polynomial& P, monomial& m, int minlvl, int maxlvl)
+bool fr_ring_factorization(const polynomial& P, monomial& m)
 {
+    int rl = P.ring_level();
+    int v = 0;
+    int b1 = -1;
+    for (int i = 0; i < P.size(); ++i)
+    {
+        int ps = P[i].ring_pow_sum(rl, rl);
+        if (ps > v)
+        {
+            int mp = P[i].multiplication_number();
+            if (mp - ps >= 2)//valid
+            {
+                b1 = i;
+                v = ps;
+            }
+        }
+    }
+    if (b1 != -1)
+    {
+        m = P[b1].ring_sub_mon(rl, rl);
+        return true;
+    }
+    return false;
+}
+
+bool fr_kernel_intersection(const polynomial& P, monomial& m)
+{
+    int minlvl = P.ring_level();
+    int maxlvl = minlvl;
     int v = 0;
     int bi = -1;
     int bj = -1;
@@ -116,20 +144,26 @@ bool fr_cube_intersection(const polynomial& P, monomial& m, int minlvl, int maxl
     return true;
 }
 
+bool fr_ring_kernel_intersection(const polynomial& P, monomial& m)
+{
+    //first perform factorization
+    if (fr_ring_factorization(P, m)) return true;
+    //then kernel intersection
+    if (fr_kernel_intersection(P, m)) return true;
+    return false;
+}
+
 void fr_find_kernel_intersections(vector<polynomial>& vP)
 {
     int sumbv1 = 0;
     int pi = 0;
-    //for kernel part, minlvl is always 0, and we increase maxlvl till maximum ring level
-    int minlvl = 0;
-    int maxlvl = 0;
     while (true)
     {
         monomial bk;
         bool flag = false;
         for (; pi < vP.size(); ++pi)
         {
-            flag = fr_cube_intersection(vP[pi], bk, minlvl, maxlvl);
+            flag = fr_ring_kernel_intersection(vP[pi], bk);
             if (flag)
             {
                 break;
@@ -137,12 +171,7 @@ void fr_find_kernel_intersections(vector<polynomial>& vP)
         }
         if (!flag)
         {
-            if (maxlvl == literal_maximum_ring_level()) { break; }
-            else
-            {
-                ++maxlvl;
-                continue;
-            }
+            break;
         }
         //build new literal polynomial
         polynomial nP = vP[pi];

@@ -24,6 +24,34 @@ int monomial::getpow(int i) const
     }
 }
 
+int monomial::ring_pow_sum(int minlvl, int maxlvl) const
+{
+    int res = 0;
+    for (int i = 0; i < _vterm.size(); ++i)
+    {
+        int lvl = literal_get_ring_level(_vterm[i].first);
+        if (lvl >= minlvl && lvl <= maxlvl)
+        {
+            res += _vterm[i].second;
+        }
+    }
+    return res;
+}
+
+monomial monomial::ring_sub_mon(int minlvl, int maxlvl) const
+{
+    monomial nm;
+    for (int i = 0; i < _vterm.size(); ++i)
+    {
+        int lvl = literal_get_ring_level(_vterm[i].first);
+        if (lvl >= minlvl && lvl <= maxlvl)
+        {
+            nm.append(_vterm[i].first, _vterm[i].second);
+        }
+    }
+    return nm;
+}
+
 monomial& monomial::operator*=(const monomial& m2)
 {
     vector<std::pair<int, int>> vtmp;

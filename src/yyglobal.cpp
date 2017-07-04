@@ -55,6 +55,8 @@ void vP_rebuild_map()
 
 void vP_push(const polynomial& P)
 {
+    auto it = vPmap.find(P);
+    assert(it == vPmap.end());
     vPmap.insert(std::make_pair(P, vP.size()));
     vP.push_back(P);
 }
@@ -62,8 +64,15 @@ void vP_push(const polynomial& P)
 int vP_get(const polynomial& P)
 {
     auto it = vPmap.find(P);
-    if (it != vPmap.end()) { return it->second; }
-    else { return -1; }
+    if (it != vPmap.end())
+    {
+        assert(vP[it->second] == P);
+        return it->second;
+    }
+    else
+    {
+        return -1;
+    }
 }
 
 int vfunc_get(const funcexpr& fe)
@@ -150,7 +159,7 @@ void init_ring_defaults()
     vector<vector<string>*> vp_fix{&vtmp_prefix, &vtmp_suffix, &vline_prefix, &vline_suffix, &vinfo_prefix, &vinfo_suffix, &vtmp_style, &vvar_style, &vvar_filter};
     for (int i = 0; i < vp_fix.size(); ++i)
     {
-        if (vp_fix[i]->size() != literal_maximum_ring_level()+1)
+        if (vp_fix[i]->size() != literal_maximum_ring_level() + 1)
         {
             vp_fix[i]->resize(literal_maximum_ring_level() + 1);
         }

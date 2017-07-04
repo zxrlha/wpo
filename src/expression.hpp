@@ -103,6 +103,9 @@ public:
 	//information for kcm
 	int multiplication_number() const;
 
+    int ring_pow_sum(int minlvl, int maxlvl) const;
+    monomial ring_sub_mon(int minlvl, int maxlvl) const;
+
 	int ring_level() const;
 	string ring_type() const;
 protected:
