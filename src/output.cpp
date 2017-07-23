@@ -15,6 +15,9 @@ string output_tmp_name(int i, int rl)
     return vtmp_prefix[rl] + boost::lexical_cast<string>(i) + vtmp_suffix[rl];
 }
 
+//this function only modify vP, while left vfunc unchanged
+//which is a bug, so disabled
+/*
 void literal_change(vector<polynomial>& vP, int from, int to)
 {
     for (auto& P : vP)
@@ -34,7 +37,10 @@ void literal_change(vector<polynomial>& vP, int from, int to)
         }
     }
 }
+*/
 
+//this function is correct but literal_change is buggy
+/*
 void clean()
 {
     //find polynomial like A=B
@@ -85,6 +91,7 @@ void clean()
     }
     vP = std::move(vtmp);
 }
+*/
 
 void reorder(vector<vector<int>>& vorder)
 {

@@ -421,12 +421,27 @@ void find_cube_intersections(vector<polynomial>& vP)
                 continue;
             }
         }
-        int li = literal_append_tmp();
-        //rewrote vP
+        //preparing to add this to vP
+        polynomial npoly;
+        npoly += m;
+        int li;
+        li = vP_get(npoly);
+        bool newflag = false;
+        if (li == -1)
+        {
+            newflag = true;
+            li = literal_append_tmp();
+        }
+        else
+        {
+            li = literal_get(vP[li].name());
+        }
+        //rewrote vP except the one which is just "P=m"
         int rs = 0;
         for (int pi = 0; pi < vP.size(); ++pi)
         {
             const auto& P = vP[pi];
+            if (literal_get(P.name()) == li) continue;
             polynomial dres = P / m;
             if (dres.size() == 0)
             {
@@ -454,11 +469,13 @@ void find_cube_intersections(vector<polynomial>& vP)
                   << "Remain" << std::setw(8) << summul
                   << "(" << std::setw(5) << double(summul) / osummul * 100 << "%)" << "\r";
         //add this into vP
-        polynomial nl;
-        nl += m;
-        nl.name() = literal_name(li);
-        vP_push(nl);
-        literal_set_ring_level(li, nl.ring_level());
+        npoly.name() = literal_name(li);
+        if (newflag)
+        {
+            vP_push(npoly);
+            literal_set_ring_level(li, npoly.ring_level());
+        }
+
     }
     std::cerr << std::endl;
 }

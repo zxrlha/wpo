@@ -8,7 +8,7 @@
 using std::ostream;
 
 string output_tmp_name(int i);
-void clean();
+//void clean();
 //In vorder, negative number means -1-index in vfunc, while positive number means index in vP
 void reorder(vector<vector<int>>& vorder);
 void rename(const vector<vector<int>>& vorder, vector<int>& max);

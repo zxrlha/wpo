@@ -36,6 +36,10 @@ bool pass_filter(const std::string& name, int rl)
 
 void debug_out()
 {
+    for (int i = 0; i < vfunc.size(); ++i)
+    {
+        cout<<vfunc[i]._resname<<"="<<vfunc[i]._funcname<<"("<<literal_name(vfunc[i]._paraid)<<")"<<endl;
+    }
     for (int i = 0; i < vP.size(); ++i)
     {
         string name = vP[i].name();
@@ -134,10 +138,15 @@ int main(int argc, char* argv[])
     }
     init_ring_defaults();
     find_intersections(vP);
+    //clean is disabled.
+    //one reason is that we do not need it any more,
+    //and there is a bug in clean()
+    /*
     if (flag_clean)
     {
         clean();
     }
+    */
     vector<vector<int>> vorder;
     reorder(vorder);
     //cerr << "//reorder finished" << endl;
