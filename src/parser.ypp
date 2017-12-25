@@ -78,6 +78,28 @@ IDENTIFY
 	int n = get<int64_t>($3);
 	$$ = monomial(get<monomial>($1).lit(0), n);
 }
+| mono '^' '(' '-' NUMBER ')'
+{
+    /*understand as a function call*/
+    assert(get<monomial>($1).size() == 1);
+    int n = get<int64_t>($5);
+    funcexpr nf;
+    nf._funcname=invname;
+    nf._paraid=get<monomial>($1).lit(0);
+    int nfi = vfunc_get(nf);
+    if (nfi == -1)
+    {
+        nfi = literal_append_tmp();
+        nf._resname = literal_name(nfi);
+        vfunc.push_back(nf);
+        literal_set_ring_level(nfi, nf.ring_level());
+    }
+    else
+    {
+        nfi = literal_get(vfunc[nfi]._resname);
+    }
+    $$ = monomial(nfi, n);
+}
 | NUMBER
 {
 	int i = literal_add(boost::lexical_cast<string>(get<int64_t>($1)), true);
@@ -147,7 +169,7 @@ varstr:
 	{
 		nfi = literal_get(vfunc[nfi]._resname);
 	};
-	$$ = nfi;
+	$$ = monomial(nfi);
 }
 
 exp:

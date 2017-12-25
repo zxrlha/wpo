@@ -27,6 +27,7 @@ bool flag_clean = true;
 bool flag_reuse = true;
 int64_t max_terms = 0;
 int64_t threads_num = 1;
+string invname = "inv";
 
 string in_file = "";
 
