@@ -1441,7 +1441,7 @@ yyreduce:
 	{
 		nfi = literal_get(vfunc[nfi]._resname);
 	};
-	(yyval) = monomial(nfi);
+	(yyval) = nfi;
 }
 #line 1447 "parser.cpp" /* yacc.c:1646  */
     break;

@@ -169,7 +169,7 @@ varstr:
 	{
 		nfi = literal_get(vfunc[nfi]._resname);
 	};
-	$$ = monomial(nfi);
+	$$ = nfi;
 }
 
 exp:
