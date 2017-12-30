@@ -499,6 +499,9 @@ void find_intersections(vector<polynomial>& vP)
         //fr_find_kernel_intersections(vP);//previous kernel intersection,useless since we have kcm
         find_cube_intersections(vP);//cube factorization
     }
+    else if (strategy == "none")
+    {
+    }
     else
     {
         std::cerr << "ERROR: unknown strategy " << strategy << std::endl;

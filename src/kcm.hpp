@@ -37,7 +37,8 @@ protected:
 	vector<int> _vMR;//M(R_i)
 	vector<monomial> _vk;
 	vector<int> _vMC;//M(C_i)
-	vector<vector<int> > _mat;
+	vector<vector<bool> > _mat;
+    //Eigen::SparseMatrix<int> _mat;
 
 	vector<int> _br;
 	vector<int> _bc;

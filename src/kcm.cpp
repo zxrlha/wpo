@@ -31,11 +31,7 @@ kcm::kcm(const vector<vector<pair<monomial, polynomial>>>& vkmap)
 	std::copy(skm.begin(), skm.end(), _vk.begin());
 
 	//matrix
-	_mat.resize(_vcok.size());
-	for (auto& v : _mat)
-	{
-		v.resize(_vk.size());
-	}
+	_mat.resize(_vcok.size(), vector<bool>(_vk.size(), false));
 
 	for (int i = 0; i < _vcok.size(); ++i)
 	{
@@ -43,7 +39,7 @@ kcm::kcm(const vector<vector<pair<monomial, polynomial>>>& vkmap)
 		{
 			auto it = std::lower_bound(_vk.begin(), _vk.end(), tvk[i][j]);
 			int index = it - _vk.begin();
-			_mat[i][index] = 1;
+			_mat[i][index] = true;
 		}
 	}
 	for (int i = 0; i < _vcok.size(); ++i)
@@ -69,7 +65,7 @@ int kcm::generate_best_rectangle(vector<int>& row, vector<int>& column)
 	{
 		for (int i = 0; i < _vcok.size(); ++i)
 		{
-			if (_mat[i][j] == 1)
+			if (_mat[i][j])
 			{
 				vposi_rows[j].push_back(i);
 			}
@@ -80,12 +76,12 @@ int kcm::generate_best_rectangle(vector<int>& row, vector<int>& column)
 	{
 		for (int j = 0; j < _vk.size(); ++j)
 		{
-			if (_mat[i][j] == 1)
+			if (_mat[i][j])
 			{
 				vector<int> posi_columns;
 				for (int ci2 = 0; ci2 < j; ++ci2)
 				{
-					if (_mat[i][ci2] == 1)
+					if (_mat[i][ci2])
 					{
 						generate_best_rectangle(i, j, ci2, vposi_rows[ci2], posi_columns);
 						posi_columns.push_back(ci2);
@@ -108,7 +104,7 @@ void kcm::generate_best_rectangle(int ri, int ci1, int ci2, const vector<int>& a
 	for (auto i:aposi_rows)
 	{
 		if (i >= ri) break;
-		if (_mat[i][ci1] != 0)
+		if (_mat[i][ci1])
 		{
 			posi_rows.push_back(i);
 		}
@@ -212,7 +208,7 @@ void kcm::generate_best_rectangle_11_row(vector<int>& row, vector<int>& column, 
 		for (auto j : posi_columns)
 		{
 			if (j > column.back()) break;
-			if (_mat[i][j] == 1)
+			if (_mat[i][j])
 			{
 				new_posi_columns.push_back(j);
 			}
@@ -243,7 +239,7 @@ void kcm::generate_best_rectangle_11_column(vector<int>& row, vector<int>& colum
 		for (auto j : posi_rows)
 		{
 			if (j > row.back()) break;
-			if (_mat[j][i] == 1)
+			if (_mat[j][i])
 			{
 				new_posi_rows.push_back(j);
 			}
