@@ -14,7 +14,7 @@ using std::vector;
 class kcm
 {
 public:
-	kcm(const vector<vector<pair<monomial, polynomial>>>& vkmap);
+	kcm(vector<vector<pair<monomial, polynomial>>>&& vkmap);
 	int generate_best_rectangle(vector<int>& row, vector<int>& column);
 	const monomial& row(int i) const { return _vcok[i]; };
 	const monomial& column(int i) const { return _vk[i]; };
@@ -37,8 +37,11 @@ protected:
 	vector<int> _vMR;//M(R_i)
 	vector<monomial> _vk;
 	vector<int> _vMC;//M(C_i)
-	vector<vector<bool> > _mat;
-    //Eigen::SparseMatrix<int> _mat;
+    //The matrix is represented by two vectors:
+    vector<vector<int> > _mat_nonzero_rows;
+    vector<vector<int> > _mat_nonzero_cols;
+    //if _mat[i][j] !=0, then j \in _mat_nonzero_cols[i], i\in _mat_nonzero_rows[j]
+	//vector<vector<bool> > _mat;
 
 	vector<int> _br;
 	vector<int> _bc;

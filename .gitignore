@@ -21,3 +21,4 @@ Makefile.in
 *~
 # Mac file
 .DS_Store
+/doc

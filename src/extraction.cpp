@@ -22,6 +22,8 @@ void kcm_find_kernel_intersections(vector<polynomial>& vP, int minlvl, int maxlv
         vector<pair<monomial, polynomial>> vmp;
         vector<vector<pair<monomial, polynomial>>> vkmap;
         vector<int> vtrans;//index trans, since now index in vkmap is no longer index in vP
+        //wat::timer ti;
+        //ti.start();
         for (int i = 0; i < vP.size(); ++i)
         {
             int lvl = vP[i].ring_level();
@@ -30,17 +32,29 @@ void kcm_find_kernel_intersections(vector<polynomial>& vP, int minlvl, int maxlv
             vkmap.push_back(std::move(vmp));
             vtrans.push_back(i);
         }
-        kcm tm(vkmap);
-        vkmap.clear();
+        /*
+        ti.stop();
+        std::cerr << "FIND KERNELS:" << ti.time() << std::endl;
+        ti.start();
+        */
+        kcm tm(std::move(vkmap));
+        /*
+        ti.stop();
+        std::cerr << "Build KCM:" << ti.time() << std::endl;
+        */
         vector<int> vr;
         vector<int> vc;
+        //ti.start();
         bv = tm.generate_best_rectangle(vr, vc);
+        //ti.stop();
+        //std::cerr << "Generate :" << ti.time() << std::endl;
         if (bv < 0)
         {
             break;
         }
         else
         {
+            //ti.start();
             //build new literal polynomial
             polynomial nlp;
             for (auto vci : vc)
@@ -109,6 +123,8 @@ void kcm_find_kernel_intersections(vector<polynomial>& vP, int minlvl, int maxlv
             }
             sumbv1 += bv;
             summul -= bv;
+            //ti.stop();
+            //std::cerr << "Substitute :" << ti.time() << std::endl;
             std::cerr << "Step 1: Descrease by" << std::setw(7) << bv << "."
                       << "Total descreased:" << std::setw(8) << sumbv1 << "."
                       << "Remain" << std::setw(8) << summul
@@ -441,7 +457,7 @@ void find_cube_intersections(vector<polynomial>& vP)
         for (int pi = 0; pi < vP.size(); ++pi)
         {
             const auto& P = vP[pi];
-            if (literal_get(P.name()) == li) continue;
+            if (literal_get(P.name()) == li) { continue; }
             polynomial dres = P / m;
             if (dres.size() == 0)
             {
@@ -475,7 +491,6 @@ void find_cube_intersections(vector<polynomial>& vP)
             vP_push(npoly);
             literal_set_ring_level(li, npoly.ring_level());
         }
-
     }
     std::cerr << std::endl;
 }
