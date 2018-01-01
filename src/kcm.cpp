@@ -6,7 +6,7 @@
 kcm::kcm(vector<vector<pair<monomial, polynomial>>>&& vkmap)
 {
     vector<polynomial> tvk;
-    //co-kernels
+    //co-kernels: _vcok, _icok
     for (int i = 0; i < vkmap.size(); ++i)
     {
         for (auto& pr : vkmap[i])
@@ -45,12 +45,15 @@ kcm::kcm(vector<vector<pair<monomial, polynomial>>>&& vkmap)
     for (int i = 0; i < _vcok.size(); ++i)
     {
         std::sort(_mat_nonzero_cols[i].begin(), _mat_nonzero_cols[i].end());
+        auto last = std::unique(_mat_nonzero_cols[i].begin(), _mat_nonzero_cols[i].end());
+        _mat_nonzero_cols[i].erase(last, _mat_nonzero_cols[i].end());
     }
     for (int j = 0; j < _vk.size(); ++j)
     {
         std::sort(_mat_nonzero_rows[j].begin(), _mat_nonzero_rows[j].end());
+        auto last = std::unique(_mat_nonzero_rows[j].begin(), _mat_nonzero_rows[j].end());
+        _mat_nonzero_rows[j].erase(last, _mat_nonzero_rows[j].end());
     }
-    //std::cerr << "BUILD KCM:" << ti.time() << std::endl;
     for (int i = 0; i < _vcok.size(); ++i)
     {
         _vMR.push_back(_vcok[i].multiplication_number() - 1);
@@ -66,36 +69,20 @@ int kcm::generate_best_rectangle(vector<int>& row, vector<int>& column)
     _bv = 0;
     _br.clear();
     _bc.clear();
-    vector<vector<int>> vposi_rows(_mat_nonzero_rows);
-    /*
-    for (int j = 0; j < _vk.size(); ++j)
-    {
-    for (int i = 0; i < _vcok.size(); ++i)
-    {
-    if (_mat[i][j])
-    {
-        vposi_rows[j].push_back(i);
-    }
-    }
-    }
-    */
-    //std::cerr << "BUILD POSI ROWS:" << ti.time() << std::endl;
     for (int i = 0; i < _vcok.size(); ++i)
     {
         for (int in_j = 0; in_j < _mat_nonzero_cols[i].size(); ++in_j)
         {
             int j = _mat_nonzero_cols[i][in_j];
-            //std::cerr<<_mat_nonzero_cols[i].size()<<std::endl;
             vector<int> posi_columns;
             for (int in_ci2 = 0; in_ci2 < in_j; ++in_ci2)
             {
                 int ci2 = _mat_nonzero_cols[i][in_ci2];
-                generate_best_rectangle(i, j, ci2, vposi_rows[ci2], posi_columns);
+                generate_best_rectangle(i, j, ci2, _mat_nonzero_rows[ci2], posi_columns);
                 posi_columns.push_back(ci2);
             }
         }
     }
-    //std::cerr << "Generate:" << ti.time() << std::endl;
     if (_bv == 0) { return -1; }
     if (_br.size() == 1 && _bc.size() == 1) { return -1; }
     row = _br;
@@ -134,27 +121,13 @@ namespace
 void kcm::generate_best_rectangle(int ri, int ci1, int ci2, const vector<int>& aposi_rows, const vector<int>& posi_columns)
 {
     vector<int> posi_rows(vector_intersection(aposi_rows, _mat_nonzero_rows[ci1], ri));
-    /*
-    for (auto i : aposi_rows)
-    {
-    if (i >= ri) { break; }
-    if (_mat[i][ci1])
-    {
-        posi_rows.push_back(i);
-    }
-    }
-    */
     _prs = posi_rows.size();
     _pcs = posi_columns.size();
     vector<int> row{ri};
     vector<int> column{ci1, ci2};
     _sumMR = _vMR[ri];
     _sumMC = _vMC[ci1] + _vMC[ci2];
-    //wat::timer ti;
-    //ti.start();
     generate_best_rectangle_11(row, column, posi_rows, posi_columns);
-    //ti.stop();
-    //std::cerr<<"GB11:"<<ti.time()<<std::endl;
 }
 
 //00: _prs == 0, _pcs == 0, prime rectangle
@@ -244,16 +217,6 @@ void kcm::generate_best_rectangle_11_row(vector<int>& row, vector<int>& column, 
         _sumMR += _vMR[i];
         //build new posi_columns
         vector<int> new_posi_columns(vector_intersection(posi_columns, _mat_nonzero_cols[i], column.back()));
-        /*
-        for (auto j : posi_columns)
-        {
-            if (j > column.back()) { break; }
-            if (_mat[i][j])
-            {
-                new_posi_columns.push_back(j);
-            }
-        }
-        */
         _pcs = new_posi_columns.size();
         generate_best_rectangle_11(row, column, posi_rows, new_posi_columns);
         //change row back
@@ -277,16 +240,6 @@ void kcm::generate_best_rectangle_11_column(vector<int>& row, vector<int>& colum
         _sumMC += _vMC[i];
         //build new posi_rows
         vector<int> new_posi_rows(vector_intersection(posi_rows, _mat_nonzero_rows[i], row.back()));
-        /*
-        for (auto j : posi_rows)
-        {
-            if (j > row.back()) { break; }
-            if (_mat[j][i])
-            {
-                new_posi_rows.push_back(j);
-            }
-        }
-        */
         _prs = new_posi_rows.size();
         generate_best_rectangle_11(row, column, new_posi_rows, posi_columns);
         //change column back
