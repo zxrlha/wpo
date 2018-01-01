@@ -85,7 +85,7 @@ int kcm::generate_best_rectangle(vector<int>& row, vector<int>& column)
         for (int in_j = 0; in_j < _mat_nonzero_cols[i].size(); ++in_j)
         {
             int j = _mat_nonzero_cols[i][in_j];
-            std::cerr<<_mat_nonzero_cols[i].size()<<std::endl;
+            //std::cerr<<_mat_nonzero_cols[i].size()<<std::endl;
             vector<int> posi_columns;
             for (int in_ci2 = 0; in_ci2 < in_j; ++in_ci2)
             {
