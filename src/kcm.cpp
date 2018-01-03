@@ -71,20 +71,16 @@ int kcm::generate_best_rectangle(vector<int>& row, vector<int>& column)
     _bc.clear();
     for (int i = 0; i < _vcok.size(); ++i)
     {
+        //std::cerr << i << " " <<  _vcok.size() << " " << _mat_nonzero_cols[i].size() << std::endl;
         for (int in_j = 0; in_j < _mat_nonzero_cols[i].size(); ++in_j)
         {
-            //std::cerr << i << " " << in_j << " " << _vcok.size() << " " << _mat_nonzero_cols[i].size() << std::endl;
-            //if (i > 20000) { ::exit(1); }
+            //We start from one column instead of two columns, which is faster
+            //but we need to check column.size() >= 2 now
             int j = _mat_nonzero_cols[i][in_j];
-            vector<int> posi_columns;
-            for (int in_ci2 = 0; in_ci2 < in_j; ++in_ci2)
-            {
-                int ci2 = _mat_nonzero_cols[i][in_ci2];
-                generate_best_rectangle(i, j, ci2, _mat_nonzero_rows[ci2], posi_columns);
-                posi_columns.push_back(ci2);
-            }
+            generate_best_rectangle(i, j, _mat_nonzero_rows[j], _mat_nonzero_cols[i]);
         }
     }
+    std::cerr << _bv << std::endl;
     if (_bv == 0) { return -1; }
     if (_br.size() == 1 && _bc.size() == 1) { return -1; }
     row = _br;
@@ -120,16 +116,19 @@ namespace
     }
 }
 
-void kcm::generate_best_rectangle(int ri, int ci1, int ci2, const vector<int>& aposi_rows, const vector<int>& posi_columns)
+void kcm::generate_best_rectangle(int ri, int ci, const vector<int>& posi_rows, const vector<int>& posi_columns)
 {
-    vector<int> posi_rows(vector_intersection(aposi_rows, _mat_nonzero_rows[ci1], ri));
     _prs = posi_rows.size();
     _pcs = posi_columns.size();
     vector<int> row{ri};
-    vector<int> column{ci1, ci2};
+    vector<int> column{ci};
     _sumMR = _vMR[ri];
-    _sumMC = _vMC[ci1] + _vMC[ci2];
-    generate_best_rectangle_11(row, column, posi_rows, posi_columns);
+    _sumMC = _vMC[ci];
+    //ensure we will get at least two columns
+    if (column.size() + posi_columns.size() >= 2)
+    {
+        generate_best_rectangle_11(row, column, posi_rows, posi_columns);
+    }
 }
 
 //00: _prs == 0, _pcs == 0, prime rectangle
@@ -167,21 +166,24 @@ void kcm::generate_best_rectangle_01(const vector<int>& row, const vector<int>& 
                 _sumMC += _vMC[i];
             }
         }
-        int v = value_of_prime_rectangle(newcs, row.size(), _sumMC, _sumMR);
-        if (v >= _bv)
+        if (newcs >= 2)
         {
-            _br = row;
-            _bc = column;
-            for (auto i : posi_columns)
+            int v = value_of_prime_rectangle(newcs, row.size(), _sumMC, _sumMR);
+            if (v >= _bv)
             {
-                if (i >= cb) { break; }
-                if (_vMC[i] > 0)
+                _br = row;
+                _bc = column;
+                for (auto i : posi_columns)
                 {
-                    _bc.push_back(i);
+                    if (i >= cb) { break; }
+                    if (_vMC[i] > 0)
+                    {
+                        _bc.push_back(i);
+                    }
                 }
+                assert(_bc.size() == newcs);
+                _bv = v;
             }
-            assert(_bc.size() == newcs);
-            _bv = v;
         }
     }
     else if (_sumMR <= -1)
@@ -196,21 +198,24 @@ void kcm::generate_best_rectangle_01(const vector<int>& row, const vector<int>& 
                 _sumMC += _vMC[i];
             }
         }
-        int v = value_of_prime_rectangle(newcs, row.size(), _sumMC, _sumMR);
-        if (v >= _bv)
+        if (newcs >= 2)
         {
-            _br = row;
-            _bc = column;
-            for (auto i : posi_columns)
+            int v = value_of_prime_rectangle(newcs, row.size(), _sumMC, _sumMR);
+            if (v >= _bv)
             {
-                if (i >= cb) { break; }
-                if (_vMC[i] >= 0)
+                _br = row;
+                _bc = column;
+                for (auto i : posi_columns)
                 {
-                    _bc.push_back(i);
+                    if (i >= cb) { break; }
+                    if (_vMC[i] >= 0)
+                    {
+                        _bc.push_back(i);
+                    }
                 }
+                assert(_bc.size() == newcs);
+                _bv = v;
             }
-            assert(_bc.size() == newcs);
-            _bv = v;
         }
     }
     else//normal, add them all
@@ -221,18 +226,21 @@ void kcm::generate_best_rectangle_01(const vector<int>& row, const vector<int>& 
             ++newcs;
             _sumMC += _vMC[i];
         }
-        int v = value_of_prime_rectangle(newcs, row.size(), _sumMC, _sumMR);
-        if (v >= _bv)
+        if (newcs >= 2)
         {
-            _br = row;
-            _bc = column;
-            for (auto i : posi_columns)
+            int v = value_of_prime_rectangle(newcs, row.size(), _sumMC, _sumMR);
+            if (v >= _bv)
             {
-                if (i >= cb) { break; }
-                _bc.push_back(i);
+                _br = row;
+                _bc = column;
+                for (auto i : posi_columns)
+                {
+                    if (i >= cb) { break; }
+                    _bc.push_back(i);
+                }
+                assert(_bc.size() == newcs);
+                _bv = v;
             }
-            assert(_bc.size() == newcs);
-            _bv = v;
         }
     }
     _sumMC = osummc;
@@ -281,6 +289,8 @@ void kcm::generate_best_rectangle_11(vector<int>& row, vector<int>& column, cons
 
 void kcm::generate_best_rectangle_11_row(vector<int>& row, vector<int>& column, const vector<int>& posi_rows, const vector<int>& posi_columns)
 {
+    //before adding more rows, we should try no more rows
+    generate_best_rectangle_01(row, column, posi_columns);
     int rb = row.back();
     _prs = 0;
     int opcs = _pcs;
@@ -293,7 +303,11 @@ void kcm::generate_best_rectangle_11_row(vector<int>& row, vector<int>& column, 
         //build new posi_columns
         vector<int> new_posi_columns(vector_intersection(posi_columns, _mat_nonzero_cols[i], column.back()));
         _pcs = new_posi_columns.size();
-        generate_best_rectangle_11(row, column, posi_rows, new_posi_columns);
+        //ensure we will get at least two columns
+        if (column.size() + new_posi_columns.size() >= 2)
+        {
+            generate_best_rectangle_11(row, column, posi_rows, new_posi_columns);
+        }
         //change row back
         row.erase(row.end() - 1);
         _sumMR -= _vMR[i];
@@ -302,8 +316,14 @@ void kcm::generate_best_rectangle_11_row(vector<int>& row, vector<int>& column, 
     _pcs = opcs;
 }
 
+//since we will add one column here, we are sure that we have at least two columns
 void kcm::generate_best_rectangle_11_column(vector<int>& row, vector<int>& column, const vector<int>& posi_rows, const vector<int>& posi_columns)
 {
+    //before adding more columns, we should try no more columns
+    if (column.size() >= 2)
+    {
+        generate_best_rectangle_10(row, column, posi_rows);
+    }
     int cb = column.back();
     _pcs = 0;
     int oprs = _prs;

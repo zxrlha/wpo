@@ -20,7 +20,7 @@ public:
 	const monomial& column(int i) const { return _vk[i]; };
 	int index(int i) const { return _icok[i]; };
 protected:
-	void generate_best_rectangle(int ri, int ci1, int ci2, const vector<int>& aposi_rows, const vector<int>& posi_columns);
+	void generate_best_rectangle(int ri, int ci, const vector<int>& aposi_rows, const vector<int>& posi_columns);
 	void generate_best_rectangle_11(vector<int>& row, vector<int>& column, const vector<int>& posi_rows, const vector<int>& posi_columns);
 	void generate_best_rectangle_11_row(vector<int>& row, vector<int>& column, const vector<int>& posi_rows, const vector<int>& posi_columns);
 	void generate_best_rectangle_11_column(vector<int>& row, vector<int>& column, const vector<int>& posi_rows, const vector<int>& posi_columns);
