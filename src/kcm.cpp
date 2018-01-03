@@ -80,7 +80,7 @@ int kcm::generate_best_rectangle(vector<int>& row, vector<int>& column)
             generate_best_rectangle(i, j, _mat_nonzero_rows[j], _mat_nonzero_cols[i]);
         }
     }
-    std::cerr << _bv << std::endl;
+    //std::cerr << _bv << std::endl;
     if (_bv == 0) { return -1; }
     if (_br.size() == 1 && _bc.size() == 1) { return -1; }
     row = _br;
@@ -160,9 +160,9 @@ void kcm::generate_best_rectangle_01(const vector<int>& row, const vector<int>& 
         for (auto i : posi_columns)
         {
             if (i >= cb) { break; }
-            ++newcs;
             if (_vMC[i] > 0)
             {
+                ++newcs;
                 _sumMC += _vMC[i];
             }
         }
@@ -192,9 +192,9 @@ void kcm::generate_best_rectangle_01(const vector<int>& row, const vector<int>& 
         for (auto i : posi_columns)
         {
             if (i >= cb) { break; }
-            ++newcs;
             if (_vMC[i] >= 0)
             {
+                ++newcs;
                 _sumMC += _vMC[i];
             }
         }
