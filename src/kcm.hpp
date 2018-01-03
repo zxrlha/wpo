@@ -25,10 +25,10 @@ protected:
 	void generate_best_rectangle_11_row(vector<int>& row, vector<int>& column, const vector<int>& posi_rows, const vector<int>& posi_columns);
 	void generate_best_rectangle_11_column(vector<int>& row, vector<int>& column, const vector<int>& posi_rows, const vector<int>& posi_columns);
 	void generate_best_rectangle_10(vector<int>& row, vector<int>& column, const vector<int>& posi_rows);
-	void generate_best_rectangle_01(vector<int>& row, vector<int>& column, const vector<int>& posi_columns);
+	void generate_best_rectangle_01(const vector<int>& row, const vector<int>& column, const vector<int>& posi_columns);
 	void generate_best_rectangle_00(vector<int>& row, vector<int>& column);
 	bool is_prime(int ri, int ci, const vector<int>& posi_rows, const vector<int>& posi_columns);
-	int value_of_prime_rectangle(vector<int>& row, vector<int>& column);
+	int value_of_prime_rectangle(int C, int R, int sMC, int sMR);
 	int value_diff_nr(vector<int>& row, vector<int>& column, int nr);
 	int value_diff_nc(vector<int>& row, vector<int>& column, int nc);
 
