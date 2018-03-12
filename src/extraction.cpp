@@ -6,6 +6,7 @@
 #include <functional>
 #include <thread>
 #include <wat/timer.hpp>
+#include <boost/dynamic_bitset.hpp>
 #include "kcm.hpp"
 #include "extraction.hpp"
 #include "kernel.hpp"
@@ -392,8 +393,8 @@ bool fr_cube_intersection(const vector<polynomial>& vP, monomial& m, int minlvl,
                 for (; start_index < steps; ++start_index)
                 {
                     //set the matrix
-                    wat::timer ti;
-                    ti.start();
+                    //wat::timer ti;
+                    //ti.start();
                     std::vector<monomial> mat;
                     for (int cti = 0; cti < max_terms; ++cti)
                     {
@@ -401,15 +402,17 @@ bool fr_cube_intersection(const vector<polynomial>& vP, monomial& m, int minlvl,
                         if (index >= vP.size()) { break; }
                         for (int j = 0; j < vP[index].size(); ++j)
                         {
-                            mat.push_back(vP[index][j]);
+                            //exclude meaningless terms
+                            if (vP[index][j].multiplication_number() >= 2)
+                            { mat.push_back(vP[index][j]); }
                         }
                     }
-                    ti.stop();
-                    std::cout << "PREP:" << ti.time() << "s" << std::endl;
-                    ti.start();
+                    //ti.stop();
+                    //std::cout << "PREP:" << ti.time() << "s" << std::endl;
+                    //ti.start();
                     int status = fr_parts_cube_intersection(mat, m, minlvl, maxlvl);
-                    ti.stop();
-                    std::cout << "CI:" << ti.time() << "s" << std::endl;
+                    //ti.stop();
+                    //std::cout << "CI:" << ti.time() << "s" << std::endl;
                     if (status) { return true; }
                 }
                 //reset start_index
@@ -428,6 +431,34 @@ void find_cube_intersections(vector<polynomial>& vP)
     //and we decrease minlvl till 0
     int minlvl = literal_maximum_ring_level();
     int maxlvl = literal_maximum_ring_level();
+    //manage a database for literals in each polynomial for faster lookup
+    std::vector<std::vector<int>> vdb;
+    vdb.reserve(2 * vP.size());
+    auto build_vdb_term = [&vdb, &vP](int i)
+    {
+        if (i >= vdb.size()) { vdb.resize(i + 1); }
+        vdb[i].clear();
+        for (int j = 0; j < vP[i].size(); ++j)
+        {
+            for (int k = 0; k < vP[i][j].size(); ++k)
+            {
+                vdb[i].insert(std::upper_bound(vdb[i].begin(), vdb[i].end(), vP[i][j].lit(k)), vP[i][j].lit(k));
+            }
+        }
+    };
+    auto not_in_vdb = [&vdb](int i, monomial m)
+    {
+        for (int j = 0; j < m.size(); ++j)
+        {
+            if (!std::binary_search(vdb[i].begin(), vdb[i].end(), m.lit(j))) { return true; }
+        }
+        return false;
+    };
+    //initialize vdb
+    for (int i = 0; i < vP.size(); ++i)
+    {
+        build_vdb_term(i);
+    }
     while (true)
     {
         monomial m;
@@ -460,15 +491,14 @@ void find_cube_intersections(vector<polynomial>& vP)
         int rs = 0;
         wat::timer ti;
         ti.start();
+        std::cerr << m << std::endl;
         for (int pi = 0; pi < vP.size(); ++pi)
         {
             const auto& P = vP[pi];
             if (pi == ni) { continue; }
+            //check
+            if (not_in_vdb(pi, m)) { continue; }
             polynomial dres = P / m;
-            if (dres.size() == 0)
-            {
-                continue;
-            }
             rs += dres.size();
             polynomial nP(P);
             for (int i = 0; i < dres.size(); ++i)
@@ -482,6 +512,7 @@ void find_cube_intersections(vector<polynomial>& vP)
                 nP += dres[i] * nl;
             }
             vP_replace(pi, nP);
+            build_vdb_term(pi);//update vdb
         }
         ti.stop();
         std::cerr << "REW:" << ti.time() << "s" << std::endl;
@@ -498,6 +529,7 @@ void find_cube_intersections(vector<polynomial>& vP)
         {
             vP_push(npoly);
             literal_set_ring_level(li, npoly.ring_level());
+            build_vdb_term(vP.size() - 1);
         }
     }
     std::cerr << std::endl;
