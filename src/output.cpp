@@ -165,7 +165,7 @@ void reorder(vector<vector<int>>& vorder)
 }
 
 //trans_rule: tmp index -> final index in each ring level
-string translate_tmp(int id, vector<map<int, int>>& trans_rule, vector<set<int>>& inuse, vector<int>& vmax, bool newflag, bool removeflag)
+string translate_tmp(int id, vector<map<int, int>>& trans_rule, vector<set<int>>& notinuse, vector<int>& vmax, bool newflag, bool removeflag)
 {
     int rl = literal_get_ring_level(id);
     auto it = trans_rule[rl].find(id);
@@ -174,14 +174,19 @@ string translate_tmp(int id, vector<map<int, int>>& trans_rule, vector<set<int>>
     {
         //assert(newflag);
         int ni = 0;
-        while (inuse[rl].count(ni) != 0)
+        if (notinuse[rl].size() == 0)
         {
-            ++ni;
+            ++vmax[rl];
+            ni = vmax[rl];
         }
-        if (vmax[rl] < ni) { vmax[rl] = ni; }
+        else
+        {
+            auto it = notinuse[rl].begin();
+            ni = *it;
+            notinuse[rl].erase(it);
+        }
         newname = '#' + output_tmp_name(ni, rl);
         trans_rule[rl].insert(make_pair(id, ni));
-        inuse[rl].insert(ni);
         if (!newflag) std::cerr<<newname<<std::endl;
     }
     else
@@ -190,7 +195,7 @@ string translate_tmp(int id, vector<map<int, int>>& trans_rule, vector<set<int>>
     }
     if (removeflag)
     {
-        inuse[rl].erase(trans_rule[rl][id]);
+        notinuse[rl].insert(trans_rule[rl][id]);
     }
     return newname;
 }
@@ -202,7 +207,7 @@ void rename(const vector<vector<int>>& vorder, vector<int>& vmax)
         vmax.push_back(0);
     }
     vector<map<int, int>> trans_rule(vorder.size());
-    vector<set<int>> inuse(vorder.size());
+    vector<set<int>> notinuse(vorder.size());
     //rename temporary variables to their approxiate output name,
     //and try to optimize space usage
     for (int rl = 0; rl <= literal_maximum_ring_level(); ++rl)
@@ -219,13 +224,13 @@ void rename(const vector<vector<int>>& vorder, vector<int>& vmax)
                 if (t)
                 {
                     int ni = literal_get(vfunc[index]._resname);
-                    string newname = translate_tmp(ni, trans_rule, inuse, vmax, false, flag_reuse);
+                    string newname = translate_tmp(ni, trans_rule, notinuse, vmax, false, flag_reuse);
                     vfunc[index]._resname = newname;
                 }
                 t = literal_is_tmp(vfunc[index]._paraid);
                 if (t)
                 {
-                    translate_tmp(vfunc[index]._paraid, trans_rule, inuse, vmax, true, false);
+                    translate_tmp(vfunc[index]._paraid, trans_rule, notinuse, vmax, true, false);
                 }
             }
             else//a polynomial
@@ -234,13 +239,13 @@ void rename(const vector<vector<int>>& vorder, vector<int>& vmax)
                 if (t)
                 {
                     int ni = literal_get(vP[index].name());
-                    string newname = translate_tmp(ni, trans_rule, inuse, vmax, false, flag_reuse);
+                    string newname = translate_tmp(ni, trans_rule, notinuse, vmax, false, flag_reuse);
                     vP[index].name() = newname;
                 }
                 set<int> tsi = vP[index].tmp_literals();
                 for (auto ni : tsi)
                 {
-                    translate_tmp(ni, trans_rule, inuse, vmax, true, false);
+                    translate_tmp(ni, trans_rule, notinuse, vmax, true, false);
                 }
             }
         }

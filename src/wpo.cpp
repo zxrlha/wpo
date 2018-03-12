@@ -149,11 +149,11 @@ int main(int argc, char* argv[])
     */
     vector<vector<int>> vorder;
     reorder(vorder);
-    //cerr << "//reorder finished" << endl;
+    cerr << "//reorder finished" << endl;
     vector<int> vmax;
     //debug_out(vorder);
     rename(vorder, vmax);
-    //cerr << "//rename finished" << endl;
+    cerr << "//rename finished" << endl;
     //now output
     for (int rl = 0; rl < vorder.size(); ++rl)
     {

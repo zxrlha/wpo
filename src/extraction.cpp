@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <functional>
 #include <thread>
+#include <wat/timer.hpp>
 #include "kcm.hpp"
 #include "extraction.hpp"
 #include "kernel.hpp"
@@ -32,16 +33,12 @@ void kcm_find_kernel_intersections(vector<polynomial>& vP, int minlvl, int maxlv
             vkmap.push_back(std::move(vmp));
             vtrans.push_back(i);
         }
-        /*
-        ti.stop();
-        std::cerr << "FIND KERNELS:" << ti.time() << std::endl;
-        ti.start();
-        */
+        //ti.stop();
+        //std::cerr << "FIND KERNELS:" << ti.time() << std::endl;
+        //ti.start();
         kcm tm(std::move(vkmap));
-        /*
-        ti.stop();
-        std::cerr << "Build KCM:" << ti.time() << std::endl;
-        */
+        //ti.stop();
+        //std::cerr << "Build KCM:" << ti.time() << std::endl;
         vector<int> vr;
         vector<int> vc;
         //ti.start();
@@ -137,6 +134,22 @@ bool fr_ring_factorization(const polynomial& P, monomial& m, polynomial& bcok)
 {
     int rl = literal_get_ring_level(literal_get(P.name()));
     if (rl == literal_maximum_ring_level()) { return false; }
+    //first factorize a+b
+    bcok = polynomial();
+    m = monomial();
+    for (int i = 0; i < P.size(); ++i)
+    {
+        int ps = P[i].ring_pow_sum(rl, rl);
+        if (ps == 0)
+        {
+            bcok += P[i];
+        }
+    }
+    if (bcok.size() >= 2 || (bcok.size() == 1 && bcok[0].multiplication_number() >= 2))
+    {
+        return true;
+    }
+    //then factorize high level coefficients
     int v = 0;
     int b1 = -1;
     for (int i = 0; i < P.size(); ++i)
@@ -156,21 +169,6 @@ bool fr_ring_factorization(const polynomial& P, monomial& m, polynomial& bcok)
     {
         m = P[b1].ring_sub_mon(rl, rl);
         bcok = P / m;
-        return true;
-    }
-    //now try to factorize a+b
-    bcok = polynomial();
-    m = monomial();
-    for (int i = 0; i < P.size(); ++i)
-    {
-        int ps = P[i].ring_pow_sum(rl, rl);
-        if (ps == 0)
-        {
-            bcok += P[i];
-        }
-    }
-    if (bcok.size() >= 2 || (bcok.size() == 1 && bcok[0].multiplication_number() >= 2))
-    {
         return true;
     }
     return false;
@@ -244,11 +242,8 @@ bool fr_kernel_intersection(const polynomial& P, monomial& m)
 {
     int minlvl = literal_get_ring_level(literal_get(P.name()));
     int maxlvl = minlvl;
-    //Our test examples only has two levels, and we found
-    //if we enforce only perform kernel intersection on level 0
-    //will yield much better results.
-    //We don't know why..........
-    if (minlvl == literal_maximum_ring_level()) { return false; }
+    //we only need kernels at this ring_level
+    //any terms in higher ring level should already been factorized out,
     int v = 0;
     int bi = -1;
     int bj = -1;
@@ -391,11 +386,14 @@ bool fr_cube_intersection(const vector<polynomial>& vP, monomial& m, int minlvl,
         //now start
         for (; steps != 0; --steps)
         {
+            std::cout << steps << std::endl;
             for (; base_shift < vP.size(); base_shift += steps * max_terms)
             {
                 for (; start_index < steps; ++start_index)
                 {
                     //set the matrix
+                    wat::timer ti;
+                    ti.start();
                     std::vector<monomial> mat;
                     for (int cti = 0; cti < max_terms; ++cti)
                     {
@@ -406,7 +404,12 @@ bool fr_cube_intersection(const vector<polynomial>& vP, monomial& m, int minlvl,
                             mat.push_back(vP[index][j]);
                         }
                     }
+                    ti.stop();
+                    std::cout << "PREP:" << ti.time() << "s" << std::endl;
+                    ti.start();
                     int status = fr_parts_cube_intersection(mat, m, minlvl, maxlvl);
+                    ti.stop();
+                    std::cout << "CI:" << ti.time() << "s" << std::endl;
                     if (status) { return true; }
                 }
                 //reset start_index
@@ -440,24 +443,27 @@ void find_cube_intersections(vector<polynomial>& vP)
         //preparing to add this to vP
         polynomial npoly;
         npoly += m;
+        int ni;
+        ni = vP_get(npoly);
         int li;
-        li = vP_get(npoly);
         bool newflag = false;
-        if (li == -1)
+        if (ni == -1)
         {
             newflag = true;
             li = literal_append_tmp();
         }
         else
         {
-            li = literal_get(vP[li].name());
+            li = literal_get(vP[ni].name());
         }
         //rewrote vP except the one which is just "P=m"
         int rs = 0;
+        wat::timer ti;
+        ti.start();
         for (int pi = 0; pi < vP.size(); ++pi)
         {
             const auto& P = vP[pi];
-            if (literal_get(P.name()) == li) { continue; }
+            if (pi == ni) { continue; }
             polynomial dres = P / m;
             if (dres.size() == 0)
             {
@@ -477,6 +483,8 @@ void find_cube_intersections(vector<polynomial>& vP)
             }
             vP_replace(pi, nP);
         }
+        ti.stop();
+        std::cerr << "REW:" << ti.time() << "s" << std::endl;
         int64_t bv = (rs - 1) * (m.multiplication_number() - 1);
         sumbv2 += bv;
         summul -= bv;
@@ -512,7 +520,7 @@ void find_intersections(vector<polynomial>& vP)
         fr_find_ring_factorization(vP);//ring factorization
         kcm_find_kernel_intersections(vP, 0, 0);
         //fr_find_kernel_intersections(vP);//previous kernel intersection,useless since we have kcm
-        find_cube_intersections(vP);//cube factorization
+        //find_cube_intersections(vP);//cube factorization
     }
     else if (strategy == "none")
     {

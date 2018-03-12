@@ -522,22 +522,37 @@ int polynomial::single_id() const
 polynomial operator/(const polynomial& P, const monomial& A)
 {
     polynomial res;
-    for (int i = 0; i < P.size(); ++i)
+    for (int mi = 0; mi < P.size(); ++mi)
     {
+        int i = 0;
+        int j = 0;
         bool flag = true;
-        for (int j = 0; j < A.size(); ++j)
+        while (i != P[mi].size() && j != A.size())
         {
-            if (P[i].getpow(A.lit(j)) < A.pow(j))
+            if (P[mi].lit(i) < A.lit(j))
+            {
+                ++i;
+                continue;
+            }
+            if (P[mi].lit(i) > A.lit(j))
             {
                 flag = false;
                 break;
             }
+            if (P[mi].pow(i) < A.pow(j))
+            {
+                flag = false;
+                break;
+            }
+            ++i;
+            ++j;
         }
+        if (j != A.size()) flag = false;
         if (!flag)
         {
             continue;
         }
-        monomial B(P[i]);
+        monomial B(P[mi]);
         B /= A;
         res += B;
     }
