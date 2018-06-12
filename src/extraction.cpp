@@ -5,7 +5,6 @@
 #include <cstdlib>
 #include <functional>
 #include <thread>
-#include <wat/timer.hpp>
 #include <boost/dynamic_bitset.hpp>
 #include "kcm.hpp"
 #include "extraction.hpp"
@@ -24,8 +23,6 @@ void kcm_find_kernel_intersections(vector<polynomial>& vP, int minlvl, int maxlv
         vector<pair<monomial, polynomial>> vmp;
         vector<vector<pair<monomial, polynomial>>> vkmap;
         vector<int> vtrans;//index trans, since now index in vkmap is no longer index in vP
-        //wat::timer ti;
-        //ti.start();
         for (int i = 0; i < vP.size(); ++i)
         {
             int lvl = vP[i].ring_level();
@@ -34,25 +31,16 @@ void kcm_find_kernel_intersections(vector<polynomial>& vP, int minlvl, int maxlv
             vkmap.push_back(std::move(vmp));
             vtrans.push_back(i);
         }
-        //ti.stop();
-        //std::cerr << "FIND KERNELS:" << ti.time() << std::endl;
-        //ti.start();
         kcm tm(std::move(vkmap));
-        //ti.stop();
-        //std::cerr << "Build KCM:" << ti.time() << std::endl;
         vector<int> vr;
         vector<int> vc;
-        //ti.start();
         bv = tm.generate_best_rectangle(vr, vc);
-        //ti.stop();
-        //std::cerr << "Generate :" << ti.time() << std::endl;
         if (bv < 0)
         {
             break;
         }
         else
         {
-            //ti.start();
             //build new literal polynomial
             polynomial nlp;
             for (auto vci : vc)
@@ -121,8 +109,6 @@ void kcm_find_kernel_intersections(vector<polynomial>& vP, int minlvl, int maxlv
             }
             sumbv1 += bv;
             summul -= bv;
-            //ti.stop();
-            //std::cerr << "Substitute :" << ti.time() << std::endl;
             std::cerr << "Step 1: Descrease by" << std::setw(7) << bv << "."
                       << "Total descreased:" << std::setw(8) << sumbv1 << "."
                       << "Remain" << std::setw(8) << summul
@@ -387,14 +373,12 @@ bool fr_cube_intersection(const vector<polynomial>& vP, monomial& m, int minlvl,
         //now start
         for (; steps != 0; --steps)
         {
-            std::cout << steps << std::endl;
+            //std::cout << steps << std::endl;
             for (; base_shift < vP.size(); base_shift += steps * max_terms)
             {
                 for (; start_index < steps; ++start_index)
                 {
                     //set the matrix
-                    //wat::timer ti;
-                    //ti.start();
                     std::vector<monomial> mat;
                     for (int cti = 0; cti < max_terms; ++cti)
                     {
@@ -407,12 +391,7 @@ bool fr_cube_intersection(const vector<polynomial>& vP, monomial& m, int minlvl,
                             { mat.push_back(vP[index][j]); }
                         }
                     }
-                    //ti.stop();
-                    //std::cout << "PREP:" << ti.time() << "s" << std::endl;
-                    //ti.start();
                     int status = fr_parts_cube_intersection(mat, m, minlvl, maxlvl);
-                    //ti.stop();
-                    //std::cout << "CI:" << ti.time() << "s" << std::endl;
                     if (status) { return true; }
                 }
                 //reset start_index
@@ -489,9 +468,7 @@ void find_cube_intersections(vector<polynomial>& vP)
         }
         //rewrote vP except the one which is just "P=m"
         int rs = 0;
-        wat::timer ti;
-        ti.start();
-        std::cerr << m << std::endl;
+        //std::cerr << m << std::endl;
         for (int pi = 0; pi < vP.size(); ++pi)
         {
             const auto& P = vP[pi];
@@ -514,8 +491,6 @@ void find_cube_intersections(vector<polynomial>& vP)
             vP_replace(pi, nP);
             build_vdb_term(pi);//update vdb
         }
-        ti.stop();
-        std::cerr << "REW:" << ti.time() << "s" << std::endl;
         int64_t bv = (rs - 1) * (m.multiplication_number() - 1);
         sumbv2 += bv;
         summul -= bv;
