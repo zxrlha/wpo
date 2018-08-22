@@ -435,8 +435,8 @@ static const yytype_uint8 yytranslate[] =
 static const yytype_uint8 yyrline[] =
 {
        0,    21,    21,    22,    23,    26,    27,    28,    29,    32,
-      60,    61,    69,    75,    81,   103,   109,   110,   118,   138,
-     176,   177,   182
+      60,    61,    69,    75,    81,   103,   109,   110,   116,   136,
+     174,   175,   180
 };
 #endif
 
@@ -1254,13 +1254,13 @@ yyreduce:
 
   case 7:
 #line 28 "parser.ypp" /* yacc.c:1646  */
-    { parse_options(get<string>((yyvsp[-1])), get<int64_t>((yyvsp[0]))); }
+    { parse_options(get<string>((yyvsp[-1])), boost::lexical_cast<int64_t>(get<string>((yyvsp[0])))); }
 #line 1259 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 8:
 #line 29 "parser.ypp" /* yacc.c:1646  */
-    { parse_options(get<string>((yyvsp[-2])), -1 * get<int64_t>((yyvsp[0]))); }
+    { parse_options(get<string>((yyvsp[-2])), -1 * boost::lexical_cast<int64_t>(get<string>((yyvsp[0])))); }
 #line 1265 "parser.cpp" /* yacc.c:1646  */
     break;
 
@@ -1324,7 +1324,7 @@ yyreduce:
 #line 76 "parser.ypp" /* yacc.c:1646  */
     {
 	assert(get<monomial>((yyvsp[-2])).size() == 1);
-	int n = get<int64_t>((yyvsp[0]));
+	int n = boost::lexical_cast<int64_t>(get<string>((yyvsp[0])));
 	(yyval) = monomial(get<monomial>((yyvsp[-2])).lit(0), n);
 }
 #line 1331 "parser.cpp" /* yacc.c:1646  */
@@ -1335,7 +1335,7 @@ yyreduce:
     {
     /*understand as a function call*/
     assert(get<monomial>((yyvsp[-5])).size() == 1);
-    int n = get<int64_t>((yyvsp[-1]));
+    int n = boost::lexical_cast<int64_t>(get<string>((yyvsp[-1])));
     funcexpr nf;
     nf._funcname=invname;
     nf._paraid=get<monomial>((yyvsp[-5])).lit(0);
@@ -1359,7 +1359,7 @@ yyreduce:
   case 15:
 #line 104 "parser.ypp" /* yacc.c:1646  */
     {
-	int i = literal_add(boost::lexical_cast<string>(get<int64_t>((yyvsp[0]))), true);
+	int i = literal_add(get<string>((yyvsp[0])), true);
 	monomial m(i);
 	(yyval) = m;
 }
@@ -1375,15 +1375,13 @@ yyreduce:
   case 17:
 #line 111 "parser.ypp" /* yacc.c:1646  */
     {
-	int i = get<int64_t>((yyvsp[0]));
-	monomial m(i);
-	(yyval) = m;
+	(yyval) = std::move((yyvsp[0]));
 }
-#line 1383 "parser.cpp" /* yacc.c:1646  */
+#line 1381 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 119 "parser.ypp" /* yacc.c:1646  */
+#line 117 "parser.ypp" /* yacc.c:1646  */
     {
 	int nli = vP_get(*get<spp>((yyvsp[-1])));
 	if (nli == -1)
@@ -1401,13 +1399,13 @@ yyreduce:
 	{
 		nli = literal_get(vP[nli].name());
 	}
-	(yyval) = nli;
+	(yyval) = monomial(nli);
 }
-#line 1407 "parser.cpp" /* yacc.c:1646  */
+#line 1405 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 139 "parser.ypp" /* yacc.c:1646  */
+#line 137 "parser.ypp" /* yacc.c:1646  */
     {
 	/*a function call*/
 	int nli = vP_get(*get<spp>((yyvsp[-1])));
@@ -1441,37 +1439,37 @@ yyreduce:
 	{
 		nfi = literal_get(vfunc[nfi]._resname);
 	};
-	(yyval) = nfi;
+	(yyval) = monomial(nfi);
 }
-#line 1447 "parser.cpp" /* yacc.c:1646  */
+#line 1445 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 176 "parser.ypp" /* yacc.c:1646  */
+#line 174 "parser.ypp" /* yacc.c:1646  */
     { (yyval) = spp(new polynomial(get<monomial>((yyvsp[0])))); }
-#line 1453 "parser.cpp" /* yacc.c:1646  */
+#line 1451 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 21:
-#line 178 "parser.ypp" /* yacc.c:1646  */
+#line 176 "parser.ypp" /* yacc.c:1646  */
     {
 	(yyval) = std::move(get<spp>((yyvsp[-2])));
 	*get<spp>((yyval)) += std::move(get<monomial>((yyvsp[0])));
 }
-#line 1462 "parser.cpp" /* yacc.c:1646  */
+#line 1460 "parser.cpp" /* yacc.c:1646  */
     break;
 
   case 22:
-#line 183 "parser.ypp" /* yacc.c:1646  */
+#line 181 "parser.ypp" /* yacc.c:1646  */
     {
 	(yyval) = std::move(get<spp>((yyvsp[-2])));
 	*get<spp>((yyval)) -= std::move(get<monomial>((yyvsp[0])));
 }
-#line 1471 "parser.cpp" /* yacc.c:1646  */
+#line 1469 "parser.cpp" /* yacc.c:1646  */
     break;
 
 
-#line 1475 "parser.cpp" /* yacc.c:1646  */
+#line 1473 "parser.cpp" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires

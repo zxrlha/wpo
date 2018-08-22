@@ -11,7 +11,7 @@ ID [a-zA-Z_][a-zA-Z_0-9\[\]]*
 
 %%
 
-{DIGIT}+ { yylval = boost::lexical_cast<int64_t>(yytext); return NUMBER; }
+{DIGIT}+ { yylval = string(yytext); return NUMBER; }
 
 {ID} { yylval = string(yytext); /*std::cout<<get<string>(yylval)<<std::endl;*/return IDENTIFY; }
 

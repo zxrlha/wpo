@@ -8,7 +8,7 @@
 
 using std::string;
 using spp = std::shared_ptr<polynomial>;
-using yystype = boost::variant<int64_t, string, monomial, spp>;
+using yystype = boost::variant<string, monomial, spp>;
 using boost::get;
 
 #define YYSTYPE yystype

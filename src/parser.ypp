@@ -25,8 +25,8 @@
 optionline:
 OPTION IDENTIFY { parse_options(get<string>($1), get<string>($2)); }
 |OPTION STRING { parse_options(get<string>($1), get<string>($2)); }
-|OPTION NUMBER { parse_options(get<string>($1), get<int64_t>($2)); }
-|OPTION '-' NUMBER { parse_options(get<string>($1), -1 * get<int64_t>($3)); }
+|OPTION NUMBER { parse_options(get<string>($1), boost::lexical_cast<int64_t>(get<string>($2))); }
+|OPTION '-' NUMBER { parse_options(get<string>($1), -1 * boost::lexical_cast<int64_t>(get<string>($3))); }
 
 poly_def:
 IDENTIFY '=' exp
@@ -75,14 +75,14 @@ IDENTIFY
 | mono '^' NUMBER
 {
 	assert(get<monomial>($1).size() == 1);
-	int n = get<int64_t>($3);
+	int n = boost::lexical_cast<int64_t>(get<string>($3));
 	$$ = monomial(get<monomial>($1).lit(0), n);
 }
 | mono '^' '(' '-' NUMBER ')'
 {
     /*understand as a function call*/
     assert(get<monomial>($1).size() == 1);
-    int n = get<int64_t>($5);
+    int n = boost::lexical_cast<int64_t>(get<string>($5));
     funcexpr nf;
     nf._funcname=invname;
     nf._paraid=get<monomial>($1).lit(0);
@@ -102,16 +102,14 @@ IDENTIFY
 }
 | NUMBER
 {
-	int i = literal_add(boost::lexical_cast<string>(get<int64_t>($1)), true);
+	int i = literal_add(get<string>($1), true);
 	monomial m(i);
 	$$ = m;
 }
 | mono '*' mono { $$ = get<monomial>($1) * get<monomial>($3); }
 | varstr
 {
-	int i = get<int64_t>($1);
-	monomial m(i);
-	$$ = m;
+	$$ = std::move($1);
 }
 
 varstr:
@@ -133,7 +131,7 @@ varstr:
 	{
 		nli = literal_get(vP[nli].name());
 	}
-	$$ = nli;
+	$$ = monomial(nli);
 }
 | IDENTIFY '(' exp ')'
 {
@@ -169,7 +167,7 @@ varstr:
 	{
 		nfi = literal_get(vfunc[nfi]._resname);
 	};
-	$$ = nfi;
+	$$ = monomial(nfi);
 }
 
 exp:
