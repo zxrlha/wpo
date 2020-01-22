@@ -14,6 +14,7 @@ Makefile.in
 *.lo
 *.la
 *.a
+/src/wpo
 # make dist
 /*.tar.gz
 # vim termporary file
@@ -22,3 +23,7 @@ Makefile.in
 # Mac file
 .DS_Store
 /doc
+# old versions
+/oldversions
+# WPO output
+*.exp

@@ -71,7 +71,7 @@ namespace po = boost::program_options;
 int main(int argc, char* argv[])
 {
     std::cerr.precision(4);
-    po::options_description desc("Allowd options");
+    po::options_description desc("Allowed options");
     desc.add_options()
     ("help,h", "print help message")
     ("version,v", "print version information")
