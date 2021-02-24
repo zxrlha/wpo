@@ -12,6 +12,6 @@ using std::map;
     map<string, int> vlit_map;
     vector<int> vlitlvl;
     int tmpi = 0;
-    vector<string> vrtype;
+    vector<string> vrtype{"auto"};
     map<string, int> vidlvl;
     int dftlvl = 0;

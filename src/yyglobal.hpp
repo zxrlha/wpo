@@ -8,10 +8,8 @@
 
 using std::string;
 using spp = std::shared_ptr<polynomial>;
-using yystype = boost::variant<string, monomial, spp>;
+#define YYSTYPE boost::variant<string, monomial, spp>
 using boost::get;
-
-#define YYSTYPE yystype
 
 extern vector<polynomial> vP;
 extern vector<funcexpr> vfunc;
