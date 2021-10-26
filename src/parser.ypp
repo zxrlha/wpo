@@ -1,3 +1,5 @@
+%define parse.lac full
+%define parse.error detailed
 %{
 #include <boost/lexical_cast.hpp>
 #include <cstdlib>
