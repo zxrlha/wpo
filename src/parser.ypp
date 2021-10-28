@@ -44,7 +44,6 @@ IDENTIFY '=' exp
 	}
 	else 
 	{
-		nli = literal_get(vP[nli].name());
         monomial m(nli);
         P = polynomial(m);
 	}
@@ -66,17 +65,17 @@ IDENTIFY
 }
 |'(' exp ')'
 {
-	int nli = vP_get(*get<spp>($2), true);
+	int nli = vP_insert(*get<spp>($2));
     $$ = nli;
 }
 | IDENTIFY '(' exp ')'
 {
 	/*a function call*/
-	int nli = vP_get(*get<spp>($3), true);
+	int nli = vP_insert(*get<spp>($3));
 	funcexpr nf;
 	nf._funcname=get<string>($1);
 	nf._paraid=nli;
-	int nfi = vfunc_get(nf, true);
+	int nfi = vfunc_insert(nf);
 	$$ = nfi;
 }
 
@@ -92,7 +91,7 @@ NUMBER
 }
 
 mono:
-| single_term
+single_term
 {
     monomial m(get<int>($1));
     $$ = m;
@@ -109,14 +108,14 @@ mono:
     funcexpr nflog;//log(a)
     nflog._funcname=logname;
     nflog._paraid=get<int>($1);
-    int nfilog = vfunc_get(nflog, true);
+    int nfilog = vfunc_insert(nflog);
     int idb = get<int>($3);
     polynomial blna(monomial(idb)*monomial(nfilog));
-    int npid = vP_get(blna, true);
+    int npid = vP_insert(blna);
     funcexpr nfexp;
     nfexp._funcname=expname;
     nfexp._paraid=npid;
-    int nfiexp = vfunc_get(nfexp, true);
+    int nfiexp = vfunc_insert(nfexp);
     $$ = monomial(nfiexp);
 }
 | mono '/' single_term
@@ -124,7 +123,7 @@ mono:
     funcexpr nfinv;
     nfinv._funcname=invname;
     nfinv._paraid=get<int>($3);
-    int nfiinv = vfunc_get(nfinv, true);
+    int nfiinv = vfunc_insert(nfinv);
     monomial res = get<monomial>($1);
     res *= monomial(nfiinv);
     $$ = std::move(res);

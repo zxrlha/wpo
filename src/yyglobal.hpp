@@ -46,9 +46,10 @@ extern int64_t osummul;
 void vP_replace(int i, const polynomial& nP);
 void vP_rebuild_map();
 void vP_push(const polynomial& P);
-int vP_get(polynomial& P, bool create = false);//if not exists and create is set to true, it will call vP_push and create one
+int vP_insert(polynomial& P);//check before push, will return literal name
+int vP_get(const polynomial& P);//return index in vP
 void vP_map_remove(const polynomial& P);
-int vfunc_get(funcexpr& fe, bool create = false);
+int vfunc_insert(funcexpr& fe);//check before push, will return literal name
 
 void parse_options(const string& name, const string& value);
 void parse_options(const string& name, int64_t value);

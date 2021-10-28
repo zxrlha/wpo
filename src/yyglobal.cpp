@@ -71,7 +71,7 @@ void vP_push(const polynomial& P)
     vP.push_back(P);
 }
 
-int vP_get(polynomial& P, bool create)
+int vP_insert(polynomial& P)
 {
     auto it = vPmap.find(P);
     if (it != vPmap.end())
@@ -79,7 +79,7 @@ int vP_get(polynomial& P, bool create)
         assert(vP[it->second] == P);
         return literal_get(vP[it->second].name());
     }
-    else if (create)
+    else
     {
         int nli = P.single_id();
         if (nli == -1)
@@ -91,13 +91,23 @@ int vP_get(polynomial& P, bool create)
         }
         return nli;
     }
+}
+
+int vP_get(const polynomial& P)
+{
+    auto it = vPmap.find(P);
+    if (it != vPmap.end())
+    {
+        assert(vP[it->second] == P);
+        return it->second;
+    }
     else
     {
         return -1;
     }
 }
 
-int vfunc_get(funcexpr& fe, bool create)
+int vfunc_insert(funcexpr& fe)
 {
     for (int i = 0; i < vfunc.size(); ++i)
     {
@@ -107,18 +117,11 @@ int vfunc_get(funcexpr& fe, bool create)
             return literal_get(vfunc[i]._resname);
         }
     }
-    if (create)
-    {
-        int nfi = literal_append_tmp();
-        fe._resname = literal_name(nfi);
-        vfunc.push_back(fe);
-        literal_set_ring_level(nfi, fe.ring_level());
-        return nfi;
-    }
-    else
-    {
-        return -1;
-    }
+    int nfi = literal_append_tmp();
+    fe._resname = literal_name(nfi);
+    vfunc.push_back(fe);
+    literal_set_ring_level(nfi, fe.ring_level());
+    return nfi;
 }
 
 void parse_options(const string& name, const string& value)
