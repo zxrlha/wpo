@@ -28,6 +28,8 @@ bool flag_reuse = true;
 int64_t max_terms = -1;
 int64_t threads_num = 1;
 string invname = "inv";
+string logname = "log";
+string expname = "exp";
 
 string in_file = "";
 
@@ -69,7 +71,7 @@ void vP_push(const polynomial& P)
     vP.push_back(P);
 }
 
-int vP_get(const polynomial& P)
+int vP_get(polynomial& P, bool create)
 {
     auto it = vPmap.find(P);
     if (it != vPmap.end())
@@ -77,23 +79,46 @@ int vP_get(const polynomial& P)
         assert(vP[it->second] == P);
         return it->second;
     }
+    else if (create)
+    {
+        int nli = P.single_id();
+        if (nli == -1)
+        {
+            nli = literal_append_tmp();
+            P.name() = literal_name(nli);
+            literal_set_ring_level(nli, P.ring_level());
+            vP_push(std::move(P));
+        }
+        return nli;
+    }
     else
     {
         return -1;
     }
 }
 
-int vfunc_get(const funcexpr& fe)
+int vfunc_get(funcexpr& fe, bool create)
 {
     for (int i = 0; i < vfunc.size(); ++i)
     {
         if (fe._funcname == vfunc[i]._funcname
-                && fe._paraid == vfunc[i]._paraid)
+            && fe._paraid == vfunc[i]._paraid)
         {
-            return i;
+            return literal_get(vfunc[i]._resname);
         }
     }
-    return -1;
+    if (create)
+    {
+        int nfi = literal_append_tmp();
+        fe._resname = literal_name(nfi);
+        vfunc.push_back(fe);
+        literal_set_ring_level(nfi, fe.ring_level());
+        return nfi;
+    }
+    else
+    {
+        return -1;
+    }
 }
 
 void parse_options(const string& name, const string& value)
@@ -125,6 +150,18 @@ void parse_options(const string& name, const string& value)
     else if (name == "strategy")
     {
         strategy = value;
+    }
+    else if (name == "invname")
+    {
+        invname = value;
+    }
+    else if (name == "expname")
+    {
+        expname = value;
+    }
+    else if (name == "logname")
+    {
+        logname = value;
     }
     else if (name == "clean")
     {

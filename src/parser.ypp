@@ -13,7 +13,7 @@
 	%token NUMBER IDENTIFY STRING
 	%token OPTION
 	%left '-' '+'
-	%left '*'
+	%left '*' '/'
 	%right '^'
 	%token '(' ')'
 
@@ -58,122 +58,88 @@ IDENTIFY '=' exp
     literal_set_ring_level(literal_get(P.name()), P.ring_level());
 }
 
-monowithsign:
-mono { $$ = $1; }
+single_var:
+IDENTIFY
+{
+	int i = literal_add(get<string>($1));
+    $$ = i;
+}
+|'(' exp ')'
+{
+	int nli = vP_get(*get<spp>($2), true);
+    $$ = nli;
+}
+| IDENTIFY '(' exp ')'
+{
+	/*a function call*/
+	int nli = vP_get(*get<spp>($3), true);
+	funcexpr nf;
+	nf._funcname=get<string>($1);
+	nf._paraid=nli;
+	int nfi = vfunc_get(nf, true);
+	$$ = nfi;
+}
+
+single_term:
+NUMBER
+{
+	int i = literal_add(get<string>($1), true);
+	$$ = i;
+}
+| single_var
+{
+    $$ = $1;
+}
+
+mono:
+| single_term
+{
+    monomial m(get<int>($1));
+    $$ = m;
+}
+| single_term '^' NUMBER
+{
+	int n = boost::lexical_cast<int64_t>(get<string>($3));
+	$$ = monomial(get<int>($1), n);
+}
+| single_term '^' single_var
+{
+    /*a^b=>exp(b*log(a))*/
+    /* it is single '^' single, because '^' has high priority */
+    funcexpr nflog;//log(a)
+    nflog._funcname=logname;
+    nflog._paraid=get<int>($1);
+    int nfilog = vfunc_get(nflog, true);
+    int idb = get<int>($3);
+    polynomial blna(monomial(idb)*monomial(nfilog));
+    int npid = vP_get(blna, true);
+    funcexpr nfexp;
+    nfexp._funcname=expname;
+    nfexp._paraid=npid;
+    int nfiexp = vfunc_get(nfexp, true);
+    $$ = monomial(nfiexp);
+}
+| mono '/' single_term
+{
+    funcexpr nfinv;
+    nfinv._funcname=invname;
+    nfinv._paraid=get<int>($3);
+    int nfiinv = vfunc_get(nfinv, true);
+    monomial res = get<monomial>($1);
+    res *= monomial(nfiinv);
+    $$ = std::move(res);
+}
+| mono '*' mono { $$ = get<monomial>($1) * get<monomial>($3); }
 | '-' mono
 {
+/* it should be -mono rather than -single, because this unary minus operator has lower priority */
 	auto& t = get<monomial>($2);
 	t.reverse_sign();
 	$$ = t;
 }
 
-mono:
-IDENTIFY
-{
-	int i = literal_add(get<string>($1));
-	monomial m(i);
-	$$ = m;
-}
-| mono '^' NUMBER
-{
-	assert(get<monomial>($1).size() == 1);
-	int n = boost::lexical_cast<int64_t>(get<string>($3));
-	$$ = monomial(get<monomial>($1).lit(0), n);
-}
-| mono '^' '(' '-' NUMBER ')'
-{
-    /*understand as a function call*/
-    assert(get<monomial>($1).size() == 1);
-    int n = boost::lexical_cast<int64_t>(get<string>($5));
-    funcexpr nf;
-    nf._funcname=invname;
-    nf._paraid=get<monomial>($1).lit(0);
-    int nfi = vfunc_get(nf);
-    if (nfi == -1)
-    {
-        nfi = literal_append_tmp();
-        nf._resname = literal_name(nfi);
-        vfunc.push_back(nf);
-        literal_set_ring_level(nfi, nf.ring_level());
-    }
-    else
-    {
-        nfi = literal_get(vfunc[nfi]._resname);
-    }
-    $$ = monomial(nfi, n);
-}
-| NUMBER
-{
-	int i = literal_add(get<string>($1), true);
-	monomial m(i);
-	$$ = m;
-}
-| mono '*' mono { $$ = get<monomial>($1) * get<monomial>($3); }
-| varstr
-{
-	$$ = std::move($1);
-}
-
-varstr:
-'(' exp ')'
-{
-	int nli = vP_get(*get<spp>($2));
-	if (nli == -1)
-	{
-		nli = get<spp>($2)->single_id();
-		if (nli == -1)//new polynomial
-		{
-			nli = literal_append_tmp();
-			get<spp>($2)->name() = literal_name(nli);
-			literal_set_ring_level(nli, get<spp>($2)->ring_level());
-			vP_push(std::move(*get<spp>($2)));
-		}
-	}
-	else 
-	{
-		nli = literal_get(vP[nli].name());
-	}
-	$$ = monomial(nli);
-}
-| IDENTIFY '(' exp ')'
-{
-	/*a function call*/
-	int nli = vP_get(*get<spp>($3));
-	if (nli == -1)
-	{
-		nli = get<spp>($3)->single_id();
-		if (nli == -1)//new polynomial
-		{
-			nli = literal_append_tmp();
-			get<spp>($3)->name() = literal_name(nli);
-			literal_set_ring_level(nli, get<spp>($3)->ring_level());
-			vP_push(std::move(*get<spp>($3)));
-		}
-	}
-	else
-	{
-		nli = literal_get(vP[nli].name());
-	};
-	funcexpr nf;
-	nf._funcname=get<string>($1);
-	nf._paraid=nli;
-	int nfi = vfunc_get(nf);
-	if (nfi == -1)
-	{
-		nfi = literal_append_tmp();
-		nf._resname = literal_name(nfi);
-		vfunc.push_back(nf);
-		literal_set_ring_level(nfi, nf.ring_level());
-	}
-	else
-	{
-		nfi = literal_get(vfunc[nfi]._resname);
-	};
-	$$ = monomial(nfi);
-}
-
 exp:
-monowithsign { $$ = spp(new polynomial(get<monomial>($1))); }
+mono { $$ = spp(new polynomial(get<monomial>($1))); }
 | exp '+' mono
 {
 	$$ = std::move(get<spp>($1));

@@ -166,18 +166,19 @@ enum yysymbol_kind_t
   YYSYMBOL_7_ = 7,                         /* '-'  */
   YYSYMBOL_8_ = 8,                         /* '+'  */
   YYSYMBOL_9_ = 9,                         /* '*'  */
-  YYSYMBOL_10_ = 10,                       /* '^'  */
-  YYSYMBOL_11_ = 11,                       /* '('  */
-  YYSYMBOL_12_ = 12,                       /* ')'  */
-  YYSYMBOL_13_ = 13,                       /* '='  */
-  YYSYMBOL_YYACCEPT = 14,                  /* $accept  */
-  YYSYMBOL_file = 15,                      /* file  */
-  YYSYMBOL_optionline = 16,                /* optionline  */
-  YYSYMBOL_poly_def = 17,                  /* poly_def  */
-  YYSYMBOL_monowithsign = 18,              /* monowithsign  */
-  YYSYMBOL_mono = 19,                      /* mono  */
-  YYSYMBOL_varstr = 20,                    /* varstr  */
-  YYSYMBOL_exp = 21                        /* exp  */
+  YYSYMBOL_10_ = 10,                       /* '/'  */
+  YYSYMBOL_11_ = 11,                       /* '^'  */
+  YYSYMBOL_12_ = 12,                       /* '('  */
+  YYSYMBOL_13_ = 13,                       /* ')'  */
+  YYSYMBOL_14_ = 14,                       /* '='  */
+  YYSYMBOL_YYACCEPT = 15,                  /* $accept  */
+  YYSYMBOL_file = 16,                      /* file  */
+  YYSYMBOL_optionline = 17,                /* optionline  */
+  YYSYMBOL_poly_def = 18,                  /* poly_def  */
+  YYSYMBOL_single_var = 19,                /* single_var  */
+  YYSYMBOL_single_term = 20,               /* single_term  */
+  YYSYMBOL_mono = 21,                      /* mono  */
+  YYSYMBOL_exp = 22                        /* exp  */
 };
 typedef enum yysymbol_kind_t yysymbol_kind_t;
 
@@ -467,13 +468,13 @@ union yyalloc
 #define YYLAST   38
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  14
+#define YYNTOKENS  15
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  8
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  22
+#define YYNRULES  24
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  39
+#define YYNSTATES  38
 
 /* YYMAXUTOK -- Last valid token kind.  */
 #define YYMAXUTOK   261
@@ -494,12 +495,12 @@ static const yytype_int8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      11,    12,     9,     8,     2,     7,     2,     2,     2,     2,
+      12,    13,     9,     8,     2,     7,     2,    10,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,    13,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,    14,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,    10,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,    11,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -524,8 +525,8 @@ static const yytype_int8 yytranslate[] =
 static const yytype_uint8 yyrline[] =
 {
        0,    23,    23,    24,    25,    28,    29,    30,    31,    34,
-      62,    63,    71,    77,    83,   105,   111,   112,   118,   138,
-     176,   177,   182
+      62,    67,    72,    84,    89,    94,    95,   100,   105,   122,
+     132,   133,   142,   143,   148
 };
 #endif
 
@@ -543,9 +544,9 @@ yysymbol_name (yysymbol_kind_t yysymbol)
   static const char *const yy_sname[] =
   {
   "end of file", "error", "invalid token", "NUMBER", "IDENTIFY", "STRING",
-  "OPTION", "'-'", "'+'", "'*'", "'^'", "'('", "')'", "'='", "$accept",
-  "file", "optionline", "poly_def", "monowithsign", "mono", "varstr",
-  "exp", YY_NULLPTR
+  "OPTION", "'-'", "'+'", "'*'", "'/'", "'^'", "'('", "')'", "'='",
+  "$accept", "file", "optionline", "poly_def", "single_var", "single_term",
+  "mono", "exp", YY_NULLPTR
   };
   return yy_sname[yysymbol];
 }
@@ -557,7 +558,7 @@ yysymbol_name (yysymbol_kind_t yysymbol)
 static const yytype_int16 yytoknum[] =
 {
        0,   256,   257,   258,   259,   260,   261,    45,    43,    42,
-      94,    40,    41,    61
+      47,    94,    40,    41,    61
 };
 #endif
 
@@ -575,10 +576,10 @@ static const yytype_int16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-     -15,    15,   -15,    -6,    28,   -15,   -15,    -2,   -15,   -15,
-     -15,     5,   -15,     9,     0,    -2,   -15,     8,   -15,    29,
-     -15,    -2,     8,    16,     0,     3,     0,     0,    18,   -15,
-      17,   -15,    22,     8,     8,   -15,    31,    26,   -15
+     -15,    16,   -15,     5,    28,   -15,   -15,    -2,   -15,   -15,
+     -15,    23,   -15,    22,    -2,    -2,   -15,    25,    -1,    21,
+     -15,    -2,    -1,    10,     0,    -2,     3,    -2,    -2,    17,
+     -15,   -15,   -15,   -15,   -15,    -1,    -1,   -15
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -586,16 +587,16 @@ static const yytype_int8 yypact[] =
      means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
-       2,     0,     1,     0,     0,     4,     3,     0,     7,     5,
-       6,     0,    15,    12,     0,     0,    20,    10,    17,     9,
-       8,     0,    11,     0,     0,     0,     0,     0,     0,    18,
-      16,    13,     0,    22,    21,    19,     0,     0,    14
+       2,     0,     1,     0,     0,     4,     3,    15,     7,     5,
+       6,     0,    13,    10,    15,    15,    14,    16,    22,     9,
+       8,    15,    21,     0,     0,    15,     0,    15,    15,     0,
+      11,    17,    18,    20,    19,    24,    23,    12
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -15,   -15,   -15,   -15,   -15,   -14,   -15,     1
+     -15,   -15,   -15,   -15,    13,    12,   -14,     6
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
@@ -609,44 +610,44 @@ static const yytype_int8 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-      22,    12,    13,    12,    13,    14,    31,     7,    20,    15,
-      30,    15,    33,    34,    32,     2,    23,    24,    25,     3,
-      21,     4,    28,    26,    27,    26,    27,    25,    29,    36,
-      35,     8,     9,    10,    37,    11,    26,    27,    38
+      22,    12,    13,    31,    13,    14,    12,    13,    25,    26,
+      15,    33,    15,    35,    36,    15,     2,    27,    28,     7,
+       3,    23,     4,    30,    27,    28,    20,    29,    27,    28,
+      37,     8,     9,    10,    21,    11,    24,    32,    34
 };
 
 static const yytype_int8 yycheck[] =
 {
-      14,     3,     4,     3,     4,     7,     3,    13,     3,    11,
-      24,    11,    26,    27,    11,     0,    15,     9,    10,     4,
-      11,     6,    21,     7,     8,     7,     8,    10,    12,     7,
-      12,     3,     4,     5,     3,     7,     7,     8,    12
+      14,     3,     4,     3,     4,     7,     3,     4,     9,    10,
+      12,    25,    12,    27,    28,    12,     0,     7,     8,    14,
+       4,    15,     6,    13,     7,     8,     3,    21,     7,     8,
+      13,     3,     4,     5,    12,     7,    11,    24,    26
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,    15,     0,     4,     6,    16,    17,    13,     3,     4,
-       5,     7,     3,     4,     7,    11,    18,    19,    20,    21,
-       3,    11,    19,    21,     9,    10,     7,     8,    21,    12,
-      19,     3,    11,    19,    19,    12,     7,     3,    12
+       0,    16,     0,     4,     6,    17,    18,    14,     3,     4,
+       5,     7,     3,     4,     7,    12,    19,    20,    21,    22,
+       3,    12,    21,    22,    11,     9,    10,     7,     8,    22,
+      13,     3,    19,    21,    20,    21,    21,    13
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    14,    15,    15,    15,    16,    16,    16,    16,    17,
-      18,    18,    19,    19,    19,    19,    19,    19,    20,    20,
-      21,    21,    21
+       0,    15,    16,    16,    16,    17,    17,    17,    17,    18,
+      19,    19,    19,    20,    20,    21,    21,    21,    21,    21,
+      21,    21,    22,    22,    22
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
 static const yytype_int8 yyr2[] =
 {
        0,     2,     0,     2,     2,     2,     2,     2,     3,     3,
-       1,     2,     1,     3,     6,     1,     3,     1,     3,     4,
-       1,     3,     3
+       1,     3,     4,     1,     1,     0,     1,     3,     3,     3,
+       3,     2,     1,     3,     3
 };
 
 
@@ -1597,43 +1598,43 @@ yyreduce:
   case 2: /* file: %empty  */
 #line 23 "parser.ypp"
 {}
-#line 1601 "parser.cpp"
+#line 1602 "parser.cpp"
     break;
 
   case 3: /* file: file poly_def  */
 #line 24 "parser.ypp"
                 {}
-#line 1607 "parser.cpp"
+#line 1608 "parser.cpp"
     break;
 
   case 4: /* file: file optionline  */
 #line 25 "parser.ypp"
                   {}
-#line 1613 "parser.cpp"
+#line 1614 "parser.cpp"
     break;
 
   case 5: /* optionline: OPTION IDENTIFY  */
 #line 28 "parser.ypp"
                 { parse_options(get<string>(yyvsp[-1]), get<string>(yyvsp[0])); }
-#line 1619 "parser.cpp"
+#line 1620 "parser.cpp"
     break;
 
   case 6: /* optionline: OPTION STRING  */
 #line 29 "parser.ypp"
                { parse_options(get<string>(yyvsp[-1]), get<string>(yyvsp[0])); }
-#line 1625 "parser.cpp"
+#line 1626 "parser.cpp"
     break;
 
   case 7: /* optionline: OPTION NUMBER  */
 #line 30 "parser.ypp"
                { parse_options(get<string>(yyvsp[-1]), boost::lexical_cast<int64_t>(get<string>(yyvsp[0]))); }
-#line 1631 "parser.cpp"
+#line 1632 "parser.cpp"
     break;
 
   case 8: /* optionline: OPTION '-' NUMBER  */
 #line 31 "parser.ypp"
                    { parse_options(get<string>(yyvsp[-2]), -1 * boost::lexical_cast<int64_t>(get<string>(yyvsp[0]))); }
-#line 1637 "parser.cpp"
+#line 1638 "parser.cpp"
     break;
 
   case 9: /* poly_def: IDENTIFY '=' exp  */
@@ -1663,185 +1664,154 @@ yyreduce:
     //set correct ring level
     literal_set_ring_level(literal_get(P.name()), P.ring_level());
 }
-#line 1667 "parser.cpp"
+#line 1668 "parser.cpp"
     break;
 
-  case 10: /* monowithsign: mono  */
-#line 62 "parser.ypp"
-     { yyval = yyvsp[0]; }
-#line 1673 "parser.cpp"
-    break;
-
-  case 11: /* monowithsign: '-' mono  */
-#line 64 "parser.ypp"
+  case 10: /* single_var: IDENTIFY  */
+#line 63 "parser.ypp"
 {
+	int i = literal_add(get<string>(yyvsp[0]));
+    yyval = i;
+}
+#line 1677 "parser.cpp"
+    break;
+
+  case 11: /* single_var: '(' exp ')'  */
+#line 68 "parser.ypp"
+{
+	int nli = vP_get(*get<spp>(yyvsp[-1]), true);
+    yyval = nli;
+}
+#line 1686 "parser.cpp"
+    break;
+
+  case 12: /* single_var: IDENTIFY '(' exp ')'  */
+#line 73 "parser.ypp"
+{
+	/*a function call*/
+	int nli = vP_get(*get<spp>(yyvsp[-1]), true);
+	funcexpr nf;
+	nf._funcname=get<string>(yyvsp[-3]);
+	nf._paraid=nli;
+	int nfi = vfunc_get(nf, true);
+	yyval = nfi;
+}
+#line 1700 "parser.cpp"
+    break;
+
+  case 13: /* single_term: NUMBER  */
+#line 85 "parser.ypp"
+{
+	int i = literal_add(get<string>(yyvsp[0]), true);
+	yyval = i;
+}
+#line 1709 "parser.cpp"
+    break;
+
+  case 14: /* single_term: single_var  */
+#line 90 "parser.ypp"
+{
+    yyval = yyvsp[0];
+}
+#line 1717 "parser.cpp"
+    break;
+
+  case 16: /* mono: single_term  */
+#line 96 "parser.ypp"
+{
+    monomial m(get<int>(yyvsp[0]));
+    yyval = m;
+}
+#line 1726 "parser.cpp"
+    break;
+
+  case 17: /* mono: single_term '^' NUMBER  */
+#line 101 "parser.ypp"
+{
+	int n = boost::lexical_cast<int64_t>(get<string>(yyvsp[0]));
+	yyval = monomial(get<int>(yyvsp[-2]), n);
+}
+#line 1735 "parser.cpp"
+    break;
+
+  case 18: /* mono: single_term '^' single_var  */
+#line 106 "parser.ypp"
+{
+    /*a^b=>exp(b*log(a))*/
+    /* it is single '^' single, because '^' has high priority */
+    funcexpr nflog;//log(a)
+    nflog._funcname=logname;
+    nflog._paraid=get<int>(yyvsp[-2]);
+    int nfilog = vfunc_get(nflog, true);
+    int idb = get<int>(yyvsp[0]);
+    polynomial blna(monomial(idb)*monomial(nfilog));
+    int npid = vP_get(blna, true);
+    funcexpr nfexp;
+    nfexp._funcname=expname;
+    nfexp._paraid=npid;
+    int nfiexp = vfunc_get(nfexp, true);
+    yyval = monomial(nfiexp);
+}
+#line 1756 "parser.cpp"
+    break;
+
+  case 19: /* mono: mono '/' single_term  */
+#line 123 "parser.ypp"
+{
+    funcexpr nfinv;
+    nfinv._funcname=invname;
+    nfinv._paraid=get<int>(yyvsp[0]);
+    int nfiinv = vfunc_get(nfinv, true);
+    monomial res = get<monomial>(yyvsp[-2]);
+    res *= monomial(nfiinv);
+    yyval = std::move(res);
+}
+#line 1770 "parser.cpp"
+    break;
+
+  case 20: /* mono: mono '*' mono  */
+#line 132 "parser.ypp"
+                { yyval = get<monomial>(yyvsp[-2]) * get<monomial>(yyvsp[0]); }
+#line 1776 "parser.cpp"
+    break;
+
+  case 21: /* mono: '-' mono  */
+#line 134 "parser.ypp"
+{
+/* it should be -mono rather than -single, because this unary minus operator has lower priority */
 	auto& t = get<monomial>(yyvsp[0]);
 	t.reverse_sign();
 	yyval = t;
 }
-#line 1683 "parser.cpp"
+#line 1787 "parser.cpp"
     break;
 
-  case 12: /* mono: IDENTIFY  */
-#line 72 "parser.ypp"
-{
-	int i = literal_add(get<string>(yyvsp[0]));
-	monomial m(i);
-	yyval = m;
-}
-#line 1693 "parser.cpp"
+  case 22: /* exp: mono  */
+#line 142 "parser.ypp"
+     { yyval = spp(new polynomial(get<monomial>(yyvsp[0]))); }
+#line 1793 "parser.cpp"
     break;
 
-  case 13: /* mono: mono '^' NUMBER  */
-#line 78 "parser.ypp"
-{
-	assert(get<monomial>(yyvsp[-2]).size() == 1);
-	int n = boost::lexical_cast<int64_t>(get<string>(yyvsp[0]));
-	yyval = monomial(get<monomial>(yyvsp[-2]).lit(0), n);
-}
-#line 1703 "parser.cpp"
-    break;
-
-  case 14: /* mono: mono '^' '(' '-' NUMBER ')'  */
-#line 84 "parser.ypp"
-{
-    /*understand as a function call*/
-    assert(get<monomial>(yyvsp[-5]).size() == 1);
-    int n = boost::lexical_cast<int64_t>(get<string>(yyvsp[-1]));
-    funcexpr nf;
-    nf._funcname=invname;
-    nf._paraid=get<monomial>(yyvsp[-5]).lit(0);
-    int nfi = vfunc_get(nf);
-    if (nfi == -1)
-    {
-        nfi = literal_append_tmp();
-        nf._resname = literal_name(nfi);
-        vfunc.push_back(nf);
-        literal_set_ring_level(nfi, nf.ring_level());
-    }
-    else
-    {
-        nfi = literal_get(vfunc[nfi]._resname);
-    }
-    yyval = monomial(nfi, n);
-}
-#line 1729 "parser.cpp"
-    break;
-
-  case 15: /* mono: NUMBER  */
-#line 106 "parser.ypp"
-{
-	int i = literal_add(get<string>(yyvsp[0]), true);
-	monomial m(i);
-	yyval = m;
-}
-#line 1739 "parser.cpp"
-    break;
-
-  case 16: /* mono: mono '*' mono  */
-#line 111 "parser.ypp"
-                { yyval = get<monomial>(yyvsp[-2]) * get<monomial>(yyvsp[0]); }
-#line 1745 "parser.cpp"
-    break;
-
-  case 17: /* mono: varstr  */
-#line 113 "parser.ypp"
-{
-	yyval = std::move(yyvsp[0]);
-}
-#line 1753 "parser.cpp"
-    break;
-
-  case 18: /* varstr: '(' exp ')'  */
-#line 119 "parser.ypp"
-{
-	int nli = vP_get(*get<spp>(yyvsp[-1]));
-	if (nli == -1)
-	{
-		nli = get<spp>(yyvsp[-1])->single_id();
-		if (nli == -1)//new polynomial
-		{
-			nli = literal_append_tmp();
-			get<spp>(yyvsp[-1])->name() = literal_name(nli);
-			literal_set_ring_level(nli, get<spp>(yyvsp[-1])->ring_level());
-			vP_push(std::move(*get<spp>(yyvsp[-1])));
-		}
-	}
-	else 
-	{
-		nli = literal_get(vP[nli].name());
-	}
-	yyval = monomial(nli);
-}
-#line 1777 "parser.cpp"
-    break;
-
-  case 19: /* varstr: IDENTIFY '(' exp ')'  */
-#line 139 "parser.ypp"
-{
-	/*a function call*/
-	int nli = vP_get(*get<spp>(yyvsp[-1]));
-	if (nli == -1)
-	{
-		nli = get<spp>(yyvsp[-1])->single_id();
-		if (nli == -1)//new polynomial
-		{
-			nli = literal_append_tmp();
-			get<spp>(yyvsp[-1])->name() = literal_name(nli);
-			literal_set_ring_level(nli, get<spp>(yyvsp[-1])->ring_level());
-			vP_push(std::move(*get<spp>(yyvsp[-1])));
-		}
-	}
-	else
-	{
-		nli = literal_get(vP[nli].name());
-	};
-	funcexpr nf;
-	nf._funcname=get<string>(yyvsp[-3]);
-	nf._paraid=nli;
-	int nfi = vfunc_get(nf);
-	if (nfi == -1)
-	{
-		nfi = literal_append_tmp();
-		nf._resname = literal_name(nfi);
-		vfunc.push_back(nf);
-		literal_set_ring_level(nfi, nf.ring_level());
-	}
-	else
-	{
-		nfi = literal_get(vfunc[nfi]._resname);
-	};
-	yyval = monomial(nfi);
-}
-#line 1817 "parser.cpp"
-    break;
-
-  case 20: /* exp: monowithsign  */
-#line 176 "parser.ypp"
-             { yyval = spp(new polynomial(get<monomial>(yyvsp[0]))); }
-#line 1823 "parser.cpp"
-    break;
-
-  case 21: /* exp: exp '+' mono  */
-#line 178 "parser.ypp"
+  case 23: /* exp: exp '+' mono  */
+#line 144 "parser.ypp"
 {
 	yyval = std::move(get<spp>(yyvsp[-2]));
 	*get<spp>(yyval) += std::move(get<monomial>(yyvsp[0]));
 }
-#line 1832 "parser.cpp"
+#line 1802 "parser.cpp"
     break;
 
-  case 22: /* exp: exp '-' mono  */
-#line 183 "parser.ypp"
+  case 24: /* exp: exp '-' mono  */
+#line 149 "parser.ypp"
 {
 	yyval = std::move(get<spp>(yyvsp[-2]));
 	*get<spp>(yyval) -= std::move(get<monomial>(yyvsp[0]));
 }
-#line 1841 "parser.cpp"
+#line 1811 "parser.cpp"
     break;
 
 
-#line 1845 "parser.cpp"
+#line 1815 "parser.cpp"
 
         default: break;
       }

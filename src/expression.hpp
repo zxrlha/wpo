@@ -174,7 +174,11 @@ public:
 	set<int> literals() const;
 	set<int> tmp_literals() const;
 
-	//variable reduction
+	//variable reduction:
+    //sometimes we get a polynomial which is just a single id
+    //i.e. *this=x
+    //this function will return the literal index of x in such case
+    //and -1 otherwise
 	int single_id() const;
 
 	//multiplication number
