@@ -77,7 +77,7 @@ int vP_get(polynomial& P, bool create)
     if (it != vPmap.end())
     {
         assert(vP[it->second] == P);
-        return it->second;
+        return literal_get(vP[it->second].name());
     }
     else if (create)
     {
