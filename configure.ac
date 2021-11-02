@@ -1,5 +1,5 @@
 AC_PREREQ([2.69])
-AC_INIT([WPO], [2.12.0], [zxrlha@gmail.com])
+AC_INIT([WPO], [2.12.1], [zxrlha@gmail.com])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_AUX_DIR(config)
 AC_CONFIG_SRCDIR(src/Makefile.am)
@@ -19,8 +19,8 @@ AC_PROG_YACC
 AX_BOOST_BASE([1.51.0], [], AC_MSG_ERROR([Boost must be installed on your system. ]))
 AX_BOOST_PROGRAM_OPTIONS()
 
-# c++11
-AX_CXX_COMPILE_STDCXX_11()
+# c++17
+AX_CXX_COMPILE_STDCXX(17, [], [mandatory])
 
 # End the configure script.
 AC_SUBST([AM_CPPFLAGS])

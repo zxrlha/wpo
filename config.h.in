@@ -6,8 +6,8 @@
 /* define if the Boost::PROGRAM_OPTIONS library is available */
 #undef HAVE_BOOST_PROGRAM_OPTIONS
 
-/* define if the compiler supports basic C++11 syntax */
-#undef HAVE_CXX11
+/* define if the compiler supports basic C++17 syntax */
+#undef HAVE_CXX17
 
 /* Name of package */
 #undef PACKAGE
