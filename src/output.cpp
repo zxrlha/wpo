@@ -143,9 +143,10 @@ void reorder(vector<vector<int>>& vorder)
             if (!vP[*it].contain_literals(unknown_literal))//known!
             {
                 flag = true;
-                vorder[vP[*it].ring_level()].push_back(*it);
-                //mark as known
                 int li = literal_get(vP[*it].name());
+                int lvl = vP[*it].ring_level();
+                vorder[lvl].push_back(*it);
+                //mark as known
                 assert(li != -1);
                 unknown_literal.erase(li);
                 it = un_vp.erase(it);

@@ -525,8 +525,8 @@ static const yytype_int8 yytranslate[] =
 static const yytype_uint8 yyrline[] =
 {
        0,    23,    23,    24,    25,    28,    29,    30,    31,    34,
-      61,    66,    71,    83,    88,    94,    99,   104,   121,   131,
-     132,   141,   142,   147
+      64,    69,    74,    86,    91,    97,   102,   107,   124,   134,
+     135,   144,   145,   150
 };
 #endif
 
@@ -1651,6 +1651,7 @@ yyreduce:
 	}
 	else 
 	{
+        nli = literal_get(vP[nli].name());
         monomial m(nli);
         P = polynomial(m);
 	}
@@ -1660,32 +1661,34 @@ yyreduce:
 	std::cerr<<"Parsing..."<<vindex.size()<<" polynomials have been parsed\r";
     //add this polynomial into literal if not added, so if this part appear in another polynomial can be replaced by this literal
     literal_add(P.name());
-    //set correct ring level
-    literal_set_ring_level(literal_get(P.name()), P.ring_level());
+    //set correct ring level if not specified
+    int idlvl = literal_find_ring_level(P.name());
+    if (idlvl == -1)
+        literal_set_ring_level(literal_get(P.name()), P.ring_level());
 }
-#line 1667 "parser.cpp"
+#line 1670 "parser.cpp"
     break;
 
   case 10: /* single_var: IDENTIFY  */
-#line 62 "parser.ypp"
+#line 65 "parser.ypp"
 {
 	int i = literal_add(get<string>(yyvsp[0]));
     yyval = i;
 }
-#line 1676 "parser.cpp"
+#line 1679 "parser.cpp"
     break;
 
   case 11: /* single_var: '(' exp ')'  */
-#line 67 "parser.ypp"
+#line 70 "parser.ypp"
 {
 	int nli = vP_insert(*get<spp>(yyvsp[-1]));
     yyval = nli;
 }
-#line 1685 "parser.cpp"
+#line 1688 "parser.cpp"
     break;
 
   case 12: /* single_var: IDENTIFY '(' exp ')'  */
-#line 72 "parser.ypp"
+#line 75 "parser.ypp"
 {
 	/*a function call*/
 	int nli = vP_insert(*get<spp>(yyvsp[-1]));
@@ -1695,46 +1698,46 @@ yyreduce:
 	int nfi = vfunc_insert(nf);
 	yyval = nfi;
 }
-#line 1699 "parser.cpp"
+#line 1702 "parser.cpp"
     break;
 
   case 13: /* single_term: NUMBER  */
-#line 84 "parser.ypp"
+#line 87 "parser.ypp"
 {
 	int i = literal_add(get<string>(yyvsp[0]), true);
 	yyval = i;
 }
-#line 1708 "parser.cpp"
+#line 1711 "parser.cpp"
     break;
 
   case 14: /* single_term: single_var  */
-#line 89 "parser.ypp"
+#line 92 "parser.ypp"
 {
     yyval = yyvsp[0];
 }
-#line 1716 "parser.cpp"
+#line 1719 "parser.cpp"
     break;
 
   case 15: /* mono: single_term  */
-#line 95 "parser.ypp"
+#line 98 "parser.ypp"
 {
     monomial m(get<int>(yyvsp[0]));
     yyval = m;
 }
-#line 1725 "parser.cpp"
+#line 1728 "parser.cpp"
     break;
 
   case 16: /* mono: single_term '^' NUMBER  */
-#line 100 "parser.ypp"
+#line 103 "parser.ypp"
 {
 	int n = boost::lexical_cast<int64_t>(get<string>(yyvsp[0]));
 	yyval = monomial(get<int>(yyvsp[-2]), n);
 }
-#line 1734 "parser.cpp"
+#line 1737 "parser.cpp"
     break;
 
   case 17: /* mono: single_term '^' single_var  */
-#line 105 "parser.ypp"
+#line 108 "parser.ypp"
 {
     /*a^b=>exp(b*log(a))*/
     /* it is single '^' single, because '^' has high priority */
@@ -1751,11 +1754,11 @@ yyreduce:
     int nfiexp = vfunc_insert(nfexp);
     yyval = monomial(nfiexp);
 }
-#line 1755 "parser.cpp"
+#line 1758 "parser.cpp"
     break;
 
   case 18: /* mono: mono '/' single_term  */
-#line 122 "parser.ypp"
+#line 125 "parser.ypp"
 {
     funcexpr nfinv;
     nfinv._funcname=invname;
@@ -1765,52 +1768,52 @@ yyreduce:
     res *= monomial(nfiinv);
     yyval = std::move(res);
 }
-#line 1769 "parser.cpp"
+#line 1772 "parser.cpp"
     break;
 
   case 19: /* mono: mono '*' mono  */
-#line 131 "parser.ypp"
+#line 134 "parser.ypp"
                 { yyval = get<monomial>(yyvsp[-2]) * get<monomial>(yyvsp[0]); }
-#line 1775 "parser.cpp"
+#line 1778 "parser.cpp"
     break;
 
   case 20: /* mono: '-' mono  */
-#line 133 "parser.ypp"
+#line 136 "parser.ypp"
 {
 /* it should be -mono rather than -single, because this unary minus operator has lower priority */
 	auto& t = get<monomial>(yyvsp[0]);
 	t.reverse_sign();
 	yyval = t;
 }
-#line 1786 "parser.cpp"
+#line 1789 "parser.cpp"
     break;
 
   case 21: /* exp: mono  */
-#line 141 "parser.ypp"
+#line 144 "parser.ypp"
      { yyval = spp(new polynomial(get<monomial>(yyvsp[0]))); }
-#line 1792 "parser.cpp"
+#line 1795 "parser.cpp"
     break;
 
   case 22: /* exp: exp '+' mono  */
-#line 143 "parser.ypp"
+#line 146 "parser.ypp"
 {
 	yyval = std::move(get<spp>(yyvsp[-2]));
 	*get<spp>(yyval) += std::move(get<monomial>(yyvsp[0]));
 }
-#line 1801 "parser.cpp"
+#line 1804 "parser.cpp"
     break;
 
   case 23: /* exp: exp '-' mono  */
-#line 148 "parser.ypp"
+#line 151 "parser.ypp"
 {
 	yyval = std::move(get<spp>(yyvsp[-2]));
 	*get<spp>(yyval) -= std::move(get<monomial>(yyvsp[0]));
 }
-#line 1810 "parser.cpp"
+#line 1813 "parser.cpp"
     break;
 
 
-#line 1814 "parser.cpp"
+#line 1817 "parser.cpp"
 
         default: break;
       }

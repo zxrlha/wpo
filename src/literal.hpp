@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <vector>
 #include <map>
+#include <regex>
 #include <boost/lexical_cast.hpp>
 #include "yyglobal.hpp"
 
@@ -31,12 +32,13 @@ void literal_set_ring_level(int i, int lvl);
 int literal_get_ring_level(int i);
 int literal_maximum_ring_level();
 string literal_get_ring_type(int i);
+int literal_get_default_ring_level();
+void literal_set_default_ring_level(int lvl);
 int literal_find_ring_level(const string& name);
 
 void literal_parse_ring(const string& name, const string& value);
 
 bool literal_ring_type_check();
-
 
 using std::vector;
 using std::map;
@@ -46,30 +48,17 @@ extern map<string, int> vlit_map;
 extern vector<int> vlitlvl;
 extern int tmpi;
 extern vector<string> vrtype;
-extern map<string, int> vidlvl;
+extern vector<std::pair<std::regex, int>> vidlvl;
 extern int dftlvl;
 
 inline int literal_append(const string& name)
 {
     vlit.push_back(name);
     int lvl = literal_find_ring_level(name);
+    if (lvl == -1) lvl = literal_get_default_ring_level();
     vlitlvl.push_back(lvl);
     vlit_map.insert(std::make_pair(name, vlit.size() - 1));
     return vlit.size() - 1;
-}
-inline int literal_find_ring_level(const string& name)
-{
-    int lvl;
-    auto it = vidlvl.find(name);
-    if (it != vidlvl.end())
-    {
-        lvl = it->second;
-    }
-    else
-    {
-        lvl = dftlvl;
-    }
-    return lvl;
 }
 
 inline int literal_append_tmp()
@@ -177,6 +166,16 @@ inline int literal_maximum_ring_level()
     return vrtype.size() - 1;
 }
 
+inline int literal_get_default_ring_level()
+{
+    return dftlvl;
+}
+
+inline void literal_set_default_ring_level(int lvl)
+{
+    dftlvl = lvl;
+}
+
 inline string literal_get_ring_type(int i)
 {
     return vrtype[i];
@@ -196,7 +195,7 @@ inline void literal_parse_ring(const string& name, const string& value)
     else if (name.compare(0, 2, "id") == 0)
     {
         int level = boost::lexical_cast<std::int64_t>(name.substr(2));
-        vidlvl[value] = level;
+        vidlvl.push_back({std::regex(value), level});
     }
     else if (name == "_default_level")
     {

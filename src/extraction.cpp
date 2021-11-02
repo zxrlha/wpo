@@ -190,6 +190,10 @@ void fr_find_ring_factorization(vector<polynomial>& vP)
         }
         int li;
         li = vP_get(bcok);
+        if (li == pi)//identical to the current one, ignore it
+        {
+            li = -1;
+        }
         bool newflag = false;
         if (li == -1)
         {

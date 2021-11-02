@@ -44,6 +44,7 @@ IDENTIFY '=' exp
 	}
 	else 
 	{
+        nli = literal_get(vP[nli].name());
         monomial m(nli);
         P = polynomial(m);
 	}
@@ -53,8 +54,10 @@ IDENTIFY '=' exp
 	std::cerr<<"Parsing..."<<vindex.size()<<" polynomials have been parsed\r";
     //add this polynomial into literal if not added, so if this part appear in another polynomial can be replaced by this literal
     literal_add(P.name());
-    //set correct ring level
-    literal_set_ring_level(literal_get(P.name()), P.ring_level());
+    //set correct ring level if not specified
+    int idlvl = literal_find_ring_level(P.name());
+    if (idlvl == -1)
+        literal_set_ring_level(literal_get(P.name()), P.ring_level());
 }
 
 single_var:

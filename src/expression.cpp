@@ -645,6 +645,8 @@ int monomial::ring_level() const
 
 int polynomial::ring_level() const
 {
+    int lvl = literal_find_ring_level(name());
+    if (lvl != -1) return lvl;
     int min = literal_maximum_ring_level();
     for (int i = 0; i < _vmon.size(); ++i)
     {
@@ -658,7 +660,10 @@ int polynomial::ring_level() const
 }
 int funcexpr::ring_level() const
 {
-    return std::min(literal_find_ring_level(_funcname), literal_get_ring_level(_paraid));
+    int lvl1 = literal_find_ring_level(_funcname);
+    int lvl2 = literal_get_ring_level(_paraid);
+    if (lvl1 == -1) lvl1 = literal_get_default_ring_level();
+    return std::min(lvl1, lvl2);
 }
 
 string monomial::ring_type() const
