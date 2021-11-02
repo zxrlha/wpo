@@ -52,7 +52,6 @@ void vP_map_remove(const polynomial& P);
 int vfunc_insert(funcexpr& fe);//check before push, will return literal name
 
 void parse_options(const string& name, const string& value);
-void parse_options(const string& name, int64_t value);
 void init_ring_defaults();
 
 void error_end();

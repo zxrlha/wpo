@@ -1627,13 +1627,13 @@ yyreduce:
 
   case 7: /* optionline: OPTION NUMBER  */
 #line 30 "parser.ypp"
-               { parse_options(get<string>(yyvsp[-1]), boost::lexical_cast<int64_t>(get<string>(yyvsp[0]))); }
+               { parse_options(get<string>(yyvsp[-1]), get<string>(yyvsp[0])); }
 #line 1632 "parser.cpp"
     break;
 
   case 8: /* optionline: OPTION '-' NUMBER  */
 #line 31 "parser.ypp"
-                   { parse_options(get<string>(yyvsp[-2]), -1 * boost::lexical_cast<int64_t>(get<string>(yyvsp[0]))); }
+                   { parse_options(get<string>(yyvsp[-2]), "-" + get<string>(yyvsp[0])); }
 #line 1638 "parser.cpp"
     break;
 

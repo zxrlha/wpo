@@ -27,8 +27,8 @@
 optionline:
 OPTION IDENTIFY { parse_options(get<string>($1), get<string>($2)); }
 |OPTION STRING { parse_options(get<string>($1), get<string>($2)); }
-|OPTION NUMBER { parse_options(get<string>($1), boost::lexical_cast<int64_t>(get<string>($2))); }
-|OPTION '-' NUMBER { parse_options(get<string>($1), -1 * boost::lexical_cast<int64_t>(get<string>($3))); }
+|OPTION NUMBER { parse_options(get<string>($1), get<string>($2)); }
+|OPTION '-' NUMBER { parse_options(get<string>($1), "-" + get<string>($3)); }
 
 poly_def:
 IDENTIFY '=' exp

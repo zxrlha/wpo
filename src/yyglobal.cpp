@@ -36,6 +36,28 @@ string in_file = "";
 int64_t summul = 0;
 int64_t osummul = 0;
 
+//Auxiliary class for lexical_cast
+bool to_bool(const std::string& tmpstr)
+{
+    std::string str(tmpstr);
+    std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+    std::istringstream is(str);
+    bool b;
+    if (str == "0" || str == "false")
+    {
+        b = false;
+    }
+    else if (str == "1" || str == "true")
+    {
+        b = true;
+    }
+    else
+    {
+        throw std::invalid_argument("Unknown flag: " + tmpstr);
+    }
+    return b;
+}
+
 void vP_replace(int i, const polynomial& nP)
 {
     polynomial& P = vP[i];
@@ -143,58 +165,27 @@ void parse_options(const string& name, const string& value)
         }
     }
     if (name == "num_prefix")
-    {
-        num_prefix = value;
-    }
+    { num_prefix = value; }
     else if (name == "num_suffix")
-    {
-        num_suffix = value;
-    }
+    { num_suffix = value; }
     else if (name == "strategy")
-    {
-        strategy = value;
-    }
+    { strategy = value; }
     else if (name == "invname")
-    {
-        invname = value;
-    }
+    { invname = value; }
     else if (name == "expname")
-    {
-        expname = value;
-    }
+    { expname = value; }
     else if (name == "logname")
-    {
-        logname = value;
-    }
+    { logname = value; }
     else if (name == "clean")
-    {
-        flag_clean = (value == "true");
-    }
+    { flag_clean = to_bool(value); }
     else if (name == "reuse")
-    {
-        flag_reuse = (value == "true");
-    }
-    else if (name.compare(0, 4, "ring") == 0)
-    {
-        literal_parse_ring(name.substr(4), value);
-    }
-    else
-    {
-        std::cerr << "ERROR:Unknown option:" << name << std::endl;
-        error_end();
-    }
-}
-
-void parse_options(const string& name, int64_t value)
-{
-    if (name == "max_terms")
-    {
-        max_terms = value;
-    }
+    { flag_reuse = to_bool(value); }
+    else if (name == "max_terms")
+    { max_terms = boost::lexical_cast<int>(value); }
     else if (name == "threads_num")
-    {
-        threads_num = value;
-    }
+    { threads_num = boost::lexical_cast<int>(value); }
+    else if (name.compare(0, 4, "ring") == 0)
+    { literal_parse_ring(name.substr(4), value); }
     else
     {
         std::cerr << "ERROR:Unknown option:" << name << std::endl;
