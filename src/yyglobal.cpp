@@ -27,7 +27,7 @@ string strategy = "kcm";//kcm fastrun
 bool flag_clean = true;
 bool flag_reuse = true;
 int64_t max_terms = -1;
-int64_t threads_num = 1;
+bool multithread = 1;//enable multithread by default
 string invname = "inv";
 string logname = "log";
 string expname = "exp";
@@ -217,8 +217,8 @@ void parse_options(const string& name, const string& value)
     { flag_reuse = to_bool(value); }
     else if (name == "max_terms")
     { max_terms = boost::lexical_cast<int>(value); }
-    else if (name == "threads_num")
-    { threads_num = boost::lexical_cast<int>(value); }
+    else if (name == "multithread")
+    { multithread = to_bool(value); }
     else if (name.compare(0, 4, "ring") == 0)
     { literal_parse_ring(name.substr(4), value); }
     else

@@ -31,7 +31,7 @@ extern string strategy;
 extern bool flag_clean;
 extern bool flag_reuse;
 extern int64_t max_terms;
-extern int64_t threads_num;
+extern bool multithread;
 extern string invname;
 extern string logname;
 extern string expname;

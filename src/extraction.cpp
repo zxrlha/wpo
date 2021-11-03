@@ -225,7 +225,7 @@ bool fr_kernel_intersection(const polynomial& P, monomial& m)
     int v = 0;
     int bi = -1;
     int bj = -1;
-    #pragma omp parallel
+    #pragma omp parallel if (multithread)
     {
         int local_v = 0;
         int local_bi = -1;
@@ -323,7 +323,7 @@ bool fr_parts_cube_intersection(const vector<monomial>& mat, monomial& m, int mi
     int v = 1;
     int bi = -1;
     int bj = -1;
-    #pragma omp parallel
+    #pragma omp parallel if (multithread)
     {
         int local_v = 1;
         int local_bi = -1;
