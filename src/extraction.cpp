@@ -110,9 +110,9 @@ void kcm_find_kernel_intersections(vector<polynomial>& vP, int minlvl, int maxlv
             sumbv1 += bv;
             summul -= bv;
             std::cerr << "Step 1: Descrease by" << std::setw(7) << bv << "."
-                      << "Total descreased:" << std::setw(8) << sumbv1 << "."
-                      << "Remain" << std::setw(8) << summul
-                      << "(" << std::setw(5) << double(summul) / osummul * 100 << "%)" << "\r";
+                << "Total descreased:" << std::setw(8) << sumbv1 << "."
+                << "Remain" << std::setw(8) << summul
+                << "(" << std::setw(5) << double(summul) / osummul * 100 << "%)" << "\r";
         }
     }
     std::cerr << std::endl;
@@ -223,9 +223,9 @@ void fr_find_ring_factorization(vector<polynomial>& vP)
         sumbv1 += bv;
         summul -= bv;
         std::cerr << "Step " << 0 << ": Descrease by" << std::setw(7) << bv << "."
-                  << "Total descreased:" << std::setw(8) << sumbv1 << "."
-                  << "Remain" << std::setw(8) << summul
-                  << "(" << std::setw(5) << double(summul) / osummul * 100 << "%)" << "\r";
+            << "Total descreased:" << std::setw(8) << sumbv1 << "."
+            << "Remain" << std::setw(8) << summul
+            << "(" << std::setw(5) << double(summul) / osummul * 100 << "%)" << "\r";
     }
     std::cerr << std::endl;
 }
@@ -238,17 +238,31 @@ bool fr_kernel_intersection(const polynomial& P, monomial& m)
     int v = 0;
     int bi = -1;
     int bj = -1;
-    for (int i = 0; i < P.size(); ++i)
+    #pragma omp parallel
     {
-        for (int j = i + 1; j < P.size(); ++j)
+        int local_v = 0;
+        int local_bi = -1;
+        int local_bj = -1;
+        #pragma omp for
+        for (int i = 0; i < P.size(); ++i)
         {
-            int mn = gcd_mn(P[i], P[j], minlvl, maxlvl);
-            if (mn > v)
+            for (int j = i + 1; j < P.size(); ++j)
             {
-                bi = i;
-                bj = j;
-                v = mn;
+                int mn = gcd_mn(P[i], P[j], minlvl, maxlvl);
+                if (mn > local_v)
+                {
+                    local_bi = i;
+                    local_bj = j;
+                    local_v = mn;
+                }
             }
+        }
+        #pragma omp critical
+        if (local_v > v || ((local_v == v) && (local_bi < bi)))
+        {
+            v = local_v;
+            bi = local_bi;
+            bj = local_bj;
         }
     }
     if (bi == -1)
@@ -317,9 +331,9 @@ void fr_find_kernel_intersections(vector<polynomial>& vP)
         sumbv1 += bv;
         summul -= bv;
         std::cerr << "Step " << 1 << ": Descrease by" << std::setw(7) << bv << "."
-                  << "Total descreased:" << std::setw(8) << sumbv1 << "."
-                  << "Remain" << std::setw(8) << summul
-                  << "(" << std::setw(5) << double(summul) / osummul * 100 << "%)" << "\r";
+            << "Total descreased:" << std::setw(8) << sumbv1 << "."
+            << "Remain" << std::setw(8) << summul
+            << "(" << std::setw(5) << double(summul) / osummul * 100 << "%)" << "\r";
     }
     std::cerr << std::endl;
 }
@@ -328,17 +342,31 @@ bool fr_parts_cube_intersection(const vector<monomial>& mat, monomial& m, int mi
     int v = 1;
     int bi = -1;
     int bj = -1;
-    for (int i = 0; i < mat.size(); ++i)
+    #pragma omp parallel
     {
-        for (int j = i + 1; j < mat.size(); ++j)
+        int local_v = 1;
+        int local_bi = -1;
+        int local_bj = -1;
+        #pragma omp for
+        for (int i = 0; i < mat.size(); ++i)
         {
-            int mn = gcd_mn(mat[i], mat[j], minlvl, maxlvl);
-            if (mn > v)
+            for (int j = i + 1; j < mat.size(); ++j)
             {
-                bi = i;
-                bj = j;
-                v = mn;
+                int mn = gcd_mn(mat[i], mat[j], minlvl, maxlvl);
+                if (mn > local_v)
+                {
+                    local_bi = i;
+                    local_bj = j;
+                    local_v = mn;
+                }
             }
+        }
+        #pragma omp critical
+        if (local_v > v)
+        {
+            v = local_v;
+            bi = local_bi;
+            bj = local_bj;
         }
     }
     if (bi == -1)
@@ -499,9 +527,9 @@ void find_cube_intersections(vector<polynomial>& vP)
         sumbv2 += bv;
         summul -= bv;
         std::cerr << "Step 2: Descrease by" << std::setw(7) << bv << "."
-                  << "Total descreased:" << std::setw(8) << sumbv2 << "."
-                  << "Remain" << std::setw(8) << summul
-                  << "(" << std::setw(5) << double(summul) / osummul * 100 << "%)" << "\r";
+            << "Total descreased:" << std::setw(8) << sumbv2 << "."
+            << "Remain" << std::setw(8) << summul
+            << "(" << std::setw(5) << double(summul) / osummul * 100 << "%)" << "\r";
         //add this into vP
         npoly.name() = literal_name(li);
         if (newflag)

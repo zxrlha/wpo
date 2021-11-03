@@ -3,6 +3,7 @@ BUILT_SOURCES = parser.cpp parser.hpp lexer.cpp
 AM_YFLAGS=-d -Wno-yacc
 wpo_CPPFLAGS = $(BOOST_CPPFLAGS)
 wpo_LDADD = $(BOOST_LDFLAGS) $(BOOST_PROGRAM_OPTIONS_LIB)
+wpo_CXXFLAGS = $(OPENMP_CXXFLAGS)
 wpo_SOURCES = expression.hpp expression.cpp \
 			  kernel.hpp kernel.cpp \
 			  kcm.hpp kcm.cpp \
