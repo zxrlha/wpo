@@ -18,6 +18,7 @@ void kcm_find_kernel_intersections(vector<polynomial>& vP, int minlvl, int maxlv
 {
     int sumbv1 = 0;
     int bv = 0;
+    int oldnr = 10000;
     while (true)
     {
         vector<pair<monomial, polynomial>> vmp;
@@ -109,10 +110,15 @@ void kcm_find_kernel_intersections(vector<polynomial>& vP, int minlvl, int maxlv
             }
             sumbv1 += bv;
             summul -= bv;
-            std::cerr << "Step 1: Descrease by" << std::setw(7) << bv << "."
-                << "Total descreased:" << std::setw(8) << sumbv1 << "."
-                << "Remain" << std::setw(8) << summul
-                << "(" << std::setw(5) << double(summul) / osummul * 100 << "%)" << "\r";
+            int nr = double(summul) / osummul * 10000;
+            if (nr < oldnr)
+            {
+                oldnr = nr;
+                std::cerr << "Step 1: Descrease by" << std::setw(7) << bv << "."
+                    << "Total descreased:" << std::setw(8) << sumbv1 << "."
+                    << "Remain" << std::setw(8) << summul
+                    << "(" << std::setw(5) << double(summul) / osummul * 100 << "%)" << "\r";
+            }
         }
     }
     std::cerr << std::endl;
