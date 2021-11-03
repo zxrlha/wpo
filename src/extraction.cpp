@@ -16,9 +16,6 @@ using std::map;
 
 void kcm_find_kernel_intersections(vector<polynomial>& vP, int minlvl, int maxlvl)
 {
-    int sumbv1 = 0;
-    int bv = 0;
-    int oldnr = 10000;
     while (true)
     {
         vector<pair<monomial, polynomial>> vmp;
@@ -35,7 +32,7 @@ void kcm_find_kernel_intersections(vector<polynomial>& vP, int minlvl, int maxlv
         kcm tm(std::move(vkmap));
         vector<int> vr;
         vector<int> vc;
-        bv = tm.generate_best_rectangle(vr, vc);
+        int bv = tm.generate_best_rectangle(vr, vc);
         if (bv < 0)
         {
             break;
@@ -108,17 +105,7 @@ void kcm_find_kernel_intersections(vector<polynomial>& vP, int minlvl, int maxlv
             {
                 bv -= nlp.multiplication_number();
             }
-            sumbv1 += bv;
-            summul -= bv;
-            int nr = double(summul) / osummul * 10000;
-            if (nr < oldnr)
-            {
-                oldnr = nr;
-                std::cerr << "Step 1: Descrease by" << std::setw(7) << bv << "."
-                    << "Total descreased:" << std::setw(8) << sumbv1 << "."
-                    << "Remain" << std::setw(8) << summul
-                    << "(" << std::setw(5) << double(summul) / osummul * 100 << "%)" << "\r";
-            }
+            update_mulnum(1, bv);
         }
     }
     std::cerr << std::endl;
@@ -168,7 +155,6 @@ bool fr_ring_factorization(const polynomial& P, monomial& m, polynomial& bcok)
 }
 void fr_find_ring_factorization(vector<polynomial>& vP)
 {
-    int sumbv1 = 0;
     int pi = 0;
     while (true)
     {
@@ -226,12 +212,7 @@ void fr_find_ring_factorization(vector<polynomial>& vP)
             after += bcok.multiplication_number();
         }
         int bv = before - after;
-        sumbv1 += bv;
-        summul -= bv;
-        std::cerr << "Step " << 0 << ": Descrease by" << std::setw(7) << bv << "."
-            << "Total descreased:" << std::setw(8) << sumbv1 << "."
-            << "Remain" << std::setw(8) << summul
-            << "(" << std::setw(5) << double(summul) / osummul * 100 << "%)" << "\r";
+        update_mulnum(0, bv);
     }
     std::cerr << std::endl;
 }
@@ -280,7 +261,6 @@ bool fr_kernel_intersection(const polynomial& P, monomial& m)
 }
 void fr_find_kernel_intersections(vector<polynomial>& vP)
 {
-    int sumbv1 = 0;
     int pi = 0;
     while (true)
     {
@@ -334,12 +314,7 @@ void fr_find_kernel_intersections(vector<polynomial>& vP)
             after += bcok.multiplication_number();
         }
         int bv = before - after;
-        sumbv1 += bv;
-        summul -= bv;
-        std::cerr << "Step " << 1 << ": Descrease by" << std::setw(7) << bv << "."
-            << "Total descreased:" << std::setw(8) << sumbv1 << "."
-            << "Remain" << std::setw(8) << summul
-            << "(" << std::setw(5) << double(summul) / osummul * 100 << "%)" << "\r";
+        update_mulnum(1, bv);
     }
     std::cerr << std::endl;
 }
@@ -443,7 +418,6 @@ bool fr_cube_intersection(const vector<polynomial>& vP, monomial& m, int minlvl,
 }
 void find_cube_intersections(vector<polynomial>& vP)
 {
-    int sumbv2 = 0;
     //for cube part, maxlvl is always maximum ring level,
     //and we decrease minlvl till 0
     int minlvl = literal_maximum_ring_level();
@@ -530,12 +504,7 @@ void find_cube_intersections(vector<polynomial>& vP)
             build_vdb_term(pi);//update vdb
         }
         int64_t bv = (rs - 1) * (m.multiplication_number() - 1);
-        sumbv2 += bv;
-        summul -= bv;
-        std::cerr << "Step 2: Descrease by" << std::setw(7) << bv << "."
-            << "Total descreased:" << std::setw(8) << sumbv2 << "."
-            << "Remain" << std::setw(8) << summul
-            << "(" << std::setw(5) << double(summul) / osummul * 100 << "%)" << "\r";
+        update_mulnum(2, bv);
         //add this into vP
         npoly.name() = literal_name(li);
         if (newflag)

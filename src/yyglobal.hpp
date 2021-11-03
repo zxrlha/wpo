@@ -38,9 +38,6 @@ extern string expname;
 
 extern string in_file;
 
-extern int64_t summul;
-extern int64_t osummul;
-
 //note: vP_get only works if the vPmap is built correctly, i.e. pushing via vP_push, and modify via vP_replace
 //currently only parsing and step 1 called vP_get, and only them using vP_push and vP_replace
 void vP_replace(int i, const polynomial& nP);
@@ -55,5 +52,9 @@ void parse_options(const string& name, const string& value);
 void init_ring_defaults();
 
 void error_end();
+
+void init_mulnum();
+int get_mulnum();
+void update_mulnum(int step, int bv);
 
 #endif

@@ -124,13 +124,7 @@ int main(int argc, char* argv[])
     }
     cerr << "Parsing\r";
     yyparse();
-    cerr << "Total " << vP.size() << " polynomials, ";
-    for (int i = 0; i < vP.size(); ++i)
-    {
-        summul += vP[i].multiplication_number();
-    }
-    osummul = summul;
-    cerr << summul << " multiplications" << endl;
+    init_mulnum();
     if (!literal_ring_type_check())
     {
         cerr << "Ring type check failed, please check your declaration for ringtype!" << endl;

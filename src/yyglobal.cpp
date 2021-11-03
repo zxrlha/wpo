@@ -1,6 +1,7 @@
 #include "yyglobal.hpp"
 #include "literal.hpp"
 #include <map>
+#include <iomanip>
 #include <boost/lexical_cast.hpp>
 
 using std::multimap;
@@ -33,8 +34,42 @@ string expname = "exp";
 
 string in_file = "";
 
-int64_t summul = 0;
-int64_t osummul = 0;
+int summul;
+int osummul;
+
+void init_mulnum()
+{
+    summul = 0;
+    for (int i = 0; i < vP.size(); ++i)
+    {
+        summul += vP[i].multiplication_number();
+    }
+    osummul = summul;
+    std::cerr << "Total " << vP.size() << " polynomials, "
+        << summul << " multiplications" << std::endl;
+}
+
+int get_mulnum()
+{
+    return summul;
+}
+
+void update_mulnum(int step, int bv)
+{
+    static std::array<int, 3> vsumbv = {};
+    static int prevnr = 10000;
+    vsumbv[step] += bv;
+    summul -= bv;
+    int nr = double(summul) / osummul * 10000;
+    if (nr < prevnr)
+    {
+        prevnr = nr;
+        std::cerr << "Step " << step << ": Decreased by" << std::setw(7) << bv << "."
+            << "Total decreased:" << std::setw(8) << vsumbv[step] << "."
+            << "Remain" << std::setw(8) << summul
+            << "(" << std::setw(5) << double(summul) / osummul * 100 << "%)" << "\r";
+    }
+}
 
 //Auxiliary class for lexical_cast
 bool to_bool(const std::string& tmpstr)
