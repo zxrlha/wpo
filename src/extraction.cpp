@@ -230,7 +230,7 @@ bool fr_kernel_intersection(const polynomial& P, monomial& m)
         int local_v = 0;
         int local_bi = -1;
         int local_bj = -1;
-        #pragma omp for
+        #pragma omp for schedule(dynamic,4)
         for (int i = 0; i < P.size(); ++i)
         {
             for (int j = i + 1; j < P.size(); ++j)
@@ -328,7 +328,7 @@ bool fr_parts_cube_intersection(const vector<monomial>& mat, monomial& m, int mi
         int local_v = 1;
         int local_bi = -1;
         int local_bj = -1;
-        #pragma omp for
+        #pragma omp for schedule(dynamic,4)
         for (int i = 0; i < mat.size(); ++i)
         {
             for (int j = i + 1; j < mat.size(); ++j)
