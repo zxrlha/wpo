@@ -258,7 +258,7 @@ bool fr_kernel_intersection(const polynomial& P, monomial& m)
             }
         }
         #pragma omp critical
-        if (local_v > v || ((local_v == v) && (local_bi < bi)))
+        if (local_v > v || ((local_v == v) && (local_bi < bi)))//the extra case is to ensure proper ordering so that results become independent on number of threads
         {
             v = local_v;
             bi = local_bi;
@@ -362,7 +362,7 @@ bool fr_parts_cube_intersection(const vector<monomial>& mat, monomial& m, int mi
             }
         }
         #pragma omp critical
-        if (local_v > v)
+        if (local_v > v || ((local_v == v) && (local_bi < bi)))//the extra case is to ensure proper ordering so that results become independent on number of threads
         {
             v = local_v;
             bi = local_bi;
